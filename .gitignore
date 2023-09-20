@@ -1,0 +1,18 @@
+# Ignore Node.js modules
+node_modules/
+
+# Ignore build artifacts
+build/
+dist/
+*.log
+
+# Ignore environment variables (if you have a .env file)
+.env
+
+# Ignore editor-specific files
+.vscode/
+.idea/
+
+# Ignore operating system-specific files
+.DS_Store
+Thumbs.db

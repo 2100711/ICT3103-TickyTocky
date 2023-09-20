@@ -1,0 +1,18 @@
+version: '3'  # Use the desired version of Docker Compose
+
+services:
+  # webapp:
+  #   image: my-web-app:latest  # Replace with the actual image name and tag for your backend server
+  #   ports:
+  #     - "3000:3000"  # Map host port 3000 to container port 3000
+  #   depends_on:
+  #     - database  # Ensure the 'database' service is started first
+
+  backend:
+    build:
+      context: ./server  # Specify the directory containing your Node.js backend application
+    ports:
+      - "3001:3001"  # Map host port 3001 to container port 3001
+    environment:
+      MONGODB_URI: mongodb+srv://$DB_USER:$DB_PASS@testingauctionsystem.5zpmbym.mongodb.net/testingauctionsystem?retryWrites=true&w=majority  # Connection URI to MongoDB
+
