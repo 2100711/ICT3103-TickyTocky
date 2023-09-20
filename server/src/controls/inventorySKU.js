@@ -1,8 +1,10 @@
+import { InventorySKUModel } from "../models/InventorySKU.js";
+
 // Create a new InventorySKU
 const createInventorySKU = async (req, res) => {
   console.log("Creating InventorySKU...", req.body);
   try {
-    const inventorySKU = new InventorySKU(req.body);
+    const inventorySKU = new InventorySKUModel(req.body);
     await inventorySKU.save();
     res.status(201).json(inventorySKU);
   } catch (error) {
@@ -14,7 +16,7 @@ const createInventorySKU = async (req, res) => {
 // Read all InventorySKUs
 const getAllInventorySKUs = async (req, res) => {
   try {
-    const inventorySKUs = await InventorySKU.find();
+    const inventorySKUs = await InventorySKUModel.find();
     res.json(inventorySKUs);
   } catch (error) {
     console.error(error);
@@ -25,7 +27,7 @@ const getAllInventorySKUs = async (req, res) => {
 // Read a specific InventorySKU by ID
 const getInventorySKUById = async (req, res) => {
   try {
-    const inventorySKU = await InventorySKU.findById(req.params.skuId);
+    const inventorySKU = await InventorySKUModel.findOne({skuID: req.params.skuID});
     if (!inventorySKU) {
       return res.status(404).json({ error: 'InventorySKU not found' });
     }
@@ -39,7 +41,7 @@ const getInventorySKUById = async (req, res) => {
 // Update a specific InventorySKU by ID
 const updateInventorySKUById = async (req, res) => {
   try {
-    const inventorySKU = await InventorySKU.findByIdAndUpdate(req.params.skuId, req.body, {
+    const inventorySKU = await InventorySKUModel.findOneAndUpdate({skuID: req.params.skuID}, req.body, {
       new: true, // Return the updated document
     });
     if (!inventorySKU) {
@@ -55,7 +57,7 @@ const updateInventorySKUById = async (req, res) => {
 // Delete a specific InventorySKU by ID
 const deleteInventorySKUById = async (req, res) => {
   try {
-    const inventorySKU = await InventorySKU.findByIdAndRemove(req.params.skuId);
+    const inventorySKU = await InventorySKUModel.deleteOne({skuID: req.params.skuID});
     if (!inventorySKU) {
       return res.status(404).json({ error: 'InventorySKU not found' });
     }

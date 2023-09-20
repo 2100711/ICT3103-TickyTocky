@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const inventorySKUSchema = new mongoose.Schema({
   skuID: {
@@ -38,4 +38,4 @@ const inventorySKUSchema = new mongoose.Schema({
   },
 });
 
-export const InventorySKU = mongoose.model('inventorySKU', inventorySKUSchema);
+export const InventorySKUModel = mongoose.model('inventorySKU', inventorySKUSchema);

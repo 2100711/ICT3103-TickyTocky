@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const paymentSchema = new mongoose.Schema({
   paymentId: {
@@ -31,4 +31,4 @@ const paymentSchema = new mongoose.Schema({
   token: String,
 });
 
-export const Payments = mongoose.model('Payments', paymentSchema);
+export const PaymentsModel = mongoose.model('Payments', paymentSchema);

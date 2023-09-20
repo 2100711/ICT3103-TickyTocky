@@ -3,10 +3,10 @@ import { createPayment, getAllPayments, getPaymentById, updatePaymentById, delet
 
 const paymentsRouter = express.Router();
 // Define your API routes
-paymentsRouter.post('/payments', createPayment);
-paymentsRouter.get('/payments', getAllPayments);
-paymentsRouter.get('/payments/:paymentId', getPaymentById);
-paymentsRouter.put('/payments/:paymentId', updatePaymentById);
-paymentsRouter.delete('/payments/:paymentId', deletePaymentById);
+paymentsRouter.post('/', createPayment);
+paymentsRouter.get('/', getAllPayments);
+paymentsRouter.get('/:paymentId', getPaymentById);
+paymentsRouter.put('/:paymentId', updatePaymentById);
+paymentsRouter.delete('/:paymentId', deletePaymentById);
 
 export { paymentsRouter };
