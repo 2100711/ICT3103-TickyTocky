@@ -2,13 +2,9 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 
-// import { authRouter } from "./routes/auth.js";
-// import { scenariosRouter } from "./routes/scenarios.js";
 import { userRouter } from "./routes/users.js";
-// import { taskRouter } from "./routes/tasks.js";
-// import { uploadRouter } from "./routes/upload.js";
-// import { contactRouter } from "./routes/contact.js";
-// import { requestRouter } from "./routes/request.js";
+import { inventorySKURouter } from "./routes/inventorySKU.js";
+import { paymentsRouter } from "./routes/payments.js";
 
 import { PORT, MONGODB_CONNECTION } from "./constants.js";
 
@@ -18,13 +14,9 @@ app.use(express.json());
 app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 
 // Routes
-// app.use("/auth", authRouter);
-// app.use("/scenarios", scenariosRouter);
+app.use("/inventory", inventorySKURouter);
 app.use("/users", userRouter);
-// app.use("/tasks", taskRouter);
-// app.use("/upload", uploadRouter);
-// app.use("/contact", contactRouter);
-// app.use("/request", requestRouter);
+app.use("/payments", paymentsRouter);
 
 mongoose.connect(MONGODB_CONNECTION, {
   useNewUrlParser: true,
