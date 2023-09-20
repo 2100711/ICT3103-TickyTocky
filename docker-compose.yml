@@ -1,4 +1,4 @@
-version: '3'  # Use the desired version of Docker Compose
+version: "3" # Use the desired version of Docker Compose
 
 services:
   # webapp:
@@ -10,9 +10,6 @@ services:
 
   backend:
     build:
-      context: ./server  # Specify the directory containing your Node.js backend application
+      context: ./server # Specify the directory containing your Node.js backend application
     ports:
-      - "3001:3001"  # Map host port 3001 to container port 3001
-    environment:
-      MONGODB_URI: mongodb+srv://$DB_USER:$DB_PASS@testingauctionsystem.5zpmbym.mongodb.net/testingauctionsystem?retryWrites=true&w=majority  # Connection URI to MongoDB
-
+      - "3001:3001" # Map host port 3001 to container port 3001
