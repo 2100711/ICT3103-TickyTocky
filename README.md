@@ -8,9 +8,10 @@ Add .env file containing the DB_USER and DB_PASS parameters inside the /server f
 
 Follow this template:
 
-`DB_USER = [Your DB Username]`
-
-`DB_PASS = [Your DB Password]`
+```env
+DB_USER = [Your DB Username]
+DB_PASS = [Your DB Password]
+```
 
 # Running the app
 

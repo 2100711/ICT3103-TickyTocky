@@ -1,15 +1,16 @@
 version: "3" # Use the desired version of Docker Compose
 
 services:
-  # webapp:
-  #   image: my-web-app:latest  # Replace with the actual image name and tag for your backend server
-  #   ports:
-  #     - "3000:3000"  # Map host port 3000 to container port 3000
-  #   depends_on:
-  #     - database  # Ensure the 'database' service is started first
+  web:
+    build:
+      context: ./client # Specify the directory containing your React frontend application
+      dockerfile: Dockerfile-client # Specify the Dockerfile name
+    ports:
+      - "3000:3000"  # Map host port 3000 to container port 3000
 
   backend:
     build:
       context: ./server # Specify the directory containing your Node.js backend application
+      dockerfile: Dockerfile-server # Specify the Dockerfile name
     ports:
       - "3001:3001" # Map host port 3001 to container port 3001
