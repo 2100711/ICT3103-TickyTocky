@@ -1,7 +1,7 @@
 import express from "express";
 import { createInventorySKU, getAllInventorySKUs, getInventorySKUById, updateInventorySKUById, deleteInventorySKUById } from "../controls/inventorySKU.js";
 
-const inventorySKUinventorySKURouter = express.inventorySKURouter();
+const inventorySKUinventorySKURouter = express.Router();
 inventorySKURouter.post('/inventory', createInventorySKU);
 inventorySKURouter.get('/inventory', getAllInventorySKUs);
 inventorySKURouter.get('/inventory/:id', getInventorySKUById);
