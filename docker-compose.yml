@@ -1,16 +1,43 @@
 version: "3" # Use the desired version of Docker Compose
 
 services:
-  web:
-    build:
+  frontend:
+    container_name: frontend
+    build:  
       context: ./client # Specify the directory containing your React frontend application
       dockerfile: Dockerfile-client # Specify the Dockerfile name
     ports:
       - "3000:3000"  # Map host port 3000 to container port 3000
+    networks:
+      - app-network
 
   backend:
+    container_name: backend
     build:
       context: ./server # Specify the directory containing your Node.js backend application
       dockerfile: Dockerfile-server # Specify the Dockerfile name
     ports:
       - "3001:3001" # Map host port 3001 to container port 3001
+    networks:
+      - app-network
+
+  webserver:
+    image: nginx:mainline-alpine
+    container_name: webserver
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      #- ./client/public:/var/www/html
+      - ./nginx-conf:/etc/nginx/conf.d #Nginx configuration file
+      - ./gracious-kare.cloud-ssl-bundle:/ssl/ #SSL certs directory
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
