@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import { userRouter } from "./routes/users.js";
 import { inventorySKURouter } from "./routes/inventorySKU.js";
 import { paymentsRouter } from "./routes/payments.js";
+import { wishlistRouter } from "./routes/wishlist.js";
 
 import { PORT, MONGODB_CONNECTION } from "./constants.js";
 
@@ -17,6 +18,7 @@ app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 app.use("/inventory", inventorySKURouter);
 app.use("/users", userRouter);
 app.use("/payments", paymentsRouter);
+app.use("/wishlist", wishlistRouter);
 
 mongoose.connect(MONGODB_CONNECTION, {
   useNewUrlParser: true,

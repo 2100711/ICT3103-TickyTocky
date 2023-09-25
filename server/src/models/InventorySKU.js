@@ -38,4 +38,7 @@ const inventorySKUSchema = new mongoose.Schema({
   },
 });
 
-export const InventorySKUModel = mongoose.model('inventorySKU', inventorySKUSchema);
+export const InventorySKUModel = mongoose.model(
+  "inventoryskus",
+  inventorySKUSchema
+);
