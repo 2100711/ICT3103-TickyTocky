@@ -1,6 +1,6 @@
 import express from "express";
 // import jwt from "jsonwebtoken";
-// import bcrypt from "bcrypt";
+import bcrypt from "bcrypt";
 // import nodemailer from "nodemailer";
 
 import { UserModel } from "../models/Users.js";
@@ -21,49 +21,86 @@ const router = express.Router();
 
 // Register new user
 router.post("/register", async (req, res) => {
-    const {
-        fname,
-        lname,
-        email,
-        password,
-        address,
-        // dob,
-        // gender,
-        // issue,
-        // therapistName,
-        // therapistEmail,
-    } = req.body;
-    console.log(fname, email);
-    try {
-        // Checking if user exists
-        // if (await userExists(email)) {
-        //     return res.status(409).json({ error: "User already exists" });
-        // }
+  const {
+    fname,
+    lname,
+    email,
+    password,
+    address,
+    // dob,
+    // gender,
+    // issue,
+    // therapistName,
+    // therapistEmail,
+  } = req.body;
+  console.log(fname, email);
+  try {
+    // Checking if user exists
+    // if (await userExists(email)) {
+    //   return res.status(409).json({ error: "User already exists" });
+    // }
 
-        // // Hashing password
-        // const hashedPassword = await bcrypt.hash(password, 10);
+    // // Hashing password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create new user
-        const newUser = new UserModel({
-            fname: fname,
-            lname: lname,
-            email: email,
-            password: password,
-            address: address,
-            // role: "user",
-            // dob: dob,
-            // gender: gender,
-            // issue: issue,
-        });
-        console.log(newUser);
-        await newUser.save();
+    // Create new user
+    const newUser = new UserModel({
+      fname: fname,
+      lname: lname,
+      email: email,
+      password: hashedPassword,
+      address: address,
+      // role: "user",
+      // dob: dob,
+      // gender: gender,
+      // issue: issue,
+    });
+    console.log(newUser);
+    await newUser.save();
 
-        return res
-            .status(201)
-            .json({ message: "User registered successfully" });
-    } catch (err) {
-        return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
+    return res.status(201).json({ message: "User registered successfully" });
+  } catch (err) {
+    return res.status(500).json({ error: err });
+  }
+});
+
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await UserModel.findOne({ email });
+
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ message: "Invalid credentials" });
     }
+
+    // If want to only allow one active session
+    // TODO: make this work
+    // if (
+    //   req.session.user &&
+    //   req.session.user.email &&
+    //   req.session.user.email === email
+    // ) {
+    //   // remove previous session
+    //   await req.session.destroy();
+    // }
+
+    req.session.user = {
+      email,
+    };
+
+    await req.session.save();
+
+    return res.status(201).json({ message: "Login successful" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.get("/logout", (req, res) => {
+  req.session.destroy();
+  return res.status(200).json({ message: "Logged out" });
 });
 
 // Register new therapist/educator
@@ -246,8 +283,8 @@ router.post("/register", async (req, res) => {
 //             }
 //         }
 
-        // Update user password
-        // const user = await UserModel.findOne({ email: email });
+// Update user password
+// const user = await UserModel.findOne({ email: email });
 //         user.password = hashedPassword;
 //         await user.save();
 

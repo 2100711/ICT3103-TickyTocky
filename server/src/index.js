@@ -1,7 +1,10 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
+import session from "express-session";
+import MongoStore from "connect-mongo";
 
+import { authRouter } from "./routes/auth.js";
 import { userRouter } from "./routes/users.js";
 import { inventorySKURouter } from "./routes/inventorySKU.js";
 import { paymentsRouter } from "./routes/payments.js";
@@ -14,12 +17,6 @@ const app = express();
 app.use(express.json());
 app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 
-// Routes
-app.use("/inventory", inventorySKURouter);
-app.use("/users", userRouter);
-app.use("/payments", paymentsRouter);
-app.use("/wishlist", wishlistRouter);
-
 mongoose.connect(MONGODB_CONNECTION, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -27,6 +24,31 @@ mongoose.connect(MONGODB_CONNECTION, {
 
 // Get the default connection
 const db = mongoose.connection;
+
+// Sessions
+app.use(
+  session({
+    secret: "secret-key-from-env",
+    cookie: { maxAge: 20000, httpOnly: true, signed: true },
+    resave: false,
+    saveUninitialized: false,
+    store: new MongoStore({
+      client: db.getClient(),
+      crypto: {
+        secret: "squirrel",
+      },
+      // TODO: to confirm session length
+      ttl: 20000,
+    }),
+  })
+);
+
+// Routes
+app.use("/inventory", inventorySKURouter);
+app.use("/users", userRouter);
+app.use("/payments", paymentsRouter);
+app.use("/wishlist", wishlistRouter);
+app.use("/auth", authRouter);
 
 // Listen for the "connected" event
 db.on("connected", () => {
