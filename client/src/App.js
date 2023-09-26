@@ -1,76 +1,45 @@
-import logo from "./logo.svg";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
+import Login from "./components/login";
+import Register from "./components/register";
+import Home from "./components/home";
+import Discover from "./components/discover";
+import Catalogue from "./components/catalogue";
+import Product from "./components/product";
+import Dashboard from "./components/dashboard";
+import constants from "./constants.js";
 
 function App() {
-  const FNAME = "fname";
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const data = new FormData(e.target);
-    fetch("http://localhost:3001/users/", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        [FNAME]: data.get(FNAME),
-        lname: data.get("lname"),
-        password: data.get("password"),
-        email: data.get("email"),
-        address: data.get("address"),
-      }),
-    }).then((response) => {
-      response.json().then((data) => {
-        console.log(data);
-      });
-    });
-  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <form onSubmit={handleSubmit}>
-          <label>
-            First Name
-            <input type="text" name={FNAME} />
-          </label>
-          <br></br>
-          <label>
-            Last Name
-            <input type="text" name="lname" />
-          </label>
-          <br></br>
-          <label>
-            Password
-            <input type="password" name="password" />
-          </label>
-          <br></br>
-          <label>
-            Email
-            <input type="email" name="email" />
-          </label>
-          <br></br>
-          <label>
-            Address
-            <input type="text" name="address" />
-          </label>
-          <br></br>
-          <input type="submit" value="Submit" />
-        </form>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route exact path={constants.Home} element={<Home />} />
+        <Route path={constants.Login} element={<Login />} />
+        <Route path={constants.Register} element={<Register />} />
+        <Route path={constants.Discover} element={<Discover />} />
+        <Route path={constants.Catalogue} element={<Catalogue />} />
+        <Route path={constants.Product} element={<Product />} />
+        <Route path={constants.Dashboard} element={<Dashboard />} />
+        {/* PROTECTED ROUTES */}
+        {/* <Route
+          path={constants.ACCOUNT_URL}
+          element={
+            <ProtectedRoute user={userID}>
+              <Account />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={constants.ADMIN_URL}
+          element={
+            <ProtectedRoute user={userID}>
+              <Admin />
+            </ProtectedRoute>
+          }
+        /> */}
+      </Routes>
+    </BrowserRouter>
   );
 }
-// fname, lname, password, email, address
+
 export default App;
