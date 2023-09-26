@@ -1,8 +1,10 @@
 import React from "react";
 import "../styles/login.css";
 import constants from "../constants.js";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
@@ -32,7 +34,9 @@ const Login = () => {
         console.log("User data:", data);
 
         // Redirect to home page after login
-        window.location.href = constants.Home;
+        if (data.success) {
+          navigate(constants.Home);
+        }
       })
       .catch((error) => {
         console.error("Fetch error:", error);
@@ -45,8 +49,8 @@ const Login = () => {
         <div className="overlap-group">
           <div className="whiteBox" />
           <div className="greyBox" />
-          <img className="watch" alt="" />
-          <img className="logo" alt="" />
+          <div className="watch" alt="" />
+          <div className="logo" alt="" />
           <form onSubmit={handleSubmit}>
             <input
               className="email"
