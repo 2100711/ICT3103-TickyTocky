@@ -1,0 +1,85 @@
+/* Navbar container */
+.navbar {
+  height: 109px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 2560px;
+}
+
+/* Logo styles */
+.navbar-logo {
+  left: 1099.5px;
+  object-fit: cover;
+  position: absolute;
+  width: 361px;
+  height: 109px;
+  justify-content: center;
+  background: url("../assets/logo.png");
+}
+
+/* Tab styles */
+.navbar-tab1 {
+  color: #000000;
+  font-family: "Aldrich-Regular", Helvetica;
+  font-size: 25px;
+  font-weight: 400;
+  left: 804px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: 26px;
+  white-space: nowrap;
+}
+
+/* Tab styles */
+.navbar-tab2 {
+  color: #000000;
+  font-family: "Aldrich-Regular", Helvetica;
+  font-size: 25px;
+  font-weight: 400;
+  left: 974px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: 26px;
+  white-space: nowrap;
+}
+
+/* Tab styles */
+.navbar-tab3 {
+  color: #000000;
+  font-family: "Aldrich-Regular", Helvetica;
+  font-size: 25px;
+  font-weight: 400;
+  left: 1483px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: 26px;
+  white-space: nowrap;
+}
+
+/* Tab styles */
+.navbar-tab4 {
+  color: #000000;
+  font-family: "Aldrich-Regular", Helvetica;
+  font-size: 25px;
+  font-weight: 400;
+  left: 1642px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: 26px;
+  white-space: nowrap;
+}
+
+/* Profile icon styles */
+.navbar-profile-icon {
+  height: 79px;
+  left: 2480px;
+  object-fit: cover;
+  position: absolute;
+  width: 109px;
+  background: url("../assets/profile.png");
+}

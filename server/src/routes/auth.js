@@ -93,10 +93,10 @@ router.post("/login", async (req, res) => {
 
     await req.session.save();
 
-    return res.status(201).json({ message: "Login successful" });
+    return res.status(201).json({ success: true, message: "Login successful" });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
