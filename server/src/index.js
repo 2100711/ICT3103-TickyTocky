@@ -29,7 +29,11 @@ const db = mongoose.connection;
 app.use(
   session({
     secret: "secret-key-from-env",
-    cookie: { maxAge: 20000, httpOnly: true, signed: true },
+    cookie: {
+      maxAge: 20000,
+      httpOnly: true,
+      signed: true,
+    },
     resave: false,
     saveUninitialized: false,
     store: new MongoStore({

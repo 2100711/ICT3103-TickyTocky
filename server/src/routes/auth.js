@@ -76,14 +76,16 @@ router.post("/login", async (req, res) => {
 
     // If want to only allow one active session
     // TODO: make this work
-    // if (
-    //   req.session.user &&
-    //   req.session.user.email &&
-    //   req.session.user.email === email
-    // ) {
-    //   // remove previous session
-    //   await req.session.destroy();
-    // }
+    if (
+      req.session.user &&
+      req.session.user.email &&
+      req.session.user.email === email
+    ) {
+      // remove previous session
+      return res
+        .status(401)
+        .json({ message: "Unauthorized: User is already logged in" });
+    }
 
     req.session.user = {
       email,
