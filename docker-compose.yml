@@ -21,19 +21,6 @@ services:
     networks:
       - app-network
 
-  jenkins:
-    image: jenkins/jenkins:lts
-    container_name: jenkins
-    ports:
-      - "8080:8080"  # Map port 8080 on your host to port 8080 in the container
-    volumes:
-      - ./jenkins_home:/var/jenkins_home  # Persist Jenkins data
-    depends_on:
-      - frontend
-      - backend
-    networks:
-      - app-network
-
   webserver:
     image: nginx:mainline-alpine
     container_name: webserver
