@@ -9,7 +9,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'pwd'
-                dir('./jenkins_home/jobs/ICT3103_TickyTocky/workspace/client/') {
+                dir('./client') {
                     sh 'pwd'
                     sh 'npm install'
                 }
