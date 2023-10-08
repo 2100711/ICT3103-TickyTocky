@@ -38,15 +38,17 @@ services:
       - jenkins
     networks:
       - app-network
-
+      
   jenkins:
     container_name: jenkins
+    build:
+      context: ./jenkins_conf
+      dockerfile: Dockerfile-jenkins # Specify the Dockerfile name
     privileged: true
     user: root
-    build:
-      dockerfile: Dockerfile-jenkins # Specify the Dockerfile name
     ports:
-      - "8080:8080"  # Map port 8080 on your host to port 8080 in the container
+      - "8443:8080"  # Map port 8080 on your host to port 8080 in the container
+      - "50000:50000"
     volumes:
       - ./jenkins_home:/var/jenkins_home  # Persist Jenkins data
       - /var/run/docker.sock:/var/run/docker.sock  # Mount the Docker socket
