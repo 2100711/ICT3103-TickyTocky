@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'cd ./client'
+                sh 'cd /var/jenkins_home/jobs/ICT3103_TickyTocky/workspace/client/package.json'
                 sh 'npm install'
             }
         }
