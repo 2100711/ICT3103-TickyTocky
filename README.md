@@ -1,4 +1,4 @@
-# ICT 3103 TickyTocky
+# ICT3103 TickyTocky
 
 # Setup
 
