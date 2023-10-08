@@ -21,5 +21,7 @@ Run the following commands in /server:
 
 Run the following commands in /client:
 
+```
 npm install
 npm start
+```
