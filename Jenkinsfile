@@ -9,7 +9,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'pwd'
-                dir('./client') {
+                dir('client') {
                     sh 'pwd'
                     sh 'npm install'
                 }
