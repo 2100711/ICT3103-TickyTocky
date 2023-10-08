@@ -1,12 +1,6 @@
 pipeline {
     agent any
     stages {
-        stage('Checkout SCM') {
-			steps {
-				git 'https://github.com/2100711/ICT3103-TickyTocky.git'
-			}
-		}
-
 		stage('OWASP DependencyCheck') {
 			steps {
 				dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
