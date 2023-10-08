@@ -5,7 +5,6 @@ pipeline {
             steps {
                 sh 'pwd'
                 sh 'ls -la'
-                sh "cd ./client && npm install"
             }
         }
         stage('Test') {
