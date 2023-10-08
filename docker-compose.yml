@@ -47,7 +47,7 @@ services:
     privileged: true
     user: root
     ports:
-      - "8443:8080"  # Map port 8080 on your host to port 8080 in the container
+      - "8080:8080"  # Map port 8080 on your host to port 8080 in the container
       - "50000:50000"
     volumes:
       - ./jenkins_home:/var/jenkins_home  # Persist Jenkins data
