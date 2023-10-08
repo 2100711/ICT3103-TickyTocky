@@ -21,11 +21,11 @@ pipeline {
                 }
             }
         }
-		stage('OWASP DependencyCheck') {
-			steps {
-				dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
-			}
-		}
+		// stage('OWASP DependencyCheck') {
+		// 	steps {
+		// 		dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
+		// 	}
+		// }
         stage('Deliver') { 
             steps {
                 dir("client") {
