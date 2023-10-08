@@ -16,3 +16,6 @@ dist/
 # Ignore operating system-specific files
 .DS_Store
 Thumbs.db
+
+# Ignore Jenkins folder
+/jenkins_home

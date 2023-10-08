@@ -21,9 +21,9 @@ services:
     networks:
       - app-network
 
-  webserver:
+  nginx:
     image: nginx:mainline-alpine
-    container_name: webserver
+    container_name: nginx
     restart: unless-stopped
     ports:
       - "80:80"
@@ -35,6 +35,26 @@ services:
     depends_on:
       - frontend
       - backend
+    networks:
+      - app-network
+
+  jenkins:
+    container_name: jenkins
+    privileged: true
+    user: root
+    build:
+      dockerfile: Dockerfile-jenkins # Specify the Dockerfile name
+    ports:
+      - "8080:8080"  # Map port 8080 on your host to port 8080 in the container
+    volumes:
+      - ./jenkins_home:/var/jenkins_home  # Persist Jenkins data
+      - /var/run/docker.sock:/var/run/docker.sock  # Mount the Docker socket
+      - ./gracious-kare.cloud-ssl-bundle:/ssl/ #SSL certs directory
+      - ./ICT3103-TickyTocky:/home #Mount the project directory
+    depends_on:
+      - frontend
+      - backend
+      - nginx
     networks:
       - app-network
 
