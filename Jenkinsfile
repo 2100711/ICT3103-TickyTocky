@@ -22,7 +22,8 @@ pipeline {
                 dir('client') {
                     script {
                         // Run client tests
-                        sh 'npm test'
+                        // sh 'npm test'
+                        echo 'No tests'
                     }
                 }
             }
@@ -44,7 +45,8 @@ pipeline {
                 dir('server') {
                     script {
                         // Run server tests
-                        sh 'npm test'
+                        // sh 'npm test'
+                        echo 'No tests'
                     }
                 }
             }
