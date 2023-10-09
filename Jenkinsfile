@@ -5,15 +5,28 @@ pipeline {
             args '-p 3005:3005' 
         }
     }
+
     stages {
         stage('Build Client') {
             steps {
                 dir('client') {
                     script {
-                        // Clean and install client dependencies
+                        echo 'Installing client dependencies'
                         sh 'npm install'
+                        sh 'npm run build'
                     }
                 }
+            }
+        }
+
+        post {
+            success {
+                // Display a success message in the Jenkins console
+                echo "Build Client successfully completed."
+            }
+            failure {
+                // Display a failure message in the Jenkins console
+                echo "Build Client failed. Please investigate."
             }
         }
 
@@ -21,50 +34,129 @@ pipeline {
             steps {
                 dir('client') {
                     script {
-                        // Run client tests
-                        // sh 'npm test'
-                        echo 'No tests'
+                        echo 'TODO: Add client tests'
+                        // sh 'npm test' // Modify this line for your specific testing framework
                     }
                 }
             }
         }
+
+        post {
+            success {
+                // Display a success message in the Jenkins console
+                echo "Test Client successfully completed."
+            }
+            failure {
+                // Display a failure message in the Jenkins console
+                echo "Test Client failed. Please investigate."
+            }
+        }        
 
         stage('Build Server') {
             steps {
                 dir('server') {
                     script {
-                        // Clean and install server dependencies
+                        echo 'Installing server dependencies'
                         sh 'npm install'
+                        sh 'npm run build'
                     }
                 }
             }
         }
+
+        post {
+            success {
+                // Display a success message in the Jenkins console
+                echo "Build Server successfully completed."
+            }
+            failure {
+                // Display a failure message in the Jenkins console
+                echo "Build Server failed. Please investigate."
+            }
+        }        
 
         stage('Test Server') {
             steps {
                 dir('server') {
                     script {
-                        // Run server tests
-                        // sh 'npm test'
-                        echo 'No tests'
+                        echo 'TODO: Add server tests'
+                        // sh 'npm test' // Modify this line for your specific testing framework
                     }
                 }
             }
         }
 
-        // stage('Deliver') {
-        //     steps {
-        //         // Add delivery steps here if needed
-        //     }
-        // }
-    }
+        post {
+            success {
+                // Display a success message in the Jenkins console
+                echo "Test Server successfully completed."
+            }
+            failure {
+                // Display a failure message in the Jenkins console
+                echo "Test Server failed. Please investigate."
+            }
+        }        
 
-    // post {
-    //     success {
-    //         // Add post-build actions here
-    //     }
-    //     failure {
-    //         // Add failure actions here
-    //     }
-    // }
+        stage('Deploy to Staging') {
+            steps {
+                script {
+                    echo 'Deploying to staging environment'
+                    // This stage can include steps to deploy your application to a staging environment for further testing
+                }
+            }
+        }
+
+        post {
+            success {
+                // Display a success message in the Jenkins console
+                echo "Deploy to Staging successfully completed."
+            }
+            failure {
+                // Display a failure message in the Jenkins console
+                echo "Deploy to Staging failed. Please investigate."
+            }
+        }
+
+        stage('Test Staging') {
+            steps {
+                script {
+                    echo 'Running tests in the staging environment'
+                    // This stage can include tests specific to the staging environment
+                }
+            }
+        }
+
+        post {
+            success {
+                // Display a success message in the Jenkins console
+                echo "Test Staging successfully completed."
+            }
+            failure {
+                // Display a failure message in the Jenkins console
+                echo "Test Staging failed. Please investigate."
+            }
+        }
+
+        stage('Deploy to Production') {
+            steps {
+                script {
+                    echo 'Deploying to production environment'
+                    // This stage can include steps to deploy your application to the production environment
+                }
+            }
+        }
+
+        post {
+            success {
+                // Display a success message in the Jenkins console
+                echo "Deploy to Production successfully completed."
+            }
+            failure {
+                // Display a failure message in the Jenkins console
+                echo "Deploy to Production failed. Please investigate."
+            }
+        }
+
+        // Add more stages as needed, such as database migrations, security scanning, and more.
+    }
 }
