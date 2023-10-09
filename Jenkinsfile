@@ -1,35 +1,64 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:18.18.0-alpine3.18' 
-            args '-p 3000:3000' 
+    agent any
+
+    stages {
+        stage('Build Client') {
+            steps {
+                dir('client') {
+                    script {
+                        // Clean and install client dependencies
+                        sh 'npm install'
+                    }
+                }
+            }
+        }
+
+        stage('Test Client') {
+            steps {
+                dir('client') {
+                    script {
+                        // Run client tests
+                        sh 'npm test'
+                    }
+                }
+            }
+        }
+
+        stage('Build Server') {
+            steps {
+                dir('server') {
+                    script {
+                        // Clean and install server dependencies
+                        sh 'npm install'
+                    }
+                }
+            }
+        }
+
+        stage('Test Server') {
+            steps {
+                dir('server') {
+                    script {
+                        // Run server tests
+                        sh 'npm test'
+                    }
+                }
+            }
+        }
+
+        stage('Deliver') {
+            steps {
+                // Add delivery steps here if needed
+            }
         }
     }
-    stages {
-        stage('Build') { 
-            steps {
-                dir("client") {
-                    sh 'npm install'
-                }
-            }
+
+    post {
+        success {
+            // Add post-build actions here
         }
-        stage('Test') { 
-            steps {
-                dir("client") {
-                    sh 'npm test'
-                    sh 'echo $! > .pidfile'
-                }
-            }
-        }
-        stage('Deliver') { 
-            steps {
-                dir("client") {
-                    sh 'npm run build'
-                    sh 'npm start'
-                    input message: 'Finished using the web site? (Click "Proceed" to continue)'
-                    sh 'kill $(cat .pidfile)'
-                }
-            }
+        failure {
+            // Add failure actions here
         }
     }
 }
