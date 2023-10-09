@@ -59,7 +59,7 @@ pipeline {
                             sh 'npm install'
                             sh 'echo "DB_USER=$DB_USER" >> .env'
                             sh 'echo "DB_PASS=$DB_PASS" >> .env'
-                            sh 'npm start'
+                            sh 'npm run build'
                         }
                     }
                 }
