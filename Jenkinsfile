@@ -66,7 +66,6 @@ pipeline {
                             sh 'npm start & sleep 10'
                             
                             input message: 'Finished using the web site? (Click "Proceed" to continue)'
-                            sh 'npm stop'
                         }
                     }
                 }
