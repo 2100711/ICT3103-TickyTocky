@@ -64,8 +64,6 @@ pipeline {
 
                             echo 'Starting the server'
                             sh 'npm start & sleep 10'
-                            
-                            input message: 'Finished using the web site? (Click "Proceed" to continue)'
                         }
                     }
                 }
@@ -146,6 +144,8 @@ pipeline {
                 script {
                     echo 'Deploying to production environment'
                     // This stage can include steps to deploy your application to the production environment
+
+                    input message: 'Finished using the web site? (Click "Proceed" to continue)'
                 }
             }
             post {
