@@ -62,11 +62,8 @@ pipeline {
                             sh 'echo "DB_USER=$DB_USER" >> .env'
                             sh 'echo "DB_PASS=$DB_PASS" >> .env'
 
-                            // Install dotenv package (if not already installed)
-                            sh 'npm install dotenv'
-                            
-                            // Start the server with dotenv
-                            sh 'npx dotenv npm start'
+                            echo 'Starting the server'
+                            sh 'npm start & sleep 10'
                             
                             input message: 'Finished using the web site? (Click "Proceed" to continue)'
                             sh 'npm stop'
