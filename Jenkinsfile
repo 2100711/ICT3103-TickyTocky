@@ -59,15 +59,8 @@ pipeline {
                             sh 'npm install'
                             sh 'echo "DB_USER=$DB_USER" >> .env'
                             sh 'echo "DB_PASS=$DB_PASS" >> .env'
-                            sh 'npm run build'
+                            sh 'npm start'
                         }
-                    }
-                }
-                dir('server') {
-                    script {
-                        echo 'Installing server dependencies'
-                        sh 'npm install'
-                        // sh 'npm start' // TODO: It will crash because it needs a .env file
                     }
                 }
             }
