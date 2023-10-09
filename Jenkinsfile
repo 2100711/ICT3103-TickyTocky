@@ -56,7 +56,7 @@ pipeline {
                     script {
                         echo 'Installing server dependencies'
                         sh 'npm install'
-                        sh 'npm run build'
+                        sh 'npm start'
                     }
                 }
             }
