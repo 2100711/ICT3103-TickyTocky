@@ -50,19 +50,19 @@ pipeline {
             }
         }
 
-        stage('Deliver') {
-            steps {
-                // Add delivery steps here if needed
-            }
-        }
+        // stage('Deliver') {
+        //     steps {
+        //         // Add delivery steps here if needed
+        //     }
+        // }
     }
 
-    post {
-        success {
-            // Add post-build actions here
-        }
-        failure {
-            // Add failure actions here
-        }
-    }
+    // post {
+    //     success {
+    //         // Add post-build actions here
+    //     }
+    //     failure {
+    //         // Add failure actions here
+    //     }
+    // }
 }
