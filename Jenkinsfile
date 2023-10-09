@@ -146,6 +146,8 @@ pipeline {
                     // This stage can include steps to deploy your application to the production environment
 
                     input message: 'Finished using the web site? (Click "Proceed" to continue)'
+
+                    echo 'TODO: Add production tests'
                 }
             }
             post {
