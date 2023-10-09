@@ -17,16 +17,15 @@ pipeline {
                     }
                 }
             }
-        }
-
-        post {
-            success {
-                // Display a success message in the Jenkins console
-                echo "Build Client successfully completed."
-            }
-            failure {
-                // Display a failure message in the Jenkins console
-                echo "Build Client failed. Please investigate."
+            post {
+                success {
+                    // Display a success message in the Jenkins console
+                    echo "Build Client successfully completed."
+                }
+                failure {
+                    // Display a failure message in the Jenkins console
+                    echo "Build Client failed. Please investigate."
+                }
             }
         }
 
@@ -39,18 +38,17 @@ pipeline {
                     }
                 }
             }
-        }
-
-        post {
-            success {
-                // Display a success message in the Jenkins console
-                echo "Test Client successfully completed."
+            post {
+                success {
+                    // Display a success message in the Jenkins console
+                    echo "Test Client successfully completed."
+                }
+                failure {
+                    // Display a failure message in the Jenkins console
+                    echo "Test Client failed. Please investigate."
+                }
             }
-            failure {
-                // Display a failure message in the Jenkins console
-                echo "Test Client failed. Please investigate."
-            }
-        }        
+        }  
 
         stage('Build Server') {
             steps {
@@ -62,18 +60,17 @@ pipeline {
                     }
                 }
             }
+            post {
+                success {
+                    // Display a success message in the Jenkins console
+                    echo "Build Server successfully completed."
+                }
+                failure {
+                    // Display a failure message in the Jenkins console
+                    echo "Build Server failed. Please investigate."
+                }
+            }
         }
-
-        post {
-            success {
-                // Display a success message in the Jenkins console
-                echo "Build Server successfully completed."
-            }
-            failure {
-                // Display a failure message in the Jenkins console
-                echo "Build Server failed. Please investigate."
-            }
-        }        
 
         stage('Test Server') {
             steps {
@@ -84,18 +81,17 @@ pipeline {
                     }
                 }
             }
+            post {
+                success {
+                    // Display a success message in the Jenkins console
+                    echo "Test Server successfully completed."
+                }
+                failure {
+                    // Display a failure message in the Jenkins console
+                    echo "Test Server failed. Please investigate."
+                }
+            }
         }
-
-        post {
-            success {
-                // Display a success message in the Jenkins console
-                echo "Test Server successfully completed."
-            }
-            failure {
-                // Display a failure message in the Jenkins console
-                echo "Test Server failed. Please investigate."
-            }
-        }        
 
         stage('Deploy to Staging') {
             steps {
@@ -104,16 +100,15 @@ pipeline {
                     // This stage can include steps to deploy your application to a staging environment for further testing
                 }
             }
-        }
-
-        post {
-            success {
-                // Display a success message in the Jenkins console
-                echo "Deploy to Staging successfully completed."
-            }
-            failure {
-                // Display a failure message in the Jenkins console
-                echo "Deploy to Staging failed. Please investigate."
+            post {
+                success {
+                    // Display a success message in the Jenkins console
+                    echo "Deploy to Staging successfully completed."
+                }
+                failure {
+                    // Display a failure message in the Jenkins console
+                    echo "Deploy to Staging failed. Please investigate."
+                }
             }
         }
 
@@ -124,16 +119,15 @@ pipeline {
                     // This stage can include tests specific to the staging environment
                 }
             }
-        }
-
-        post {
-            success {
-                // Display a success message in the Jenkins console
-                echo "Test Staging successfully completed."
-            }
-            failure {
-                // Display a failure message in the Jenkins console
-                echo "Test Staging failed. Please investigate."
+            post {
+                success {
+                    // Display a success message in the Jenkins console
+                    echo "Test Staging successfully completed."
+                }
+                failure {
+                    // Display a failure message in the Jenkins console
+                    echo "Test Staging failed. Please investigate."
+                }
             }
         }
 
@@ -144,19 +138,28 @@ pipeline {
                     // This stage can include steps to deploy your application to the production environment
                 }
             }
-        }
-
-        post {
-            success {
-                // Display a success message in the Jenkins console
-                echo "Deploy to Production successfully completed."
-            }
-            failure {
-                // Display a failure message in the Jenkins console
-                echo "Deploy to Production failed. Please investigate."
+            post {
+                success {
+                    // Display a success message in the Jenkins console
+                    echo "Deploy to Production successfully completed."
+                }
+                failure {
+                    // Display a failure message in the Jenkins console
+                    echo "Deploy to Production failed. Please investigate."
+                }
             }
         }
 
         // Add more stages as needed, such as database migrations, security scanning, and more.
+    }
+
+    // Global success and failure conditions for the entire pipeline
+    post {
+        success {
+            echo "Pipeline successfully completed."
+        }
+        failure {
+            echo "Pipeline failed. Please investigate."
+        }
     }
 }
