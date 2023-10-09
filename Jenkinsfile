@@ -59,6 +59,9 @@ pipeline {
                             sh 'npm install'
                             sh 'echo "DB_USER=$DB_USER" >> .env'
                             sh 'echo "DB_PASS=$DB_PASS" >> .env'
+                            sh 'npm start'
+                            input message: 'Finished using the web site? (Click "Proceed" to continue)'
+                            sh 'npm stop'
                         }
                     }
                 }
