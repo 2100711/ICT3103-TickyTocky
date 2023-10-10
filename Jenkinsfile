@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout SCM') {
 			steps {
-				git '/home/ICT3103-TickyTocky'
+				git '/home'
 			}
 		}
 
