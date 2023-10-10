@@ -103,18 +103,14 @@ pipeline {
 
         stage('OWASP Dependency-Check') {
             steps {
-                script {
-                    tool name: 'Java 11', type: 'jdk'
-                    dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
-                }
+                dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
+
+                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             }
             post {
                 success {
                     // Display a success message in the Jenkins console
                     echo "OWASP Dependency-Check successfully completed."
-                    
-                    // Publish the XML report
-                    dependencyCheckPublisher pattern: 'dependency-check-report.xml'
                 }
                 failure {
                     // Display a failure message in the Jenkins console
