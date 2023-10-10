@@ -104,7 +104,9 @@ pipeline {
         stage('OWASP Dependency-Check') {
             steps {
                 withTool.Java('Java 11') {
-                    dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
+                    script {
+                        dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
+                    }
                 }
             }
             post {
