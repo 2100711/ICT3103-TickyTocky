@@ -101,21 +101,15 @@ pipeline {
             }
         }
 
-        stage('OWASP Dependency-Check') {
+        stage('OWASP Dependency-Check Vulnerabilities') {
             steps {
-                dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
-
+                dependencyCheck additionalArguments: '''
+                -o './'
+                -s './'
+                -f 'ALL'
+                --prettyPrint''', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
+                
                 dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-            }
-            post {
-                success {
-                    // Display a success message in the Jenkins console
-                    echo "OWASP Dependency-Check successfully completed."
-                }
-                failure {
-                    // Display a failure message in the Jenkins console
-                    echo "OWASP Dependency-Check failed. Please investigate."
-                }
             }
         }
 
