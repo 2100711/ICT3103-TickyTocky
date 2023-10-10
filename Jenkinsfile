@@ -102,8 +102,8 @@ pipeline {
         }
 
         stage('OWASP Dependency-Check') {
-            withTools(['Java 11']) // Install Java 11
-            steps {                
+            steps {            
+                withTools(['Java 11']) // Install Java 11 if not already installed    
                 dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
             }
             post {
