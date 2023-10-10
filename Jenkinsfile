@@ -104,9 +104,6 @@ pipeline {
         stage('OWASP Dependency-Check') {
             steps {
                 dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
-
-                // Publish the XML report
-                    dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             }
             post {
                 success {
@@ -184,6 +181,9 @@ pipeline {
     post {
         success {
             echo "Pipeline successfully completed."
+            
+            // Publish the XML report
+            dependencyCheckPublisher pattern: 'dependency-check-report.xml'
         }
         failure {
             echo "Pipeline failed. Please investigate."
