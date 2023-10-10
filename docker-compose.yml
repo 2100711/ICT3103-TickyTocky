@@ -53,7 +53,6 @@ services:
       - ./jenkins_home:/var/jenkins_home  # Persist Jenkins data
       - /var/run/docker.sock:/var/run/docker.sock  # Mount the Docker socket
       - ./gracious-kare.cloud-ssl-bundle:/ssl/ #SSL certs directory
-      - ../ICT3103-TickyTocky:/home #Mount the project directory
     depends_on:
       - frontend
       - backend

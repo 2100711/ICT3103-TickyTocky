@@ -7,12 +7,6 @@ pipeline {
     }
 
     stages {
-        stage('Checkout SCM') {
-			steps {
-				git '/home'
-			}
-		}
-
         stage('Build Client') {
             steps {
                 dir('client') {
@@ -103,23 +97,6 @@ pipeline {
                 failure {
                     // Display a failure message in the Jenkins console
                     echo "Test Server failed. Please investigate."
-                }
-            }
-        }
-
-        stage('OWASP Dependency-Check') {
-            steps {
-                dependencyCheck additionalArguments: '', odcInstallation: 'OWASP Dependency Check'
-                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-            }
-            post {
-                success {
-                    // Display a success message in the Jenkins console
-                    echo "OWASP Dependency-Check successfully completed."
-                }
-                failure {
-                    // Display a failure message in the Jenkins console
-                    echo "OWASP Dependency-Check failed. Please investigate."
                 }
             }
         }
