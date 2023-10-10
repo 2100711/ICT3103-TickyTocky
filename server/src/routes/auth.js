@@ -67,20 +67,24 @@ router.post("/login", async (req, res) => {
     const user = await UserModel.findOne({ email });
 
     if (!user || !(await bcrypt.compare(password, user.encrypted_password))) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid credentials" });
     }
 
     // If want to only allow one active session
-    // TODO: make this work
+    // TODO: make this work by deleting current session first
+    console.log(req.session.user);
     if (
       req.session.user &&
       req.session.user.email &&
       req.session.user.email === email
     ) {
       // remove previous session
-      return res
-        .status(401)
-        .json({ message: "Unauthorized: User is already logged in" });
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized: User is already logged in",
+      });
     }
 
     req.session.user = {
@@ -98,9 +102,10 @@ router.post("/login", async (req, res) => {
 
 router.get("/logout", (req, res) => {
   req.session.destroy();
-  return res.status(200).json({ message: "Logged out" });
+  return res.status(200).json({ success: true, message: "Logged out" });
 });
 
+// TODO: turn it into a function
 router.post("/generate-otp", async (req, res) => {
   const { email } = req.body;
   try {

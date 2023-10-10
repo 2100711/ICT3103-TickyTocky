@@ -33,7 +33,6 @@ app.use(
   session({
     secret: "secret-key-from-env",
     cookie: {
-      maxAge: 20000,
       httpOnly: true,
       signed: true,
     },
@@ -44,8 +43,9 @@ app.use(
       crypto: {
         secret: "squirrel",
       },
-      // TODO: to confirm session length
-      ttl: 20000,
+      autoRemove: "interval",
+      autoRemoveInterval: 1, // checks every 1 minute to delete sessions that have expired
+      ttl: 5 * 60, // sessions last for 5 minutes and session length will be added by 5 from current time if user interacts with backend server
     }),
   })
 );
@@ -76,5 +76,14 @@ db.on("disconnected", () => {
 });
 
 app.get("/", (req, res) => res.send("Dockerizing Node Application"));
+
+app.get("/test", async (req, res) => {
+  console.log("user: ", req.session.user);
+  if (!req.session.user) {
+    return res.status(403).json({ message: "no session" });
+  }
+
+  return res.status(200).json({ message: req.session });
+});
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

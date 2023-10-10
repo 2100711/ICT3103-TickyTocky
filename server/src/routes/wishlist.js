@@ -11,7 +11,7 @@ import { isAuthenticated } from "../controls/auth.js";
 
 const wishlistRouter = express.Router();
 wishlistRouter.post("/", createWishlist);
-wishlistRouter.get("/", getAllWishlist);
+wishlistRouter.get("/", isAuthenticated, getAllWishlist);
 wishlistRouter.get("/:wishlistID", getWishlistById);
 wishlistRouter.post("/email", isAuthenticated, getWishlistByEmail);
 wishlistRouter.put("/:wishlistID", updateWishlistById);
