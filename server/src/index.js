@@ -18,7 +18,6 @@ import { PORT, MONGODB_CONNECTION } from "./constants.js";
 const app = express();
 
 app.use(express.json());
-app.use(cors());
 
 mongoose.connect(MONGODB_CONNECTION, {
   useNewUrlParser: true,
