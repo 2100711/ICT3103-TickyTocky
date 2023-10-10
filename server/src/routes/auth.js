@@ -1,61 +1,58 @@
 import express from "express";
 // import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-// import nodemailer from "nodemailer";
+import nodemailer from "nodemailer";
+import crypto from "crypto";
 
 import { UserModel } from "../models/Users.js";
-// import { SuperuserModel } from "../models/Superusers.js";
-// import { AdminModel } from "../models/Admins.js";
-
-// import {
-//     JWT_SECRET,
-//     EMAIL_NAME,
-//     EMAIL_USER,
-//     EMAIL_PASS,
-//     EMAIL_SUBJECT,
-//     EMAIL_BODY,
-//     INTERNAL_SERVER_ERROR,
-// } from "../constants.js";
+import { OtpModel } from "../models/Otp.js";
+import {
+  EMAIL_NAME,
+  EMAIL_ADDR,
+  EMAIL_PASS,
+  EMAIL_USER,
+} from "../constants.js";
 
 const router = express.Router();
 
+// Check if user exists
+const userExists = async (email) => {
+  const user = await UserModel.findOne({ email: email });
+  console.log(user);
+  if (user) {
+    return true;
+  }
+  return false;
+};
+
+const generateOTP = () => {
+  const otp = crypto.randomInt(100000, 999999).toString();
+  return otp;
+};
+
 // Register new user
 router.post("/register", async (req, res) => {
-  const {
-    fname,
-    lname,
-    email,
-    password,
-    address,
-    // dob,
-    // gender,
-    // issue,
-    // therapistName,
-    // therapistEmail,
-  } = req.body;
-  console.log(fname, email);
+  const { f_name, l_name, email, password } = req.body;
   try {
-    // Checking if user exists
-    // if (await userExists(email)) {
-    //   return res.status(409).json({ error: "User already exists" });
-    // }
+    if (userExists(email))
+      return res
+        .status(409)
+        .json({ error: "User already exist, please login instead" });
 
-    // // Hashing password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Salt and Hash password
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create new user
     const newUser = new UserModel({
-      fname: fname,
-      lname: lname,
+      f_name: f_name,
+      l_name: l_name,
       email: email,
-      password: hashedPassword,
-      address: address,
-      // role: "user",
-      // dob: dob,
-      // gender: gender,
-      // issue: issue,
+      encrypted_password: hashedPassword,
+      // salt: saltedText,
     });
-    console.log(newUser);
+
     await newUser.save();
 
     return res.status(201).json({ message: "User registered successfully" });
@@ -66,11 +63,10 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
-
   try {
     const user = await UserModel.findOne({ email });
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    if (!user || !(await bcrypt.compare(password, user.encrypted_password))) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
@@ -103,6 +99,89 @@ router.post("/login", async (req, res) => {
 router.get("/logout", (req, res) => {
   req.session.destroy();
   return res.status(200).json({ message: "Logged out" });
+});
+
+router.post("/generate-otp", async (req, res) => {
+  const { email } = req.body;
+  try {
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    const token = generateOTP();
+
+    const doc = await OtpModel.create({
+      user_email: email,
+      token: token,
+    });
+
+    emailToUser(email, token);
+
+    return res.status(200).json({
+      message: `otp created`,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "An error occurred" });
+  }
+});
+
+const emailToUser = async (email, token) => {
+  const transporter = nodemailer.createTransport({
+    host: "sandbox.smtp.mailtrap.io",
+    port: 2525,
+    secure: false, // TODO: Set to true
+    auth: {
+      user: EMAIL_USER,
+      pass: EMAIL_PASS,
+    },
+  });
+
+  const emailBody = `
+  <h2>Authentication</h2>
+
+  <p>One-Time-Password : ${token}</p>
+  </br>
+  <p>If you did not make this request, please ignore this email.</p>
+  `;
+
+  const mailOptions = {
+    from: {
+      name: EMAIL_NAME,
+      address: EMAIL_ADDR,
+    },
+    to: email,
+    subject: "Ticky Tocky One-Time-Password",
+    html: emailBody,
+  };
+
+  transporter.sendMail(mailOptions, (err) => {
+    if (err) {
+      return res.status(500).json({ error: "Failed to send email" });
+    } else {
+      return res.status(200).json({ message: "Email sent" });
+    }
+  });
+};
+
+router.post("/verify-otp", async (req, res) => {
+  const { email, otp } = req.body;
+  try {
+    const token = await OtpModel.findOne({ user_email: email, token: otp });
+    console.log("what is the token: ", token);
+    if (!token) {
+      return res
+        .status(401)
+        .json({ message: "Incorrect OTP entered or OTP has expired." });
+    }
+
+    // TODO: create session so user can reset password?
+
+    return res.status(200).json({ message: "OTP verified." });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "An error occurred" });
+  }
 });
 
 // Register new therapist/educator

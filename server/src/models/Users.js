@@ -1,25 +1,45 @@
 import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema({
-    fname: { type: String, required: true },
-    lname: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    address: {type: String, required: true},
-    // role: { type: String, required: true },
-    // dob: { type: Date, required: true },
-    // gender: { type: String, required: true },
-    // issue: { type: [String], default: undefined },
-    // therapistName: { type: String },
-    // therapistEmail: { type: String },
-    // currentFolder: { type: String },
-    // therapistRequests: { type: [String] },
-    // prevTherapists: [
-    //     {
-    //         email: { type: String },
-    //         folderId: { type: String },
-    //     },
-    // ],
+  f_name: {
+    type: String,
+    maxlength: 255,
+    required: true,
+  },
+  l_name: {
+    type: String,
+    maxlength: 255,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  email_verified: {
+    type: Boolean,
+    default: false,
+    required: true,
+  },
+  encrypted_password: {
+    type: String,
+    maxlength: 255,
+    required: true,
+  },
+  salt: {
+    type: String,
+    required: false,
+  },
+  role: {
+    type: String,
+    required: true,
+    default: "member",
+  },
+  account_lock: {
+    type: Boolean,
+    default: false,
+    required: true,
+  },
 });
 
 export const UserModel = mongoose.model("users", UserSchema);

@@ -1,24 +1,24 @@
 import { UserModel } from "../models/Users.js";
 
+// TODO: This function should be deleted, only use register from auth.js
 const createUser = async (req, res) => {
   console.log("creating user..", req.body);
-  const { fname, lname, password, email, address } = req.body;
+  const { f_name, l_name, password, email } = req.body;
   try {
     // do mongo processing thing before returning
 
     const doc = await UserModel.create({
       email: email,
-      fname: fname,
-      lname: lname,
-      password: password,
-      address: address,
+      f_name: f_name,
+      l_name: l_name,
+      encrypted_password: password,
     });
 
     console.log(doc instanceof UserModel);
     console.log("created user", doc.email);
 
     res.status(200).json({
-      message: `hi ${fname} ${lname}`,
+      message: `hi ${f_name} ${l_name}`,
       email: doc.email,
     });
   } catch (error) {
@@ -34,7 +34,7 @@ const getAllUsers = async (req, res) => {
     console.log("get all users", doc);
 
     res.status(200).json({
-      message: `hi ${doc[0].fname} ${doc[0].lname}`,
+      message: `hi ${doc[0].f_name} ${doc[0].l_name}`,
       email: doc[0].email,
     });
   } catch (error) {
@@ -62,10 +62,11 @@ const getUser = async (req, res) => {
   }
 };
 
+// TODO: This function should only be available to the user that owns the account
 const updateUser = async (req, res) => {
   console.log("updating user..", req.body);
   // to figure out which items to allow in update
-  const { fname, lname, password, email, address } = req.body;
+  const { f_name, l_name, password, email } = req.body;
   try {
     // do mongo processing thing before returning
 

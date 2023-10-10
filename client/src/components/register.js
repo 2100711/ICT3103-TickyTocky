@@ -2,7 +2,10 @@ import React from "react";
 import "../styles/register.css";
 
 const Register = () => {
-  const FNAME = "fname";
+  const FNAME = "f_name";
+  const LNAME = "l_name";
+  const PASSWORD = "password";
+  const EMAIL = "email";
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -15,10 +18,9 @@ const Register = () => {
       },
       body: JSON.stringify({
         [FNAME]: data.get(FNAME),
-        lname: data.get("lname"),
-        password: data.get("password"),
-        email: data.get("email"),
-        address: data.get("address"),
+        [LNAME]: data.get(LNAME),
+        [PASSWORD]: data.get(PASSWORD),
+        [EMAIL]: data.get(EMAIL),
       }),
     }).then((response) => {
       response.json().then((data) => {
@@ -33,13 +35,11 @@ const Register = () => {
       <div className="text-wrapper">First Name</div>
       <input type="text" name={FNAME} />
       <div className="text-wrapper">Last Name</div>
-      <input type="text" name="lname" />
+      <input type="text" name={LNAME} />
       <div className="text-wrapper">Password</div>
-      <input type="password" name="password" />
+      <input type="password" name={PASSWORD} />
       <div className="text-wrapper">Email</div>
-      <input type="email" name="email" />
-      <div className="text-wrapper">Address</div>
-      <input type="text" name="address" />
+      <input type="email" name={EMAIL} />
       <br />
       <button type="submit" value={handleSubmit}>
         Submit

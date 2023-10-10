@@ -6,9 +6,12 @@ import MongoStore from "connect-mongo";
 
 import { authRouter } from "./routes/auth.js";
 import { userRouter } from "./routes/users.js";
-import { inventorySKURouter } from "./routes/inventorySKU.js";
-import { paymentsRouter } from "./routes/payments.js";
-import { wishlistRouter } from "./routes/wishlist.js";
+import { watchRouter } from "./routes/watches.js";
+import { certificateRouter } from "./routes/certificates.js";
+
+// import { inventorySKURouter } from "./routes/inventorySKU.js";
+// import { paymentsRouter } from "./routes/payments.js";
+// import { wishlistRouter } from "./routes/wishlist.js";
 
 import { PORT, MONGODB_CONNECTION } from "./constants.js";
 
@@ -48,11 +51,14 @@ app.use(
 );
 
 // Routes
-app.use("/inventory", inventorySKURouter);
-app.use("/users", userRouter);
-app.use("/payments", paymentsRouter);
-app.use("/wishlist", wishlistRouter);
 app.use("/auth", authRouter);
+app.use("/users", userRouter);
+app.use("/watches", watchRouter);
+app.use("/certificates", certificateRouter);
+
+// app.use("/inventory", inventorySKURouter);
+// app.use("/payments", paymentsRouter);
+// app.use("/wishlist", wishlistRouter);
 
 // Listen for the "connected" event
 db.on("connected", () => {
