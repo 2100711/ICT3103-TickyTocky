@@ -111,6 +111,9 @@ pipeline {
                 success {
                     // Display a success message in the Jenkins console
                     echo "OWASP Dependency-Check successfully completed."
+                    
+                    // Publish the XML report
+                    dependencyCheckPublisher pattern: 'dependency-check-report.xml'
                 }
                 failure {
                     // Display a failure message in the Jenkins console
@@ -183,9 +186,6 @@ pipeline {
     post {
         success {
             echo "Pipeline successfully completed."
-            
-            // Publish the XML report
-            dependencyCheckPublisher pattern: 'dependency-check-report.xml'
         }
         failure {
             echo "Pipeline failed. Please investigate."
