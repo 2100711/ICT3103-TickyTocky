@@ -8,7 +8,7 @@ const Constants = {
   Product: "/product",
   Dashboard: "/dashboard",
 
-  backend: "http://localhost:3001",
+  backend: "http://backend:3001",
 };
 
 export default Constants;
