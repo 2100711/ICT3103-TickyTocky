@@ -103,9 +103,7 @@ pipeline {
 
         stage('OWASP Dependency-Check') {
             steps {
-                dependencyCheck additionalArguments: 'scan="$WORKSPACE" --format HTML --format XML', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
-
-                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+                dependencyCheck additionalArguments: '--format HTML', odcInstallation: 'OWASP Dependency Check'
             }
             post {
                 success {
