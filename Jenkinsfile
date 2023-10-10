@@ -48,7 +48,7 @@ pipeline {
                     echo "Test Client failed. Please investigate."
                 }
             }
-        }  
+        }
 
         stage('Build Server') {
             steps {
@@ -97,6 +97,21 @@ pipeline {
                 failure {
                     // Display a failure message in the Jenkins console
                     echo "Test Server failed. Please investigate."
+                }
+            }
+        }
+
+        stage('OWASP Dependency-Check') {
+            steps {
+                dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
+            }
+            post {
+                success {
+                    // Display a success message in the Jenkins console
+                    echo "OWASP Dependency-Check successfully completed."
+
+                    // Publish the XML report
+                    dependencyCheckPublisher pattern: 'dependency-check-report.xml'
                 }
             }
         }
