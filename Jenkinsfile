@@ -6,10 +6,6 @@ pipeline {
         }
     }
 
-    tools {
-        jdk 'Java 11'
-    }
-
     stages {
         stage('Build Client') {
             steps {
