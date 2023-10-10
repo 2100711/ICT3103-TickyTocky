@@ -103,7 +103,11 @@ pipeline {
 
         stage('OWASP Dependency-Check') {
             steps {
-                dependencyCheck additionalArguments: '--format HTML', odcInstallation: 'OWASP Dependency Check'
+                script {
+                    withEnv(["JAVA_HOME=$JAVA_HOME", "PATH=$Java_HOME/bin:$PATH"]) {
+                        dependencyCheck additionalArguments: '--format HTML', odcInstallation: 'OWASP Dependency Check'
+                    }
+                }
             }
             post {
                 success {
