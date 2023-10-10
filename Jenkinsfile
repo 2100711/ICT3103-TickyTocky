@@ -101,6 +101,24 @@ pipeline {
             }
         }
 
+        stage('OWASP Dependency-Check') {
+            steps {
+                dependencyCheck additionalArguments: 'scan="$WORKSPACE" --format HTML --format XML', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
+
+                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+            }
+            post {
+                success {
+                    // Display a success message in the Jenkins console
+                    echo "OWASP Dependency-Check successfully completed."
+                }
+                failure {
+                    // Display a failure message in the Jenkins console
+                    echo "OWASP Dependency-Check failed. Please investigate."
+                }
+            }
+        }
+
         stage('Deploy to Staging') {
             steps {
                 script {
@@ -159,17 +177,6 @@ pipeline {
         }
 
         // Add more stages as needed, such as database migrations, security scanning, and more.
-        stage('OWASP Dependency-Check Vulnerabilities') {
-            steps {
-                dependencyCheck additionalArguments: '''
-                -o './'
-                -s './'
-                -f 'ALL'
-                --prettyPrint''', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
-                
-                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-            }
-        }
     }
 
     // Global success and failure conditions for the entire pipeline
