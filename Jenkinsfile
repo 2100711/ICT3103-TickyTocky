@@ -6,6 +6,10 @@ pipeline {
         }
     }
 
+    tools {
+        jdk 'Java 11'
+    }
+
     stages {
         stage('Build Client') {
             steps {
@@ -103,11 +107,8 @@ pipeline {
 
         stage('OWASP Dependency-Check') {
             steps {
-                script {
-                    withEnv(["JAVA_HOME=$JAVA_HOME", "PATH=$Java_HOME/bin:$PATH"]) {
-                        dependencyCheck additionalArguments: '--format HTML', odcInstallation: 'OWASP Dependency Check'
-                    }
-                }
+                dependencyCheck additionalArguments: '', odcInstallation: 'OWASP Dependency Check'
+                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             }
             post {
                 success {
