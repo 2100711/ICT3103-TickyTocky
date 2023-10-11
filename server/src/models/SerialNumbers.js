@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const SerialNumberSchema = new mongoose.Schema({
-    case: {
+    case_serial: {
         type: String,
         maxlength: 255,
         required: true,
