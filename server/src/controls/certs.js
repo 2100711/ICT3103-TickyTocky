@@ -1,76 +1,163 @@
-import { CertModel } from '../models/Certs.js'; // Import your Mongoose model
+import { CertModel } from '../models/Certs.js';
 import XLSX from 'xlsx';
+import {
+    createWatch,
+    getAllWatches,
+    getWatch,
+    updateWatch,
+    deleteWatch,
+} from "../controls/watches.js"
+
 
 // Create a new cert
-const createCert = async (certData) => {
+const createCert = async (req, res) => {
     try {
-        const cert = new CertModel(certData);
-        const result = await cert.save();
-        return result;
+        const {
+            user_email,
+            validated_by,
+            date_of_validation,
+            issue_date,
+            expiry_date,
+            remarks,
+        } = req.body;
+
+        const watch = {
+            brand,
+            model_no,
+            model_name,
+            movement,
+            case_material,
+            bracelet_strap_material,
+            yop,
+            gender,
+        }
+        const watch_id = createWatch(watch);
+        const cert = new CertModel({
+            user_email,
+            validated_by,
+            date_of_validation,
+            watch_id,
+            issue_date,
+            expiry_date,
+            remarks,
+        });
+
+        await cert.save();
+
+        res.status(201).json({
+            success: true,
+            message: 'Certificate created',
+            cert,
+        });
     } catch (error) {
-        throw error;
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred' });
     }
 };
 
 // Batch create certs
-const createCerts = async (file) => {
-    try { // Read the uploaded Excel file
-        const workbook = XLSX.read(file.data, { type: 'array' });
-        const sheetName = workbook.SheetNames[0]; // Assuming the data is in the first sheet
-        const worksheet = workbook.Sheets[sheetName];
+const createCerts = async (req, res) => {
+    try {
+        const { file } = req;
 
-        // Convert the worksheet to an array of objects
+        if (!file || !file.buffer) {
+            return res.status(400).json({ message: 'File not provided or invalid' });
+        }
+
+        const workbook = XLSX.read(file.buffer, { type: 'buffer' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
         const certDataArray = XLSX.utils.sheet_to_json(worksheet);
 
-        // Create certs from the extracted data
         const certs = await CertModel.insertMany(certDataArray);
 
-        return certs;
+        res.status(201).json({
+            message: 'Certificates created successfully',
+            certs,
+        });
     } catch (error) {
-        throw error;
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred while creating certificates' });
     }
 };
 
 // Get all certs
-const getAllCerts = async () => {
+const getAllCerts = async (req, res) => {
     try {
         const certs = await CertModel.find();
-        return certs;
+        res.status(200).json({
+            success: true,
+            message: 'All certificates retrieved',
+            certs,
+        });
     } catch (error) {
-        throw error;
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred' });
     }
 };
 
 // Get a cert by ID
-const getCert = async (certID) => {
+const getCert = async (req, res) => {
     try {
-        const cert = await CertModel.findById(certID);
-        return cert;
+        const { _id } = req.params;
+        const cert = await CertModel.findById(_id);
+
+        if (!cert) {
+            return res.status(404).json({ message: 'Certificate not found' });
+        }
+
+        res.status(200).json({ cert });
     } catch (error) {
-        throw error;
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred' });
     }
 };
 
 // Update a cert by ID
-const updateCert = async (certID, updateData) => {
+const updateCert = async (req, res) => {
     try {
-        const updatedCert = await CertModel.findByIdAndUpdate(
-            certID,
-            updateData, { new: true }
-        );
-        return updatedCert;
+        const { _id, validated_by, date_of_validation, issue_date, expiry_date, remarks } = req.body;
+        const query = { _id };
+        const update = {
+            validated_by,
+            date_of_validation,
+            issue_date,
+            expiry_date,
+            remarks,
+        };
+
+        const updatedCert = await CertModel.findOneAndUpdate(query, update, { new: true });
+
+        if (!updatedCert) {
+            return res.status(404).json({ message: 'Certificate not found' });
+        }
+
+        res.status(200).json({
+            message: 'Certificate updated',
+            updatedCert,
+        });
     } catch (error) {
-        throw error;
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred' });
     }
 };
 
 // Delete a cert by ID
-const deleteCert = async (certID) => {
+const deleteCert = async (req, res) => {
     try {
-        const result = await CertModel.findByIdAndRemove(certID);
-        return result;
+        const { _id } = req.body;
+        const deletedCert = await CertModel.findByIdAndRemove(_id);
+
+        if (!deletedCert) {
+            return res.status(404).json({ message: 'Certificate not found' });
+        }
+
+        res.status(200).json({
+            message: 'Certificate deleted',
+        });
     } catch (error) {
-        throw error;
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred' });
     }
 };
 
