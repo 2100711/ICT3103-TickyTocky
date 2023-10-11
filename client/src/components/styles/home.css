@@ -1,70 +1,55 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden; /* Prevent any default scrolling */
+}
+
 .home {
-  background-color: #ffffff;
   display: flex;
-  flex-direction: row;
   justify-content: center;
+  align-items: center;
+  height: 100vh; /* Set the height to fill the viewport */
+  width: 100vw; /* Set the width to fill the viewport */
+  background: linear-gradient(
+    to top,
+    #1890ff,
+    #0040c8
+  ); /* Example background gradient */
+}
+
+.search-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+  width: 500px;
+}
+
+.search-bar:hover {
+  transform: scale(1.05);
+}
+
+.search-input {
+  border: none;
+  box-shadow: none;
+  outline: none;
+  border-radius: 10px;
+  font-size: 26px;
+  padding: 10px;
   width: 100%;
 }
 
-.home .div {
-  background-color: #ffffff;
-  height: 1440px;
-  overflow: hidden;
-  position: relative;
-  width: 2560px;
-}
-
-.home .carousel {
-  height: 472px;
-  left: 0;
-  position: absolute;
-  top: 109px;
-  width: 2560px;
-  background: url("../assets/carousel.png");
-}
-
-.home .quote {
-  color: #000000;
-  font-family: "Aclonica-Regular", Helvetica;
-  font-size: 30px;
-  font-weight: 400;
-  left: 960px;
-  letter-spacing: 0;
-  line-height: normal;
-  position: absolute;
-  text-align: center;
-  top: 580px;
-  width: 641px;
-}
-
-.home .products {
-  height: 640px;
-  left: 730px;
-  object-fit: cover;
-  position: absolute;
-  top: 700px;
-  width: 1100px;
-  background: url("../assets/products.png");
-}
-
-.home .footer {
-  background-color: #000000;
-  height: 74px;
-  left: 0;
-  position: absolute;
-  top: 1367px;
-  width: 2560px;
-}
-
-.home .footer-text {
-  color: #ffffff;
-  font-family: "Aldrich-Regular", Helvetica;
-  font-size: 20px;
-  font-weight: 400;
-  left: 57px;
-  letter-spacing: 0;
-  line-height: normal;
-  position: absolute;
-  top: 29px;
-  white-space: nowrap;
+/* Add custom style for the clear button */
+.ant-input-clear-icon {
+  color: #999; /* Change the color of the clear button (optional) */
+  font-size: 18px; /* Increase the font size of the clear button (optional) */
+  cursor: pointer;
 }
