@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthData } from "../../auth/AuthWrapper";
 
 export const Login = () => {
   const navigate = useNavigate();
-  const { login } = AuthData();
+  const { login, user } = AuthData();
   const [formData, setFormData] = useReducer(
     (formData, newItem) => {
       return { ...formData, ...newItem };
@@ -13,6 +13,10 @@ export const Login = () => {
     { email: "", password: "" }
   );
   const [errorMessage, setErrorMessage] = useState(null);
+
+  useEffect(() => {
+    if (user.isAuthenticated) navigate("/");
+  });
 
   const handleLogin = async () => {
     const { success, message } = await login(formData.email, formData.password);

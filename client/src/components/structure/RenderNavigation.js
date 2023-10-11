@@ -1,7 +1,6 @@
 import { Link, Route, Routes } from "react-router-dom";
 import { AuthData } from "../../auth/AuthWrapper";
 import { nav } from "./navigation";
-
 import { useNavigate } from "react-router-dom";
 
 export const RenderRoutes = () => {
@@ -29,7 +28,7 @@ export const RenderMenu = () => {
     if (success) {
       navigate("/");
     }
-    console.error(message);
+    console.log(message); // TODO: Remove
   };
 
   const MenuItem = ({ r }) => {

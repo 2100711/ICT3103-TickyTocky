@@ -1,8 +1,10 @@
 const isAuthenticated = (req, res, next) => {
-  if (req.session.user && req.session.user.email === req.body.email) {
+  if (req.session.user) {
     next();
   } else {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res
+      .status(200)
+      .json({ success: false, message: "Invalid session." });
   }
 };
 

@@ -3,12 +3,48 @@ import {
   RenderMenu,
   RenderRoutes,
 } from "../components/structure/RenderNavigation";
+import { useEffect } from "react";
 import Constants from "../constants";
 const AuthContext = createContext();
 export const AuthData = () => useContext(AuthContext);
 
 export const AuthWrapper = () => {
   const [user, setUser] = useState({ email: "", isAuthenticated: false });
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    fetchAuthState();
+  }, []);
+
+  const fetchAuthState = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${Constants.backend}/auth/check-auth`, {
+        method: "GET",
+        credentials: "include", // Include cookies in the request
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message);
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        setIsLoading(false);
+        setUser({ email: data.email, isAuthenticated: data.success });
+        return { success: true, message: "Authenticated" };
+      } else {
+        setIsLoading(false);
+        setUser({ email: "", isAuthenticated: false });
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      setIsLoading(false);
+      setUser({ email: "", isAuthenticated: false });
+      return { success: false, message: error.message };
+    }
+  };
 
   const login = async (email, password) => {
     try {
@@ -66,8 +102,12 @@ export const AuthWrapper = () => {
     }
   };
 
+  if (isLoading) {
+    return <h3>Loading...</h3>;
+  }
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, fetchAuthState }}>
       <>
         <RenderMenu />
         <RenderRoutes />

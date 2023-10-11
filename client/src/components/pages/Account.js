@@ -1,5 +1,7 @@
 import React from "react";
+import { AuthData } from "../../auth/AuthWrapper";
 
 export const Account = () => {
-  return <div>Account</div>;
+  const { user } = AuthData();
+  return <div>Account: {user.email}</div>;
 };

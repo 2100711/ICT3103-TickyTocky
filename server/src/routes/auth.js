@@ -12,6 +12,7 @@ import {
   EMAIL_PASS,
   EMAIL_USER,
 } from "../constants.js";
+import { isAuthenticated } from "../controls/auth.js";
 
 const router = express.Router();
 
@@ -30,6 +31,14 @@ const generateOTP = () => {
   return otp;
 };
 
+router.get("/check-auth", isAuthenticated, async (req, res) => {
+  return res.status(201).json({
+    email: req.session.user.email,
+    success: true,
+    message: "User is authenticated.",
+  });
+});
+
 // Register new user
 router.post("/register", async (req, res) => {
   const { f_name, l_name, email, password } = req.body;
@@ -37,7 +46,7 @@ router.post("/register", async (req, res) => {
     if (userExists(email))
       return res
         .status(409)
-        .json({ error: "User already exist, please login instead" });
+        .json({ error: "User already exist, please login instead." });
 
     // Salt and Hash password
     const saltRounds = 10;
@@ -55,7 +64,7 @@ router.post("/register", async (req, res) => {
 
     await newUser.save();
 
-    return res.status(201).json({ message: "User registered successfully" });
+    return res.status(201).json({ message: "User registered successfully." });
   } catch (err) {
     return res.status(500).json({ error: err });
   }
@@ -69,7 +78,7 @@ router.post("/login", async (req, res) => {
     if (!user || !(await bcrypt.compare(password, user.encrypted_password))) {
       return res
         .status(401)
-        .json({ success: false, message: "Invalid credentials" });
+        .json({ success: false, message: "Invalid credentials." });
     }
 
     // If want to only allow one active session
@@ -93,16 +102,18 @@ router.post("/login", async (req, res) => {
 
     await req.session.save();
 
-    return res.status(201).json({ success: true, message: "Login successful" });
+    return res
+      .status(201)
+      .json({ success: true, message: "Login successful." });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ success: false, message: "Server error" });
+    return res.status(500).json({ success: false, message: "Server error." });
   }
 });
 
 router.get("/logout", (req, res) => {
   req.session.destroy();
-  return res.status(200).json({ success: true, message: "Logged out" });
+  return res.status(200).json({ success: true, message: "Logged out." });
 });
 
 // TODO: turn it into a function
@@ -110,7 +121,7 @@ router.post("/generate-otp", async (req, res) => {
   const { email } = req.body;
   try {
     if (!email) {
-      return res.status(400).json({ error: "Email is required" });
+      return res.status(400).json({ error: "Email is required." });
     }
 
     const token = generateOTP();
@@ -127,7 +138,7 @@ router.post("/generate-otp", async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "An error occurred" });
+    return res.status(500).json({ message: "An error occurred." });
   }
 });
 
@@ -162,9 +173,9 @@ const emailToUser = async (email, token) => {
 
   transporter.sendMail(mailOptions, (err) => {
     if (err) {
-      return res.status(500).json({ error: "Failed to send email" });
+      return res.status(500).json({ error: "Failed to send email." });
     } else {
-      return res.status(200).json({ message: "Email sent" });
+      return res.status(200).json({ message: "Email sent." });
     }
   });
 };
@@ -185,7 +196,7 @@ router.post("/verify-otp", async (req, res) => {
     return res.status(200).json({ message: "OTP verified." });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "An error occurred" });
+    res.status(500).json({ message: "An error occurred." });
   }
 });
 
