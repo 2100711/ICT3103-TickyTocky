@@ -1,6 +1,6 @@
 import React from "react";
 import { Input } from "antd";
-import "../styles/Home.css"; // Corrected the import statement
+import "../styles/Home.css";
 
 export const Home = () => {
   return (
