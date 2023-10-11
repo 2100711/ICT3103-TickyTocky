@@ -8,7 +8,7 @@ const Constants = {
   Product: "/product",
   Dashboard: "/dashboard",
 
-  backend: "http://localhost:3001",
+  backend: "https://www.gracious-kare.cloud/be",
 };
 
 export default Constants;
