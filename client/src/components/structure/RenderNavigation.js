@@ -1,14 +1,7 @@
 import React from "react";
 import { Link, Route, Routes, useLocation } from "react-router-dom";
 import { Menu } from "antd"; // Import Ant Design Menu component
-import {
-  HomeOutlined,
-  LogoutOutlined,
-  LoginOutlined,
-  InfoCircleOutlined,
-  UserOutlined,
-  LockOutlined,
-} from "@ant-design/icons"; // Import Ant Design icons
+import { LogoutOutlined, LoginOutlined } from "@ant-design/icons"; // Import Ant Design icons
 import { AuthData } from "../../auth/AuthWrapper";
 import { nav } from "./navigation";
 import { useNavigate } from "react-router-dom";
