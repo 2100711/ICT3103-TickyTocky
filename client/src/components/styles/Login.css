@@ -1,0 +1,76 @@
+/* Login.css */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(
+    to bottom,
+    #1890ff,
+    #0040c8
+  ); /* Example background gradient */
+  color: #fff;
+  font-family: "Arial", sans-serif;
+  text-align: center;
+}
+
+/* CSS for the Logo */
+.logo {
+  text-align: center;
+  margin-bottom: 32px; /* Add some spacing below the logo */
+}
+
+.logo h2 {
+  font-size: 36px; /* Adjust the font size to make it more prominent */
+  color: #1890ff; /* Use your theme color for the logo text */
+  text-transform: uppercase; /* Uppercase the text for a more brand-like appearance */
+  letter-spacing: 2px; /* Add some letter spacing for style */
+  font-weight: bold; /* Make the text bold */
+}
+
+.login-form {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 48px; /* Increase padding */
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 400px; /* Adjust the maximum width */
+  width: 100%; /* Make it responsive */
+}
+
+.login-form h2 {
+  font-size: 28px; /* Increase font size */
+  margin-bottom: 32px; /* Increase margin */
+  color: #333;
+}
+
+.input-icon {
+  font-size: 16px; /* Increase icon size */
+  color: rgba(0, 0, 0, 0.5); /* Adjust icon color */
+}
+
+.login-button {
+  width: 100%;
+  font-size: 14px; /* Increase font size */
+  background: #1890ff; /* Use the theme color for the button background */
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+
+  &:hover {
+    background: #0040c8; /* Darker color on hover */
+  }
+}
+
+.register-link,
+.forgot-password-link {
+  margin-top: 16px;
+  font-size: 14px;
+  color: #333;
+}
+
+.register-link a,
+.forgot-password-link a {
+  color: #1890ff;
+  margin-right: 10px; /* Add some spacing between the links */
+}

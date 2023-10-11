@@ -2,6 +2,9 @@ import React, { useEffect } from "react";
 import { useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthData } from "../../auth/AuthWrapper";
+import { Form, Input, Button, Checkbox } from "antd";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import "../styles/Login.css";
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -26,28 +29,65 @@ export const Login = () => {
     setErrorMessage(message);
   };
 
+  const onFinish = async (values) => {
+    const { success, message } = await login(formData.email, formData.password);
+    if (success) {
+      navigate("/account");
+    }
+    setErrorMessage(message);
+  };
+
   return (
-    <div className="page">
-      <h2>Login page</h2>
-      <div className="inputs">
-        <div className="input">
-          <input
-            value={formData.email}
-            onChange={(e) => setFormData({ email: e.target.value })}
-            type="text"
-          />
+    <div className="login-container">
+      <div className="login-form">
+        <div className="logo">
+          <h2>Ticky Tocky</h2>
         </div>
-        <div className="input">
-          <input
-            value={formData.password}
-            onChange={(e) => setFormData({ password: e.target.value })}
-            type="password"
-          />
-        </div>
-        <div className="button">
-          <button onClick={handleLogin}>Log in</button>
-        </div>
-        {errorMessage ? <div className="error">{errorMessage}</div> : null}
+        <Form name="login-form" onFinish={onFinish}>
+          <Form.Item
+            name="email"
+            rules={[
+              {
+                required: true,
+                message: "Please input your email!",
+              },
+            ]}
+          >
+            <Input
+              prefix={<UserOutlined className="input-icon" />}
+              placeholder="Email"
+            />
+          </Form.Item>
+          <Form.Item
+            name="password"
+            rules={[
+              {
+                required: true,
+                message: "Please input your password!",
+              },
+            ]}
+          >
+            <Input
+              prefix={<LockOutlined className="input-icon" />}
+              type="password"
+              placeholder="Password"
+            />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" className="login-button">
+              Log In
+            </Button>
+          </Form.Item>
+          <Form.Item name="remember" valuePropName="checked">
+            <Checkbox>Remember me</Checkbox>
+          </Form.Item>
+        </Form>
+        <p className="register-link">
+          Don't have an account? <a href="/">Register</a>
+        </p>
+        <p className="forgot-password-link">
+          <a href="/">Forgot Password?</a>
+        </p>
       </div>
     </div>
   );

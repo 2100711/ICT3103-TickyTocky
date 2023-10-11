@@ -12,6 +12,7 @@ export const nav = [
     element: <Home />,
     isMenu: true,
     isPrivate: false,
+    iconName: "HomeOutlined", // Replace with the actual icon name
   },
   {
     path: "/about",
@@ -19,6 +20,7 @@ export const nav = [
     element: <About />,
     isMenu: true,
     isPrivate: false,
+    iconName: "InfoCircleOutlined", // Replace with the actual icon name
   },
   {
     path: "/login",
@@ -26,6 +28,7 @@ export const nav = [
     element: <Login />,
     isMenu: false,
     isPrivate: false,
+    iconName: "LoginOutlined", // Replace with the actual icon name
   },
   {
     path: "/account",
@@ -33,6 +36,7 @@ export const nav = [
     element: <Account />,
     isMenu: true,
     isPrivate: true,
+    iconName: "UserOutlined", // Replace with the actual icon name
   },
   {
     path: "/admin",
@@ -41,13 +45,15 @@ export const nav = [
     isMenu: true,
     isPrivate: true,
     isPrivate2: true,
+    iconName: "AdminOutlined", // Replace with the actual icon name
   },
   {
     path: "/admintest",
-    name: "admintest",
+    name: "AdminTest",
     element: <AdminTest />,
     isMenu: true,
     isPrivate: true,
     isPrivate2: true,
+    iconName: "AdminTestOutlined", // Replace with the actual icon name
   },
 ];
