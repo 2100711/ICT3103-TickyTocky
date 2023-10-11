@@ -82,10 +82,13 @@ router.post("/register", async (req, res) => {
     }
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", async (req, res) => { <<
     const { email, password } = req.body;
     try {
         const user = await UserModel.findOne({ email });
+        const { email, password } = req.body;
+        console.log("email: ", email);
+        console.log("password: ", password);
 
         if (!user || !(await bcrypt.compare(password, user.encrypted_password))) {
             return res
