@@ -6,7 +6,7 @@ const createSerialNumbers = async (serialNumbers) => {
 
         const serialNumbers = new SerialNumberModel({
             case_serial,
-            movement,
+            movement_serial,
             dial,
             bracelet_strap,
             crown_pusher,

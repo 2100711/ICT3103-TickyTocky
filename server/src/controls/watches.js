@@ -12,7 +12,7 @@ const createWatch = async (watch) => {
     try {
         const serialNumbers = {
             case_serial,
-            movement,
+            movement_serial,
             dial,
             bracelet_strap,
             crown_pusher,

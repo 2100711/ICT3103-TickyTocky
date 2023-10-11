@@ -11,6 +11,7 @@ import {
 
 // Create a new cert
 const createCert = async (req, res) => {
+    console.log(req.body);
     try {
         const {
             user_email,
@@ -19,6 +20,19 @@ const createCert = async (req, res) => {
             issue_date,
             expiry_date,
             remarks,
+            brand,
+            model_no,
+            model_name,
+            movement,
+            case_material,
+            bracelet_strap_material,
+            yop,
+            gender,
+            case_serial,
+            movement_serial,
+            dial,
+            bracelet_strap,
+            crown_pusher,
         } = req.body;
 
         const watch = {
@@ -30,6 +44,11 @@ const createCert = async (req, res) => {
             bracelet_strap_material,
             yop,
             gender,
+            case_serial,
+            movement_serial,
+            dial,
+            bracelet_strap,
+            crown_pusher,
         }
         const watch_id = createWatch(watch);
         const cert = new CertModel({

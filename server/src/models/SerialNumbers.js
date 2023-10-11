@@ -6,7 +6,7 @@ const SerialNumberSchema = new mongoose.Schema({
         maxlength: 255,
         required: true,
     },
-    movement: {
+    movement_serial: {
         type: String,
         maxlength: 255,
         required: true,
