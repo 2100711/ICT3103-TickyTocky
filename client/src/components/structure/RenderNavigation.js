@@ -4,9 +4,10 @@ import { nav } from "./navigation";
 import { useNavigate } from "react-router-dom";
 
 export const RenderRoutes = () => {
-  const { user } = AuthData();
-  return (
-    <Routes>
+    const { user } = AuthData();
+
+    return (
+        <Routes>
       {nav.map((r, i) => {
         if (
           r.isPrivate &&
@@ -26,30 +27,30 @@ export const RenderRoutes = () => {
         } else return false;
       })}
     </Routes>
-  );
+    );
 };
 
 export const RenderMenu = () => {
-  const navigate = useNavigate();
-  const { user, logout } = AuthData();
+    const navigate = useNavigate();
+    const { user, logout } = AuthData();
 
-  const handleLogout = async () => {
-    const { success, message } = await logout();
-    if (success) {
-      navigate("/");
-    }
-    console.log(message); // TODO: Remove
-  };
+    const handleLogout = async () => {
+        const { success, message } = await logout();
+        if (success) {
+            navigate("/");
+        }
+        console.log(message); // TODO: Remove
+    };
 
-  const MenuItem = ({ r }) => {
-    return (
-      <div className="menuItem">
+    const MenuItem = ({ r }) => {
+        return (
+            <div className="menuItem">
         <Link to={r.path}>{r.name}</Link>
       </div>
-    );
-  };
-  return (
-    <div className="menu">
+        );
+    };
+    return (
+        <div className="menu">
       {nav.map((r, i) => {
         if (!r.isPrivate && r.isMenu) {
           return <MenuItem key={i} r={r} />;
@@ -82,5 +83,5 @@ export const RenderMenu = () => {
         </div>
       )}
     </div>
-  );
+    );
 };

@@ -4,30 +4,29 @@ import { useNavigate } from "react-router-dom";
 import { AuthData } from "../../auth/AuthWrapper";
 
 export const Login = () => {
-  const navigate = useNavigate();
-  const { login, user } = AuthData();
-  const [formData, setFormData] = useReducer(
-    (formData, newItem) => {
-      return { ...formData, ...newItem };
-    },
-    { email: "", password: "" }
-  );
-  const [errorMessage, setErrorMessage] = useState(null);
+    const navigate = useNavigate();
+    const { login, user } = AuthData();
+    const [formData, setFormData] = useReducer(
+        (formData, newItem) => {
+            return { ...formData, ...newItem };
+        }, { email: "", password: "" }
+    );
+    const [errorMessage, setErrorMessage] = useState(null);
 
-  useEffect(() => {
-    if (user.isAuthenticated) navigate("/");
-  });
+    useEffect(() => {
+        if (user.isAuthenticated) navigate("/");
+    });
 
-  const handleLogin = async () => {
-    const { success, message } = await login(formData.email, formData.password);
-    if (success) {
-      navigate("/account");
-    }
-    setErrorMessage(message);
-  };
+    const handleLogin = async () => {
+        const { success, message } = await login(formData.email, formData.password);
+        if (success) {
+            navigate("/account");
+        }
+        setErrorMessage(message);
+    };
 
-  return (
-    <div className="page">
+    return (
+        <div className="page">
       <h2>Login page</h2>
       <div className="inputs">
         <div className="input">
@@ -50,5 +49,5 @@ export const Login = () => {
         {errorMessage ? <div className="error">{errorMessage}</div> : null}
       </div>
     </div>
-  );
+    );
 };

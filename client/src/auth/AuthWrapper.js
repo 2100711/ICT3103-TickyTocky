@@ -1,131 +1,119 @@
 import { createContext, useContext, useState } from "react";
 import {
-  RenderMenu,
-  RenderRoutes,
+    RenderMenu,
+    RenderRoutes,
 } from "../components/structure/RenderNavigation";
 import { useEffect } from "react";
-import Constants from "../constants";
+import { getAuth, login, logout } from "../api/auth";
 const AuthContext = createContext();
 export const AuthData = () => useContext(AuthContext);
 
 export const AuthWrapper = () => {
-  const [user, setUser] = useState({
-    email: "",
-    isAuthenticated: false,
-    role: "",
-  });
-  const [isLoading, setIsLoading] = useState(true);
-  useEffect(() => {
-    fetchAuthState();
-  }, []);
+    const [user, setUser] = useState({
+        email: "",
+        isAuthenticated: false,
+        role: "",
+    });
+    const [isLoading, setIsLoading] = useState(true);
+    useEffect(() => {
+        fetchAuthState();
+    }, []);
 
-  const fetchAuthState = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(`${Constants.backend}/auth/check-auth`, {
-        method: "GET",
-        credentials: "include", // Include cookies in the request
-      });
+    const fetchAuthState = async () => {
+        setIsLoading(true);
+        try {
+            const response = await getAuth();
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message);
-      }
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message);
+            }
 
-      const data = await response.json();
+            const data = await response.json();
 
-      if (data.success) {
-        setIsLoading(false);
-        setUser({ email: data.email, isAuthenticated: data.success });
-        if (data.role) {
-          setUser((user) => {
-            return { ...user, role: data.role };
-          });
+            if (data.success) {
+                setIsLoading(false);
+                setUser({ email: data.email, isAuthenticated: data.success });
+                if (data.role) {
+                    setUser((user) => {
+                        return { ...user, role: data.role };
+                    });
+                }
+                return { success: true, message: "Authenticated" };
+            } else {
+                setIsLoading(false);
+                setUser({ email: "", isAuthenticated: false });
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            setIsLoading(false);
+            setUser({ email: "", isAuthenticated: false });
+            return { success: false, message: error.message };
         }
-        return { success: true, message: "Authenticated" };
-      } else {
-        setIsLoading(false);
-        setUser({ email: "", isAuthenticated: false });
-        throw new Error(data.message);
-      }
-    } catch (error) {
-      setIsLoading(false);
-      setUser({ email: "", isAuthenticated: false });
-      return { success: false, message: error.message };
-    }
-  };
+    };
 
-  const login = async (email, password) => {
-    try {
-      const response = await fetch(`${Constants.backend}/auth/login`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+    const login = async (email, password) => {
+        const req = {
+            email: email,
+            password: password,
+        };
+        try {
+            const response = await login(req);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message);
-      }
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message);
+            }
 
-      const data = await response.json();
+            const data = await response.json();
 
-      if (data.success) {
-        setUser({ email, isAuthenticated: data.success });
-        if (data.role) {
-          setUser((user) => {
-            return { ...user, role: data.role };
-          });
+            if (data.success) {
+                setUser({ email, isAuthenticated: data.success });
+                if (data.role) {
+                    setUser((user) => {
+                        return { ...user, role: data.role };
+                    });
+                }
+                return { success: true, message: "Successful login" };
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            return { success: false, message: error.message };
         }
-        return { success: true, message: "Successful login" };
-      } else {
-        throw new Error(data.message);
-      }
-    } catch (error) {
-      return { success: false, message: error.message };
+    };
+
+    const logout = async () => {
+        try {
+            const response = await logout();
+
+            if (!response.ok) {
+                throw new Error("An error occurred.");
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                setUser({ ...user, isAuthenticated: false, role: undefined });
+                return { success: true, message: data.message };
+            } else {
+                throw new Error("An error occurred.");
+            }
+        } catch (error) {
+            return { success: false, message: error.message };
+        }
+    };
+
+    if (isLoading) {
+        return <h3>Loading...</h3>;
     }
-  };
 
-  const logout = async () => {
-    try {
-      const response = await fetch(`${Constants.backend}/auth/logout`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("An error occurred.");
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        setUser({ ...user, isAuthenticated: false, role: undefined });
-        return { success: true, message: data.message };
-      } else {
-        throw new Error("An error occurred.");
-      }
-    } catch (error) {
-      return { success: false, message: error.message };
-    }
-  };
-
-  if (isLoading) {
-    return <h3>Loading...</h3>;
-  }
-
-  return (
-    <AuthContext.Provider value={{ user, login, logout, fetchAuthState }}>
+    return (
+        <AuthContext.Provider value={{ user, login, logout, fetchAuthState }}>
       <>
         <RenderMenu />
         <RenderRoutes />
       </>
     </AuthContext.Provider>
-  );
+    );
 };
