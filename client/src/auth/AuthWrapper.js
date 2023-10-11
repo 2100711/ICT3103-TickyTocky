@@ -17,10 +17,6 @@ export const AuthWrapper = () => {
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     fetchAuthState();
-
-    test().catch((error) => {
-      console.log(error.message);
-    });
   }, []);
 
   const fetchAuthState = async () => {

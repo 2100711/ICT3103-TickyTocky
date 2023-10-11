@@ -56,6 +56,8 @@ export const Login = () => {
             <Input
               prefix={<UserOutlined className="input-icon" />}
               placeholder="Email"
+              value={formData.email}
+              onChange={(e) => setFormData({ email: e.target.value })}
             />
           </Form.Item>
           <Form.Item
@@ -71,10 +73,17 @@ export const Login = () => {
               prefix={<LockOutlined className="input-icon" />}
               type="password"
               placeholder="Password"
+              value={formData.password}
+              onChange={(e) => setFormData({ password: e.target.value })}
             />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit" className="login-button">
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="login-button"
+              onClick={handleLogin}
+            >
               Log In
             </Button>
           </Form.Item>

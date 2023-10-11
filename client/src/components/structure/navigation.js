@@ -45,7 +45,7 @@ export const nav = [
     isMenu: true,
     isPrivate: true,
     isPrivate2: true,
-    iconName: "AdminOutlined", // Replace with the actual icon name
+    iconName: "LockOutlined", // Replace with the actual icon name
   },
   {
     path: "/admintest",
@@ -54,6 +54,6 @@ export const nav = [
     isMenu: true,
     isPrivate: true,
     isPrivate2: true,
-    iconName: "AdminTestOutlined", // Replace with the actual icon name
+    iconName: "LockOutlined", // Replace with the actual icon name
   },
 ];

@@ -17,11 +17,3 @@ export async function postLogin(req) {
 export async function getLogout() {
   return requestGet(LOGOUT_API);
 }
-
-export async function test() {
-  try {
-    return requestGet("http://localhost:3001/test");
-  } catch (error) {
-    throw error;
-  }
-}
