@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthData } from "../../auth/AuthWrapper";
-import { Form, Input, Button, Checkbox } from "antd";
+import { Form, Input, Button, Checkbox, notification } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import "../styles/Login.css";
 
@@ -25,8 +25,15 @@ export const Login = () => {
     const { success, message } = await login(formData.email, formData.password);
     if (success) {
       navigate("/account");
+    } else {
+      setErrorMessage(message);
+      // Display error message as a notification
+      notification.error({
+        message: "Login Error",
+        description: message,
+        duration: 5,
+      });
     }
-    setErrorMessage(message);
   };
 
   return (
