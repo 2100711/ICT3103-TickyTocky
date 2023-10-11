@@ -65,9 +65,13 @@ export const RenderMenu = () => {
         const shouldRenderItem =
           (!r.isPrivate && r.isMenu) ||
           (r.isPrivate &&
+            r.isPrivate2 &&
             user.isAuthenticated &&
-            ((r.isPrivate2 && user.role === "admin") ||
-              (typeof r.isPrivate2 === "undefined" && !user.role)));
+            user?.role === "admin" &&
+            r.isMenu) ||
+          ((typeof r.isPrivate2 === "undefined" || r.isPrivate2 === false) &&
+            user.isAuthenticated &&
+            r.isMenu);
 
         return shouldRenderItem ? (
           <Menu.Item
