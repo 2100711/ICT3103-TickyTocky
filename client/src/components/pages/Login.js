@@ -9,27 +9,19 @@ import "../styles/Login.css";
 export const Login = () => {
   const navigate = useNavigate();
   const { login, user } = AuthData();
-  const [formData, setFormData] = useReducer(
+  const [formData] = useReducer(
     (formData, newItem) => {
       return { ...formData, ...newItem };
     },
     { email: "", password: "" }
   );
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [setErrorMessage] = useState(null);
 
   useEffect(() => {
     if (user.isAuthenticated) navigate("/");
   });
 
-  const handleLogin = async () => {
-    const { success, message } = await login(formData.email, formData.password);
-    if (success) {
-      navigate("/account");
-    }
-    setErrorMessage(message);
-  };
-
-  const onFinish = async (values) => {
+  const onFinish = async () => {
     const { success, message } = await login(formData.email, formData.password);
     if (success) {
       navigate("/account");
