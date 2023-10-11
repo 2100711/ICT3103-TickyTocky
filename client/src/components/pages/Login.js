@@ -9,19 +9,19 @@ import "../styles/Login.css";
 export const Login = () => {
   const navigate = useNavigate();
   const { login, user } = AuthData();
-  const [formData] = useReducer(
+  const [formData, setFormData] = useReducer(
     (formData, newItem) => {
       return { ...formData, ...newItem };
     },
     { email: "", password: "" }
   );
-  const [setErrorMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     if (user.isAuthenticated) navigate("/");
   });
 
-  const onFinish = async () => {
+  const handleLogin = async () => {
     const { success, message } = await login(formData.email, formData.password);
     if (success) {
       navigate("/account");
@@ -35,7 +35,7 @@ export const Login = () => {
         <div className="logo">
           <h2>Ticky Tocky</h2>
         </div>
-        <Form name="login-form" onFinish={onFinish}>
+        <Form name="login-form" onFinish={handleLogin}>
           <Form.Item
             name="email"
             rules={[
@@ -70,12 +70,7 @@ export const Login = () => {
             />
           </Form.Item>
           <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              className="login-button"
-              onClick={handleLogin}
-            >
+            <Button type="primary" htmlType="submit" className="login-button">
               Log In
             </Button>
           </Form.Item>
