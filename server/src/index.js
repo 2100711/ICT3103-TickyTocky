@@ -18,6 +18,7 @@ import { PORT, MONGODB_CONNECTION } from "./constants.js";
 const app = express();
 
 app.use(express.json());
+app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 
 mongoose.connect(MONGODB_CONNECTION, {
   useNewUrlParser: true,

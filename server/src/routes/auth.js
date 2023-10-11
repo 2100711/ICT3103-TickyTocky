@@ -32,10 +32,22 @@ const generateOTP = () => {
 };
 
 router.get("/check-auth", isAuthenticated, async (req, res) => {
+  const user = await UserModel.findOne({ email: req.session.user.email });
+
+  if (!user) {
+    return res.status(201).json({
+      email: req.session.user.email,
+      success: false,
+      message: "An error occurred.",
+      role: "",
+    });
+  }
+
   return res.status(201).json({
     email: req.session.user.email,
     success: true,
     message: "User is authenticated.",
+    role: user.role,
   });
 });
 
@@ -83,7 +95,7 @@ router.post("/login", async (req, res) => {
 
     // If want to only allow one active session
     // TODO: make this work by deleting current session first
-    console.log(req.session.user);
+    console.log("session: ", req.session.user);
     if (
       req.session.user &&
       req.session.user.email &&
@@ -104,7 +116,7 @@ router.post("/login", async (req, res) => {
 
     return res
       .status(201)
-      .json({ success: true, message: "Login successful." });
+      .json({ success: true, message: "Login successful.", role: user.role });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ success: false, message: "Server error." });

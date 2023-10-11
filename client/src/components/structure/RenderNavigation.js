@@ -5,11 +5,21 @@ import { useNavigate } from "react-router-dom";
 
 export const RenderRoutes = () => {
   const { user } = AuthData();
-
   return (
     <Routes>
       {nav.map((r, i) => {
-        if (r.isPrivate && user.isAuthenticated) {
+        if (
+          r.isPrivate &&
+          r.isPrivate2 &&
+          user.isAuthenticated &&
+          user?.role === "admin"
+        ) {
+          return <Route key={i} path={r.path} element={r.element} />;
+        } else if (
+          r.isPrivate &&
+          (typeof r.isPrivate2 === "undefined" || r.isPrivate2 === false) &&
+          user.isAuthenticated
+        ) {
           return <Route key={i} path={r.path} element={r.element} />;
         } else if (!r.isPrivate) {
           return <Route key={i} path={r.path} element={r.element} />;
@@ -43,7 +53,19 @@ export const RenderMenu = () => {
       {nav.map((r, i) => {
         if (!r.isPrivate && r.isMenu) {
           return <MenuItem key={i} r={r} />;
-        } else if (user.isAuthenticated && r.isMenu) {
+        } else if (
+          r.isPrivate &&
+          r.isPrivate2 &&
+          user.isAuthenticated &&
+          user?.role === "admin" &&
+          r.isMenu
+        ) {
+          return <MenuItem key={i} r={r} />;
+        } else if (
+          (typeof r.isPrivate2 === "undefined" || r.isPrivate2 === false) &&
+          user.isAuthenticated &&
+          r.isMenu
+        ) {
           return <MenuItem key={i} r={r} />;
         } else return false;
       })}

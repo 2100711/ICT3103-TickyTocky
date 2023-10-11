@@ -9,7 +9,11 @@ const AuthContext = createContext();
 export const AuthData = () => useContext(AuthContext);
 
 export const AuthWrapper = () => {
-  const [user, setUser] = useState({ email: "", isAuthenticated: false });
+  const [user, setUser] = useState({
+    email: "",
+    isAuthenticated: false,
+    role: "",
+  });
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     fetchAuthState();
@@ -33,6 +37,11 @@ export const AuthWrapper = () => {
       if (data.success) {
         setIsLoading(false);
         setUser({ email: data.email, isAuthenticated: data.success });
+        if (data.role) {
+          setUser((user) => {
+            return { ...user, role: data.role };
+          });
+        }
         return { success: true, message: "Authenticated" };
       } else {
         setIsLoading(false);
@@ -66,6 +75,11 @@ export const AuthWrapper = () => {
 
       if (data.success) {
         setUser({ email, isAuthenticated: data.success });
+        if (data.role) {
+          setUser((user) => {
+            return { ...user, role: data.role };
+          });
+        }
         return { success: true, message: "Successful login" };
       } else {
         throw new Error(data.message);
@@ -92,7 +106,7 @@ export const AuthWrapper = () => {
       const data = await response.json();
 
       if (data.success) {
-        setUser({ ...user, isAuthenticated: false });
+        setUser({ ...user, isAuthenticated: false, role: undefined });
         return { success: true, message: data.message };
       } else {
         throw new Error("An error occurred.");
