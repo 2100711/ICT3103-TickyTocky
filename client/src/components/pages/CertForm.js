@@ -60,33 +60,9 @@ export const CertForm = ({ visible, onCancel }) => {
   };
 
   const handleFinish = (values) => {
-    const dates_to_format = [
-      "date_of_validation",
-      "expiry_date",
-      "issue_date",
-      "yop",
-    ];
+    console.log("HANDLEFINISHxcv: ", values);
 
-    for (const date of dates_to_format) {
-      console.log(typeof values[`${date}`]);
-      const inputDate = new Date(values[`${date}`]);
-      const year = inputDate.getFullYear();
-      const month = String(inputDate.getMonth() + 1).padStart(2, "0");
-      const day = String(inputDate.getDate()).padStart(2, "0");
-
-      values[`${date}`] = `${year}-${month}-${day}`;
-    }
-
-    console.log("HANDLEFINISH: ", values);
-
-    // Access the form data from the respective state variable based on the active tab
-    // if (activeTab === "serial") {
-    //   console.log("Serial Form Data:", serialFormData);
-    // } else if (activeTab === "watch") {
-    //   console.log("Watch Form Data:", watchFormData);
-    // } else if (activeTab === "cert") {
-    //   console.log("Cert Form Data:", certFormData);
-    // }
+    // TODO: validation
 
     createCert(values)
       .then((response) => {
