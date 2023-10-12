@@ -86,7 +86,7 @@ export const Login = () => {
           </Form.Item>
         </Form>
         <p className="register-link">
-          Don't have an account? <a href="/">Register</a>
+          Don't have an account? <a href="/register">Register</a>
         </p>
         <p className="forgot-password-link">
           <a href="/">Forgot Password?</a>

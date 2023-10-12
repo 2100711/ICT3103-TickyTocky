@@ -1,9 +1,10 @@
-import { About } from "../pages/About";
+import { AboutUs } from "../pages/AboutUs";
 import { Account } from "../pages/Account";
 import { AdminTest } from "../pages/AdminTest";
 import { Home } from "../pages/Home";
 import { Login } from "../pages/Login";
 import { Admin } from "../pages/Admin";
+import { Register } from "../pages/Register";
 
 export const nav = [
   {
@@ -15,9 +16,9 @@ export const nav = [
     iconName: "HomeOutlined", // Replace with the actual icon name
   },
   {
-    path: "/about",
-    name: "About",
-    element: <About />,
+    path: "/aboutus",
+    name: "About Us",
+    element: <AboutUs />,
     isMenu: true,
     isPrivate: false,
     iconName: "InfoCircleOutlined", // Replace with the actual icon name
@@ -29,6 +30,14 @@ export const nav = [
     isMenu: false,
     isPrivate: false,
     iconName: "LoginOutlined", // Replace with the actual icon name
+  },
+  {
+    path: "/register",
+    name: "Register",
+    element: <Register />,
+    isMenu: false,
+    isPrivate: false,
+    iconName: "RegisterOutlined", // Replace with the actual icon name
   },
   {
     path: "/account",

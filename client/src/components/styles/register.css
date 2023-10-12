@@ -1,0 +1,94 @@
+/* Register.css */
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(to top, #69b1ff, #002c8c);
+  color: #fff;
+  font-family: "Arial", sans-serif;
+  text-align: center;
+}
+
+.register-form {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 650px; /* Adjust the maximum width to make it wider */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.register-form h2 {
+  font-size: 30px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: bold;
+  margin-bottom: -20px;
+  background: linear-gradient(#69b1ff, #002c8c);
+  -webkit-background-clip: text; /* Apply the gradient to the text */
+  background-clip: text; /* Apply the gradient to the text */
+  color: transparent; /* Make the text color transparent */
+  text-align: center;
+}
+
+.form-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 5px;
+}
+
+label {
+  font-size: 16px;
+  color: #444;
+  margin-left: 31px;
+  margin-top: 26px;
+}
+
+.input-box {
+  width: 90%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+}
+
+.error-message {
+  color: #ff4d4f;
+}
+
+.form-button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.form-button-container button {
+  flex: 1; /* Make the buttons occupy equal space */
+  font-size: 16px;
+  border-radius: 5px;
+  margin-right: 8px;
+}
+
+.form-button-container button:last-child {
+  margin-right: 0; /* Remove spacing for the last button */
+}
+
+.form-button-container button[type="default"] {
+  background: #ccc;
+}
+
+.form-button-container button[type="primary"] {
+  background: #1890ff;
+  color: #fff;
+}
+
+.form-button-container button[type="primary"]:hover {
+  background: #0040c8;
+}

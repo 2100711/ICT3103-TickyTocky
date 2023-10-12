@@ -6,26 +6,12 @@
   min-height: 100vh;
   background: linear-gradient(
     to top,
-    #1890ff,
-    #0040c8
+    #69b1ff,
+    #002c8c
   ); /* Example background gradient */
   color: #fff;
   font-family: "Arial", sans-serif;
   text-align: center;
-}
-
-/* CSS for the Logo */
-.logo {
-  text-align: center;
-  margin-bottom: 32px; /* Add some spacing below the logo */
-}
-
-.logo h2 {
-  font-size: 36px; /* Adjust the font size to make it more prominent */
-  color: #1890ff; /* Use your theme color for the logo text */
-  text-transform: uppercase; /* Uppercase the text for a more brand-like appearance */
-  letter-spacing: 2px; /* Add some letter spacing for style */
-  font-weight: bold; /* Make the text bold */
 }
 
 .login-form {
@@ -39,8 +25,14 @@
 
 .login-form h2 {
   font-size: 28px; /* Increase font size */
+  text-transform: uppercase; /* Uppercase the text for a more brand-like appearance */
+  letter-spacing: 2px; /* Add some letter spacing for style */
+  font-weight: bold; /* Make the text bold */
   margin-bottom: 32px; /* Increase margin */
-  color: #333;
+  background: linear-gradient(#69b1ff, #002c8c);
+  -webkit-background-clip: text; /* Apply the gradient to the text */
+  background-clip: text; /* Apply the gradient to the text */
+  color: transparent; /* Make the text color transparent */
 }
 
 .input-icon {
