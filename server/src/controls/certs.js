@@ -8,7 +8,7 @@ import {
   updateWatch,
   deleteWatch,
 } from "../controls/watches.js";
-import { userExists } from "../routes/auth.js";
+import { userExists } from "../controls/auth.js";
 
 // Create a new cert
 const createCert = async (req, res) => {
