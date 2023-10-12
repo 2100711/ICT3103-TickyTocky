@@ -8,10 +8,12 @@ import {
   deleteUser,
 } from "../controls/users.js";
 
-userRouter.post("/", createUser);
-userRouter.get("/all-users", getAllUsersEmails);
-userRouter.get("/:email", getUser); // get one user
-userRouter.put("/", updateUser);
-userRouter.delete("/", deleteUser);
+import { isAuthenticated, isAdmin } from "../controls/auth.js";
+
+userRouter.post("/", isAuthenticated, isAdmin, createUser);
+userRouter.get("/all-users", isAuthenticated, isAdmin, getAllUsersEmails);
+userRouter.get("/:email", isAuthenticated, getUser); // get one user -> only available for the user that owns the account
+userRouter.put("/", isAuthenticated, updateUser); // -> only available for the user that owns the account
+userRouter.delete("/", isAuthenticated, isAdmin, deleteUser);
 
 export { userRouter };
