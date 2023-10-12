@@ -1,10 +1,12 @@
 import { SerialNumberModel } from "../models/SerialNumbers.js";
 
 // Create a new Serial Number
-const createSerialNumbers = async (serialNumbers) => {
-  const { case_serial, movement_serial, dial, bracelet_strap, crown_pusher } =
-    serialNumbers;
+const createSerialNumbers = async (serialNumbers, session) => {
   try {
+    const sessionOptions = session ? { session } : {};
+
+    const { case_serial, movement_serial, dial, bracelet_strap, crown_pusher } =
+      serialNumbers;
     const serialNumbersData = new SerialNumberModel({
       case_serial,
       movement_serial,
@@ -13,7 +15,7 @@ const createSerialNumbers = async (serialNumbers) => {
       crown_pusher,
     });
 
-    await serialNumbersData.save();
+    await serialNumbersData.save(sessionOptions);
 
     return serialNumbersData._id;
   } catch (error) {
@@ -47,29 +49,52 @@ const getSerialNumbers = async (serialNumbers) => {
 };
 
 // Update Serial Numbers by ID
-const updateSerialNumbers = async (serialNumbers) => {
+const updateSerialNumbers = async (serialNumbers, session) => {
   try {
+    const {
+      serial_id,
+      case_serial,
+      movement_serial,
+      dial,
+      bracelet_strap,
+      crown_pusher,
+    } = serialNumbers;
+
+    const sessionOptions = session ? { session } : {};
+
+    const serial_data = await SerialNumberModel.findById({ _id: serial_id });
+    if (!serial_data) throw new Error("Serial Numbers not found.");
+
     const updatedSerialNumbers = await SerialNumberModel.findOneAndUpdate(
-      serialNumbers._id,
-      serialNumbers,
-      { new: true }
+      { _id: serial_id },
+      { case_serial, movement_serial, dial, bracelet_strap, crown_pusher },
+      { new: true, ...sessionOptions }
     );
 
     if (!updatedSerialNumbers) {
-      throw error;
+      throw new Error("Serial Numbers not found.");
     }
 
-    return updatedSerialNumbers;
+    return updatedSerialNumbers._id;
   } catch (error) {
     throw error;
   }
 };
 
 // Delete Serial Numbers by ID
-const deleteSerialNumbers = async (serialNumbers) => {
+const deleteSerialNumbers = async (serialNumbers_id, session) => {
   try {
+    const sessionOptions = session ? { session } : {};
+
+    const serial = await SerialNumberModel.findById(serialNumbers_id);
+
+    if (!serial) throw new Error("Serial Numbers not found");
+
     const deletedSerialNumbers = await SerialNumberModel.findByIdAndRemove(
-      serialNumbers._id
+      serialNumbers_id,
+      {
+        ...sessionOptions,
+      }
     );
 
     if (!deletedSerialNumbers) {

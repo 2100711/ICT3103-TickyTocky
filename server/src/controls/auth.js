@@ -1,3 +1,5 @@
+import { UserModel } from "../models/Users.js";
+
 const isAuthenticated = (req, res, next) => {
   if (req.session.user) {
     next();
@@ -8,11 +10,15 @@ const isAuthenticated = (req, res, next) => {
   }
 };
 
-const isAdmin = (req, res, next) => {
-  if (req.session.user) {
+// isAdmin function should be used only after isAuthenticated
+const isAdmin = async (req, res, next) => {
+  const user = await UserModel.findOne({
+    email: req.session.user.email,
+  }).select("-_id role");
+  if (user.role === "admin") {
     next();
   } else {
-    return res.status(403).json({ success: false, message: "Unauthorised." });
+    return res.status(403).json({ success: false, message: "Unauthorized." });
   }
 };
 

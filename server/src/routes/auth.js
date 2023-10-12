@@ -19,7 +19,6 @@ const router = express.Router();
 // Check if user exists
 const userExists = async (email) => {
   const user = await UserModel.findOne({ email: email });
-  console.log(user);
   if (user) {
     return true;
   }
@@ -55,7 +54,7 @@ router.get("/check-auth", isAuthenticated, async (req, res) => {
 router.post("/register", async (req, res) => {
   const { f_name, l_name, email, password } = req.body;
   try {
-    if (userExists(email))
+    if (await userExists(email))
       return res
         .status(409)
         .json({ error: "User already exist, please login instead." });
@@ -459,4 +458,4 @@ router.post("/verify-otp", async (req, res) => {
 //     });
 // }
 
-export { router as authRouter };
+export { router as authRouter, userExists };

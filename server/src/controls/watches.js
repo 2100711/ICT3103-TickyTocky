@@ -8,7 +8,7 @@ import {
 } from "../controls/serialNumbers.js";
 
 // Create a new watch
-const createWatch = async (watch) => {
+const createWatch = async (watch, session) => {
   const {
     case_serial,
     movement_serial,
@@ -25,6 +25,8 @@ const createWatch = async (watch) => {
     gender,
   } = watch;
   try {
+    const sessionOptions = session ? { session } : {};
+
     const serialNumbers = {
       case_serial,
       movement_serial,
@@ -32,7 +34,7 @@ const createWatch = async (watch) => {
       bracelet_strap,
       crown_pusher,
     };
-    const serial_id = await createSerialNumbers(serialNumbers);
+    const serial_id = await createSerialNumbers(serialNumbers, session);
     const watchData = new WatchModel({
       brand,
       model_no,
@@ -45,7 +47,7 @@ const createWatch = async (watch) => {
       serial_id,
     });
 
-    await watchData.save();
+    await watchData.save(sessionOptions);
     return watchData._id;
   } catch (error) {
     throw error;
@@ -78,26 +80,84 @@ const getWatch = async (watch) => {
 };
 
 // Update a watch by ID
-const updateWatch = async (watch) => {
+const updateWatch = async (watch, session) => {
   try {
-    const updatedWatch = await WatchModel.findOneAndUpdate(watch._id, watch, {
-      new: true,
-    });
+    const {
+      watch_id,
+      case_serial,
+      movement_serial,
+      dial,
+      bracelet_strap,
+      crown_pusher,
+      brand,
+      model_no,
+      model_name,
+      movement,
+      case_material,
+      bracelet_strap_material,
+      yop,
+      gender,
+    } = watch;
+
+    const sessionOptions = session ? { session } : {};
+
+    const watch_data = await WatchModel.findById({ _id: watch_id });
+
+    if (!watch_data) throw new Error("Watch not found.");
+
+    const serialNumbers = {
+      serial_id: watch_data.serial_id,
+      case_serial,
+      movement_serial,
+      dial,
+      bracelet_strap,
+      crown_pusher,
+    };
+
+    const serial_id = await updateSerialNumbers(serialNumbers, session);
+
+    const updatedWatch = await WatchModel.findOneAndUpdate(
+      { _id: watch_id },
+      {
+        brand,
+        model_no,
+        model_name,
+        movement,
+        case_material,
+        bracelet_strap_material,
+        yop,
+        gender,
+      },
+      {
+        new: true,
+        ...sessionOptions,
+      }
+    );
 
     if (!updatedWatch) {
-      throw error;
+      throw new Error("Watch not found.");
     }
 
-    return updatedWatch;
+    return updatedWatch._id;
   } catch (error) {
     throw error;
   }
 };
 
 // Delete a watch by ID
-const deleteWatch = async (watch) => {
+const deleteWatch = async (watch_id, session) => {
   try {
-    const deletedWatch = await WatchModel.findByIdAndRemove(watch._id);
+    const sessionOptions = session ? { session } : {};
+
+    const watch = await WatchModel.findById(watch_id);
+
+    if (!watch) throw new Error("Watch not found");
+
+    const deletedSerial = await deleteSerialNumbers(watch.serial_id, session);
+
+    const deletedWatch = await WatchModel.findByIdAndRemove(watch_id, {
+      ...sessionOptions,
+    });
 
     if (!deletedWatch) {
       throw error;
