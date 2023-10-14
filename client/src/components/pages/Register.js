@@ -21,6 +21,11 @@ export const Register = () => {
       validateLName()
     ) {
       console.log("Registration successful");
+      notification.success({
+        message: "Registration successful",
+        description: "You may now login with your credentials",
+        duration: 5,
+      });
       navigate("/login");
     }
     // e.preventDefault();
