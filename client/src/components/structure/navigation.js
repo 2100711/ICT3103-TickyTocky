@@ -5,6 +5,9 @@ import { Home } from "../pages/Home";
 import { Login } from "../pages/Login";
 import { Admin } from "../pages/Admin";
 import { Register } from "../pages/Register";
+import { OTPVerification } from "../pages/OTPVerification";
+import { ForgotPassword } from "../pages/ForgotPassword";
+import { PasswordReset } from "../pages/PasswordReset";
 
 export const nav = [
   {
@@ -38,6 +41,27 @@ export const nav = [
     isMenu: false,
     isPrivate: false,
     iconName: "RegisterOutlined", // Replace with the actual icon name
+  },
+  {
+    path: "/forgotpassword",
+    name: "Forgot Password",
+    element: <ForgotPassword />,
+    isMenu: false,
+    isPrivate: false,
+  },
+  {
+    path: "/resetpassword",
+    name: "Reset Password",
+    element: <PasswordReset />,
+    isMenu: false,
+    isPrivate: false,
+  },
+  {
+    path: "/otp",
+    name: "OTP Verification",
+    element: <OTPVerification />,
+    isMenu: false,
+    isPrivate: false,
   },
   {
     path: "/account",

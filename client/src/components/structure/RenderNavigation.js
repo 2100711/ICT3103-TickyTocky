@@ -48,7 +48,13 @@ export const RenderMenu = () => {
   const location = useLocation();
 
   // Check if the current route is "login" and conditionally render the navbar
-  if (location.pathname === "/login") {
+  if (
+    location.pathname === "/login" ||
+    location.pathname === "/otp" ||
+    location.pathname === "/register" ||
+    location.pathname === "/forgotpassword" ||
+    location.pathname === "/resetpassword"
+  ) {
     return null; // Render nothing for the "login" route
   }
 

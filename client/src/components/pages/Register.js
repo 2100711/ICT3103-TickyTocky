@@ -12,25 +12,36 @@ export const Register = () => {
   const [lname, setLname] = useState("");
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    const data = new FormData(e.target);
-    fetch("http://localhost:3001/users/", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        [email]: data.get(email),
-        [cfmPassword]: data.get(cfmPassword),
-        [fname]: data.get(fname),
-        [lname]: data.get(lname),
-      }),
-    }).then((response) => {
-      response.json().then((data) => {
-        console.log(data);
-      });
-    });
+    // TODO: Implement registration logic
+    if (
+      validateEmail() &&
+      validatePassword() &&
+      validateCfmPassword() &&
+      validateFName() &&
+      validateLName()
+    ) {
+      console.log("Registration successful");
+      navigate("/login");
+    }
+    // e.preventDefault();
+    // const data = new FormData(e.target);
+    // fetch("http://localhost:3001/users/", {
+    //   method: "POST",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({
+    //     [email]: data.get(email),
+    //     [cfmPassword]: data.get(cfmPassword),
+    //     [fname]: data.get(fname),
+    //     [lname]: data.get(lname),
+    //   }),
+    // }).then((response) => {
+    //   response.json().then((data) => {
+    //     console.log(data);
+    //   });
+    // });
   };
 
   const handleClear = () => {
@@ -73,6 +84,19 @@ export const Register = () => {
     }
   };
 
+  const validateCfmPassword = () => {
+    if (cfmPassword === password) {
+      return true; // Validation successful
+    } else {
+      notification.error({
+        message: "Passwords do not match",
+        description: "Please reenter the same password",
+        duration: 5,
+      });
+      return false; // Validation failed
+    }
+  };
+
   const validateFName = () => {
     const nameRegex = /^[A-Za-z]+$/i;
     if (nameRegex.test(fname)) {
@@ -108,14 +132,12 @@ export const Register = () => {
         <Form.Item
           name="email"
           label="Email"
-          rules={[
-            { required: true, message: "Please input your email!" },
-            { validator: validateEmail },
-          ]}
+          rules={[{ required: true, message: "Please enter your email!" }]}
           className="form-item"
         ></Form.Item>
         <Input
           className="input-box"
+          placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -123,14 +145,12 @@ export const Register = () => {
         <Form.Item
           name="password"
           label="Password"
-          rules={[
-            { required: true, message: "Please input your password!" },
-            { validator: validatePassword },
-          ]}
+          rules={[{ required: true, message: "Please enter your password!" }]}
           className="form-item"
         ></Form.Item>
         <Input.Password
           className="input-box"
+          placeholder="Enter your password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
@@ -141,22 +161,13 @@ export const Register = () => {
           dependencies={["password"]}
           hasFeedback
           rules={[
-            { required: true, message: "Please confirm your password!" },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue("password") === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(
-                  new Error("The two passwords do not match")
-                );
-              },
-            }),
+            { required: true, message: "Please reenter the same password!" },
           ]}
           className="form-item"
         ></Form.Item>
         <Input.Password
           className="input-box"
+          placeholder="Reenter your password"
           value={cfmPassword}
           onChange={(e) => setCfmPassword(e.target.value)}
         />
@@ -164,14 +175,12 @@ export const Register = () => {
         <Form.Item
           name="fname"
           label="First Name"
-          rules={[
-            { required: true, message: "Please input your first name!" },
-            { validator: validateFName },
-          ]}
+          rules={[{ required: true, message: "Please enter your first name!" }]}
           className="form-item"
         ></Form.Item>
         <Input
           className="input-box"
+          placeholder="Enter your first name"
           value={fname}
           onChange={(e) => setFname(e.target.value)}
         />
@@ -179,39 +188,25 @@ export const Register = () => {
         <Form.Item
           name="lname"
           label="Last Name"
-          rules={[
-            { required: true, message: "Please input your last name!" },
-            { validator: validateLName },
-          ]}
+          rules={[{ required: true, message: "Please enter your last name!" }]}
           className="form-item"
         ></Form.Item>
         <Input
           className="input-box"
+          placeholder="Enter your last name"
           value={lname}
           onChange={(e) => setLname(e.target.value)}
         />
 
         <Form.Item className="form-button-container">
           <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <Button
-              type="default"
-              className="clear-button"
-              onClick={handleClear}
-            >
+            <Button type="default" onClick={handleClear}>
               Clear
             </Button>
-            <Button
-              type="default"
-              className="cancel-button"
-              onClick={handleCancel}
-            >
+            <Button type="default" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button
-              type="primary"
-              htmlType="submit"
-              className="register-button"
-            >
+            <Button type="primary" htmlType="submit" onClick={handleSubmit}>
               Register
             </Button>
           </div>

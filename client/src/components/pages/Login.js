@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useReducer, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthData } from "../../auth/AuthWrapper";
 import { Form, Input, Button, Checkbox, notification } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
@@ -84,13 +84,13 @@ export const Login = () => {
           <Form.Item name="remember" valuePropName="checked">
             <Checkbox>Remember me</Checkbox>
           </Form.Item>
+          <p>
+            Don't have an account? <Link to="/register">Register</Link>
+          </p>
+          <p>
+            <Link to="/forgotpassword">Forgot Password?</Link>
+          </p>
         </Form>
-        <p className="register-link">
-          Don't have an account? <a href="/register">Register</a>
-        </p>
-        <p className="forgot-password-link">
-          <a href="/">Forgot Password?</a>
-        </p>
       </div>
     </div>
   );
