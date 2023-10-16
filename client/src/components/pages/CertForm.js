@@ -1,82 +1,96 @@
 import React, { useState, useEffect } from "react";
 import {
-  Modal,
-  Button,
-  Form,
-  Input,
-  Select,
-  DatePicker,
-  Upload,
-  Tabs,
+    Modal,
+    Button,
+    Form,
+    Input,
+    Select,
+    DatePicker,
+    Upload,
+    Tabs,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { getAllUsers } from "../../api/users";
 import { createCert } from "../../api/certs";
+import jsPDF from "jspdf";
 
 const { TabPane } = Tabs;
 
 export const CertForm = ({ visible, onCancel }) => {
-  const [activeTab, setActiveTab] = useState("serial");
-  const [userEmails, setUserEmails] = useState([]);
-  const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState("serial");
+    const [userEmails, setUserEmails] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-  const [form] = Form.useForm();
+    const [form] = Form.useForm();
 
-  useEffect(() => {
-    // Fetch user emails here and set the user emails state variable
-    getAllUsers()
-      .then((response) => {
-        console.log(response);
-        setUserEmails(response.emails);
-        setLoading(false); // Set loading to false when data is loaded
-      })
-      .catch((error) => {
-        console.error("Error fetching user emails:", error);
-        setLoading(false); // Set loading to false on error
-      });
-  }, []); // Empty dependency array ensures this effect runs only once on mount
+    useEffect(() => {
+        // Fetch user emails here and set the user emails state variable
+        getAllUsers()
+            .then((response) => {
+                console.log(response);
+                setUserEmails(response.emails);
+                setLoading(false); // Set loading to false when data is loaded
+            })
+            .catch((error) => {
+                console.error("Error fetching user emails:", error);
+                setLoading(false); // Set loading to false on error
+            });
+    }, []); // Empty dependency array ensures this effect runs only once on mount
 
-  const handleTabChange = (key) => {
-    setActiveTab(key);
-  };
+    const handleTabChange = (key) => {
+        setActiveTab(key);
+    };
 
-  const handleCancel = () => {
-    onCancel();
-  };
+    const handleCancel = () => {
+        onCancel();
+    };
 
-  // TODO: handleNext and handlePrevious works but if in the next form there are empty fields, the next button would not work
-  const handleNext = () => {
-    // Handle the next button logic, e.g., validate and move to the next tab
-    setActiveTab((current) => {
-      return current === "serial" ? "watch" : "cert";
-    });
-  };
+    // TODO: handleNext and handlePrevious works but if in the next form there are empty fields, the next button would not work
+    const handleNext = () => {
+        // Handle the next button logic, e.g., validate and move to the next tab
+        setActiveTab((current) => {
+            return current === "serial" ? "watch" : "cert";
+        });
+    };
 
-  const handlePrevious = () => {
-    // Handle the previous button logic, e.g., move back to the previous tab
-    setActiveTab((current) => {
-      return current === "cert" ? "watch" : "serial";
-    });
-  };
+    const handlePrevious = () => {
+        // Handle the previous button logic, e.g., move back to the previous tab
+        setActiveTab((current) => {
+            return current === "cert" ? "watch" : "serial";
+        });
+    };
 
-  const handleFinish = (values) => {
-    console.log("HANDLEFINISHxcv: ", values);
+    const handleFinish = async (values) => {
+        console.log("HANDLEFINISHxcv: ", values);
 
-    // TODO: validation
+        const doc = new jsPDF();
+        doc.text("Certificate of Validation", 10, 10);
+        doc.text("User Email: " + values.user_email, 10, 30);
+        doc.text("Validated By: " + values.validated_by, 10, 40);
+        doc.text("Date of Validation: " + values.date_of_validation, 10, 50);
+        doc.text("Issue Date: " + values.issue_date, 10, 60);
+        doc.text("Expiry Date: " + values.expiry_date, 10, 70);
+        doc.text("Remarks: " + values.remarks, 10, 80);
 
-    createCert(values)
-      .then((response) => {
-        // Handle success, e.g., show a success message
-        console.log("Certificate created:", response);
-      })
-      .catch((error) => {
-        // Handle error, e.g., show an error message
-        console.error("Error creating certificate:", error);
-      });
-  };
+        const pdfContent = doc.output('datauristring');
 
-  return (
-    <Modal
+        const data = { ...values, pdf_content: pdfContent };
+
+        console.log("cb why not working: ", data);
+
+        createCert(data)
+            .then((response) => {
+                // Handle success, e.g., show a success message
+                console.log("Certificate created:", response);
+            })
+            .catch((error) => {
+                // Handle error, e.g., show an error message
+                console.error("Error creating certificate:", error);
+            });
+    };
+
+    return (
+        <Modal
       title="Certificate Form"
       open={visible}
       onCancel={handleCancel}
@@ -282,5 +296,5 @@ export const CertForm = ({ visible, onCancel }) => {
         </TabPane>
       </Tabs>
     </Modal>
-  );
+    );
 };

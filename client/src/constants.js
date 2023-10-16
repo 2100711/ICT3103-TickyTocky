@@ -6,7 +6,7 @@ export const REGISTER_URL = "/register";
 export const ADMIN_URL = "/admin";
 
 // SERVER URL
-export const SERVER_URL = "https://www.gracious-kare.cloud/be";
+export const SERVER_URL = "http://localhost:3001";
 export const CERTS_URL = `${SERVER_URL}/certs`;
 export const USERS_URL = `${SERVER_URL}/users`;
 export const AUTH_URL = `${SERVER_URL}/auth`;

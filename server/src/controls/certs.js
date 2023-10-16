@@ -9,10 +9,12 @@ import {
     deleteWatch,
 } from "../controls/watches.js";
 import { userExists } from "../controls/auth.js";
+import { createPdfContent } from "../controls/pdf.js"
 
 const createCert = async (req, res) => {
+    const session = await CertModel.startSession();
     try {
-        const session = await CertModel.startSession();
+
         session.startTransaction();
 
         const {
@@ -54,7 +56,8 @@ const createCert = async (req, res) => {
         };
 
         const watch_id = await createWatch(watch, session);
-        const cert = new CertModel({
+
+        const pdfContent = await createPdfContent({
             user_email,
             validated_by,
             date_of_validation,
@@ -63,6 +66,22 @@ const createCert = async (req, res) => {
             expiry_date,
             remarks,
         });
+
+        console.log("cbcbcbcb: ", pdfContent);
+
+        const cert = new CertModel({
+            user_email,
+            validated_by,
+            date_of_validation,
+            watch_id,
+            issue_date,
+            expiry_date,
+            remarks,
+            pdf_content: pdfContent,
+        });
+
+        console.log("lanjiao: ",
+            cert);
 
         await cert.save({ session });
 
@@ -75,6 +94,7 @@ const createCert = async (req, res) => {
             cert,
         });
     } catch (error) {
+        console.log(error);
         await session.abortTransaction();
         session.endSession();
         res.status(500).json({ success: false, message: "An error occurred" });
@@ -111,13 +131,14 @@ const createCerts = async (req, res) => {
 
 const getAllCerts = async (req, res) => {
     try {
-        const certs = await CertModel.find().select("_id user_email");
+        const certs = await CertModel.find({ pdf_content: { $ne: null } }).select("_id user_email pdf_content");
         res.status(200).json({
             success: true,
             message: "All certificates retrieved",
-            certs,
+            certs: certs,
         });
     } catch (error) {
+        console.log("wtf : ", error);
         res.status(500).json({ success: false, message: "An error occurred" });
     }
 };
