@@ -169,7 +169,7 @@ pipeline {
     //     }
 
     //     // Add more stages as needed, such as database migrations, security scanning, and more.
-    // }
+    }
 
     // Global success and failure conditions for the entire pipeline
     post {
