@@ -2,6 +2,11 @@ pipeline {
     agent any
 
     stages {
+        docker {
+            image 'node:18.18.0-alpine3.18' 
+            args '-p 3005:3005' 
+        }
+        
         stage('Build Client') {
             steps {
                 dir('client') {
