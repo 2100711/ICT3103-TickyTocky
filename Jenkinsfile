@@ -24,6 +24,7 @@ pipeline {
 
         stage('Test') {
             steps {
+                dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
                 dir('client') {
                     script {
                         echo 'TODO: Add client tests'
@@ -73,6 +74,7 @@ pipeline {
     // Global success and failure conditions for the entire pipeline
     post {
         success {
+            dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             echo "Pipeline successfully completed."
         }
         failure {
