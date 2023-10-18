@@ -4,6 +4,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                echo 'Building the application'
                 dir('client') {
                     script {
                         sh 'apt install -y nodejs npm'
