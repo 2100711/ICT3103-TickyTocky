@@ -10,7 +10,7 @@ pipeline {
 
                         echo 'Installing client dependencies'
                         sh 'npm install'
-                        sh 'npm run build'
+                        // sh 'npm run build'
                     }
                 }
             }
