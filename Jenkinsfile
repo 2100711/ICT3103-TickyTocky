@@ -52,7 +52,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'DB_USER', variable: 'DB_USER'), string(credentialsId: 'DB_PASS', variable: 'DB_PASS')]) {
                     dir('server') {
                         script {
-                            sh 'apt install -y nodejs npm'
+                            // sh 'apt install -y nodejs npm'
 
                             echo 'Installing server dependencies'
                             sh 'npm install'
