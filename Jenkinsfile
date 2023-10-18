@@ -2,17 +2,13 @@ pipeline {
     agent any
 
     stages {
-        agent {
-            docker {
-                image 'node:18.18.0-alpine3.18' 
-                args '-p 3005:3005'
-            }
-        }
-
         stage('Build Client') {
             steps {
                 dir('client') {
                     script {
+                        sh 'curl -sL https://deb.nodesource.com/setup_14.x | bash -'
+                        sh 'apt-get install -y nodejs'
+
                         echo 'Installing client dependencies'
                         sh 'npm install'
                         sh 'npm run build'
@@ -57,6 +53,9 @@ pipeline {
                 withCredentials([string(credentialsId: 'DB_USER', variable: 'DB_USER'), string(credentialsId: 'DB_PASS', variable: 'DB_PASS')]) {
                     dir('server') {
                         script {
+                            sh 'curl -sL https://deb.nodesource.com/setup_14.x | bash -'
+                            sh 'apt-get install -y nodejs'
+
                             echo 'Installing server dependencies'
                             sh 'npm install'
 
