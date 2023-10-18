@@ -6,8 +6,7 @@ pipeline {
             steps {
                 dir('client') {
                     script {
-                        sh 'curl -sL https://deb.nodesource.com/setup_14.x | bash -'
-                        sh 'apt-get install -y nodejs'
+                        sh 'apt install nodejs npm'
 
                         echo 'Installing client dependencies'
                         sh 'npm install'
@@ -53,8 +52,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'DB_USER', variable: 'DB_USER'), string(credentialsId: 'DB_PASS', variable: 'DB_PASS')]) {
                     dir('server') {
                         script {
-                            sh 'curl -sL https://deb.nodesource.com/setup_14.x | bash -'
-                            sh 'apt-get install -y nodejs'
+                            sh 'apt install nodejs npm'
 
                             echo 'Installing server dependencies'
                             sh 'npm install'
