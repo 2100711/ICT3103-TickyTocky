@@ -5,26 +5,24 @@ import { createCerts } from "../../api/certs";
 import * as XLSX from 'xlsx'; // Import the xlsx library
 
 export const ExcelUploadModal = ({ visible, onCancel }) => {
+    const [fileData, setFileData] = useState([]);
+
     const handleFileUpload = async (info) => {
-        if (info.file.status === 'done') {
-            message.success(`${info.file.name} file uploaded successfully`);
-
-            // Process the uploaded Excel file using XLSX library
-            const fileData = await readFileContents(info.file.originFileObj);
-
-            // You can now work with the 'fileData' Excel data
-        } else if (info.file.status === 'error') {
-            message.error(`${info.file.name} file upload failed.`);
-        }
+        const excelData = await readFileContents(info.fileList[0].originFileObj);
+        setFileData(excelData)
+        // if (info.file.status === 'done') {
+        //     message.success(`${info.file.name} file uploaded successfully`);
+        //     console.log('hi')
+        //     const excelData = await readFileContents(info.file.originFileObj);
+        //     setFileData(excelData);
+        // } else if (info.file.status === 'error') {
+        //     message.error(`${info.file.name} file upload failed.`);
+        // }
     };
-
 
     const readFileContents = (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
-
-            // Log the start of the file reading
-            console.log('Reading file...');
 
             reader.onload = (e) => {
                 const workbook = XLSX.read(e.target.result, { type: 'array' });
@@ -32,24 +30,26 @@ export const ExcelUploadModal = ({ visible, onCancel }) => {
                 const worksheet = workbook.Sheets[firstSheetName];
                 const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-                // Log the data read from the file
-                console.log('File data:', data);
-
                 resolve(data);
             };
 
             reader.onerror = (error) => {
-                // Log any errors that occur during file reading
                 console.error('File reading error:', error);
                 reject(error);
             };
 
-            // Log when the file reading starts
-            console.log('Reading file contents...');
             reader.readAsArrayBuffer(file);
         });
     };
 
+    const handleCustomRequest = async () => {
+        if (fileData) {
+            console.log('Data to be submitted:', fileData);
+            const result = await createCerts(fileData)
+            console.log('result',result)
+            // Call the API to submit the data using the 'fileData'
+        }
+    };
 
     return (
         <Modal
@@ -67,13 +67,19 @@ export const ExcelUploadModal = ({ visible, onCancel }) => {
                 >
                     <Upload
                         name="file"
-                        action={(file) => createCerts(file)}
-                        onChange={handleFileUpload}
+                        maxCount={1}
+                        showUploadList={{ showRemoveIcon: true }}
+                        accept=".xls, .xlsx"
+                        beforeUpload={() => false}
+                        onChange={(info) => handleFileUpload(info)}
                     >
                         <Button icon={<UploadOutlined />}>Click to Upload</Button>
                     </Upload>
                 </Form.Item>
             </Form>
+            <Button title="Submit" onClick={handleCustomRequest}>
+                Submit
+            </Button>
         </Modal>
     );
 };

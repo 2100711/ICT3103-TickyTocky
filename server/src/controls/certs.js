@@ -130,11 +130,12 @@ const createCert = async (req, res) => {
 };
 
 const createCerts = async (req, res) => {
+    console.log("create certs", req.body)
     const session = await CertModel.startSession();
     try {
         session.startTransaction();
 
-        const { file } = req;
+        const { file } = req.body;
 
         if (!file || !file.buffer) {
             return res.status(400).json({ message: "File not provided or invalid" });
