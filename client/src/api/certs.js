@@ -12,8 +12,11 @@ export async function createCert(req) {
     return requestPost(CREATE_CERT_API, { req });
 }
 
-export async function createCerts(req) {
-    return requestPost(CREATE_CERT_API, { req });
+export async function createCerts(file) {
+    const formData = new FormData();
+    formData.append('file', file); // 'file' is the File object obtained from the file input field
+    console.log("idkkkkkk", formData);
+    return requestPost(CREATE_CERTS_API, formData, 'multipart/form-data');
 }
 
 export async function getAllCerts(req) {

@@ -4,16 +4,24 @@ import { UploadOutlined } from '@ant-design/icons';
 import { CertForm } from './CertForm';
 import { getAllCerts } from '../../api/certs';
 import { CertTable } from '../pages/CertTable';
+import { ExcelUploadModal } from "../pages/ExcelUploadModal"
 
 export const Admin = () => {
     const [modalVisible, setModalVisible] = useState(false);
+    const [excelUploadModalVisible, setExcelUploadModalVisible] = useState(false);
 
     const showModal = () => {
         setModalVisible(true);
     };
 
+    const showExcelUploadModal = () => {
+        setExcelUploadModalVisible(true);
+    };
+
+
     const handleCancel = () => {
         setModalVisible(false);
+        setExcelUploadModalVisible(false);
     };
 
     return (
@@ -21,6 +29,10 @@ export const Admin = () => {
       <Button type="primary" onClick={showModal}>
         Open Modal
       </Button>
+      <Button type="primary" onClick={showExcelUploadModal}>
+                Open Excel Upload Modal
+            </Button>
+      <ExcelUploadModal visible={excelUploadModalVisible} onCancel={handleCancel} />
       <CertForm visible={modalVisible} onCancel={handleCancel} />
       <CertTable/>
     </div>
