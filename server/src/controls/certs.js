@@ -135,16 +135,8 @@ const createCerts = async (req, res) => {
     try {
         session.startTransaction();
 
-        const { file } = req.body;
-
-        if (!file || !file.buffer) {
-            return res.status(400).json({ message: "File not provided or invalid" });
-        }
-
-        const workbook = XLSX.read(file.buffer, { type: "buffer" });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const certDataArray = XLSX.utils.sheet_to_json(worksheet);
+        const certDataArray = req.body;
+        console.log("certcertdatata", certDataArray);
 
         const pdfContentsArray = [];
 
@@ -168,6 +160,7 @@ const createCerts = async (req, res) => {
 
             // Create the watch and get the watch_id
             const watch_id = await createWatch(watch, session);
+            console.log("watchwatch", watch_id);
 
             // Create random cert-id
             let randomCertId = generateRandomCertId(6);
@@ -189,10 +182,24 @@ const createCerts = async (req, res) => {
                 remarks: certData.remarks, // Add remarks or other relevant fields
             });
 
-            pdfContentsArray.push(pdfContent);
+            const certs = new CertModel({
+                cert_id: randomCertId,
+                user_email: certData.user_email,
+                validated_by: certData.validated_by,
+                date_of_validation: certData.date_of_validation,
+                watch_id,
+                issue_date: certData.issue_date,
+                expiry_date: certData.expiry_date,
+                remarks: certData.remarks,
+                pdf_content: pdfContent,
+            });
+
+            pdfContentsArray.push(certs);
+            console.log("pdfContentsArraypdfContentsArray", pdfContentsArray);
         }
 
-        const certs = await CertModel.insertMany(certDataArray);
+        const certs = await CertModel.insertMany(pdfContentsArray);
+        console.log("ceertscerts", certs);
 
         certs.forEach((cert, index) => {
             cert.pdf_content = pdfContentsArray[index];
