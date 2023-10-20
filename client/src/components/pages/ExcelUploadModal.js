@@ -1,13 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Form, Button, message } from 'antd';
 import { createCerts } from "../../api/certs";
-import * as XLSX from 'xlsx'; // Import the xlsx library
+import * as XLSX from 'xlsx';
 
 export const ExcelUploadModal = ({ visible, onCancel }) => {
     const [selectedFile, setSelectedFile] = useState(null);
+    const [isSubmitting, setSubmitting] = useState(false);
+    const [successMessage, setSuccessMessage] = useState(null);
+
+    useEffect(() => {
+        if (!visible) {
+            // Reset form fields and feedback when the modal visibility changes
+            setSelectedFile(null);
+            setSuccessMessage(null);
+            setSubmitting(false);
+        }
+    }, [visible]);
 
     const handleFileChange = (e) => {
-        // When the user selects a file, store it in the component's state
         const file = e.target.files[0];
         setSelectedFile(file);
     };
@@ -18,34 +28,28 @@ export const ExcelUploadModal = ({ visible, onCancel }) => {
             return;
         }
 
-        // Prepare the form data to include the selected file
-        const formData = new FormData();
-        formData.append('excelFile', selectedFile);
+        setSubmitting(true);
 
         try {
-            // Parse the Excel file and extract data
+            const formData = new FormData();
+            formData.append('excelFile', selectedFile);
             const fileData = await parseExcelFile(selectedFile);
-
             const customJsonData = transformData(fileData);
-            console.log("jsonjson", customJsonData);
 
-            // Now you have the file data, and you can do further processing here
-
-            // Send the form data with the file to the server
             const response = await createCerts(customJsonData);
 
             if (response.success) {
-                message.success('Certificates created successfully');
-                // You can perform additional actions here, such as closing the modal
+                setSuccessMessage('Certificates created successfully');
             } else {
                 message.error('An error occurred while creating certificates');
             }
         } catch (error) {
             message.error('An error occurred while creating certificates');
+        } finally {
+            setSubmitting(false);
         }
     };
 
-    // Function to parse the Excel file and skip the header
     const parseExcelFile = (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -56,11 +60,7 @@ export const ExcelUploadModal = ({ visible, onCancel }) => {
                 const worksheet = workbook.Sheets[firstSheetName];
                 const data = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false });
 
-                // Remove the first row (header) from the data
-                data.shift();
-
-                // Log the data read from the file (excluding the header)
-                console.log('File data (excluding header):', data);
+                data.shift(); // Remove the header
 
                 resolve(data);
             };
@@ -116,10 +116,17 @@ export const ExcelUploadModal = ({ visible, onCancel }) => {
                     <input type="file" accept=".xlsx" onChange={handleFileChange} />
                 </Form.Item>
                 <Form.Item>
-                    <Button type="primary" onClick={handleFormSubmit}>
+                    <Button
+                        type="primary"
+                        onClick={handleFormSubmit}
+                        disabled={isSubmitting}
+                    >
                         Submit
                     </Button>
                 </Form.Item>
+                {successMessage && (
+                    <p style={{ color: 'green' }}>{successMessage}</p>
+                )}
             </Form>
         </Modal>
     );
