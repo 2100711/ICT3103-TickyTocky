@@ -9,7 +9,7 @@ import {
   deleteWatch,
 } from "../controls/watches.js";
 import { userExists } from "../controls/auth.js";
-import { createPdfContent } from "../controls/pdf.js";
+import { createPdfContent, generatePdfContent } from "../controls/pdf.js";
 
 // Function to generate a random alphanumeric string with the first three characters as random capital letters and the last three characters as random digits
 const generateRandomCertId = () => {
@@ -280,7 +280,11 @@ const getCert = async (req, res) => {
       }
     }
 
-    res.status(200).json({ success: true, message: "Certificate found", cert });
+    const pdf_content = await generatePdfContent(cert);
+
+    res
+      .status(200)
+      .json({ success: true, message: "Certificate found", pdf_content });
   } catch (error) {
     res.status(500).json({ success: false, message: "An error occurred" });
   }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Table, Button, Pagination, Input } from "antd";
-import { getAllCerts } from "../../api/certs";
+import { getAllCerts, getCert } from "../../api/certs";
 
 export const CertTable = () => {
   const [certs, setCerts] = useState([]);
@@ -61,20 +61,29 @@ export const CertTable = () => {
     fetchData();
   }, []);
 
-  // const handleViewPDF = (cert) => {
+  //   const handleViewPDF = (cert) => {
   //     // Access the pdf_content from the cert object
   //     console.log("Certificate Data: ", cert);
   //     const pdfDataURL = `data:application/pdf;base64,${cert.pdf_content}`;
   //     window.open(pdfDataURL, "_blank");
-  // };
+  //   };
 
-  const handleViewPDF = (cert) => {
-    // Assuming cert.pdf_content is the actual content of the PDF
-    const pdfDataURL = `data:application/pdf;base64,${cert.pdf_content}`;
-    const newTab = window.open();
-    newTab.document.write(
-      '<iframe width="100%" height="100%" src="' + pdfDataURL + '"></iframe>'
-    );
+  const handleViewPDF = async (cert) => {
+    try {
+      setLoading(true);
+      const response = await getCert(cert.cert_id);
+      const pdf = response.pdf_content;
+      const pdfDataURL = `data:application/pdf;base64,${pdf}`;
+      const newTab = window.open();
+      newTab.document.title = `${cert.cert_id}`;
+      newTab.document.write(
+        '<iframe width="100%" height="100%" src="' + pdfDataURL + '"></iframe>'
+      );
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+    }
   };
 
   const handleDownloadPDF = (cert) => {
