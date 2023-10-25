@@ -76,7 +76,7 @@ export const Register = () => {
   };
 
   const validatePassword = () => {
-    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%])[A-Za-z\d!@#$%]{12,64}$/;
     if (passwordRegex.test(password)) {
       return true; // Validation successful
     } else {
