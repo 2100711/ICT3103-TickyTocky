@@ -11,7 +11,9 @@ export const Register = () => {
   const [fname, setFname] = useState("");
   const [lname, setLname] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     // TODO: Implement registration logic
     if (
       validateEmail() &&
@@ -20,33 +22,46 @@ export const Register = () => {
       validateFName() &&
       validateLName()
     ) {
-      console.log("Registration successful");
-      notification.success({
-        message: "Registration successful",
-        description: "You may now login with your credentials",
-        duration: 5,
+      const data = {
+        email: email,
+        password: cfmPassword,
+        f_name: fname,
+        l_name: lname,
+      };
+
+      console.log(data);
+
+      await fetch("http://localhost:3001/auth/register", {
+        method: "POST",
+        credentials: "include",
+        mode: "cors",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }).then((response) => {
+        response.json().then((data) => {
+          console.log(data.success);
+          if (data.success) {
+            console.log("Registration successful");
+            notification.success({
+              message: "Registration successful",
+              description: "You may now login with your credentials",
+              duration: 5,
+            });
+            navigate("/login");
+          } else {
+            console.log("Registration failed");
+            notification.error({
+              message: "Registration failed",
+              description: "Please try again",
+              duration: 5,
+            });
+          }
+        });
       });
-      navigate("/login");
     }
-    // e.preventDefault();
-    // const data = new FormData(e.target);
-    // fetch("http://localhost:3001/users/", {
-    //   method: "POST",
-    //   headers: {
-    //     Accept: "application/json",
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     [email]: data.get(email),
-    //     [cfmPassword]: data.get(cfmPassword),
-    //     [fname]: data.get(fname),
-    //     [lname]: data.get(lname),
-    //   }),
-    // }).then((response) => {
-    //   response.json().then((data) => {
-    //     console.log(data);
-    //   });
-    // });
   };
 
   const handleClear = () => {
@@ -139,26 +154,28 @@ export const Register = () => {
           label="Email"
           rules={[{ required: true, message: "Please enter your email!" }]}
           className="form-item"
-        ></Form.Item>
-        <Input
-          className="input-box"
-          placeholder="Enter your email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        >
+          <Input
+            className="input-box"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </Form.Item>
 
         <Form.Item
           name="password"
           label="Password"
           rules={[{ required: true, message: "Please enter your password!" }]}
           className="form-item"
-        ></Form.Item>
-        <Input.Password
-          className="input-box"
-          placeholder="Enter your password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        >
+          <Input.Password
+            className="input-box"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </Form.Item>
 
         <Form.Item
           name="cfmPassword"
@@ -169,39 +186,42 @@ export const Register = () => {
             { required: true, message: "Please reenter the same password!" },
           ]}
           className="form-item"
-        ></Form.Item>
-        <Input.Password
-          className="input-box"
-          placeholder="Reenter your password"
-          value={cfmPassword}
-          onChange={(e) => setCfmPassword(e.target.value)}
-        />
+        >
+          <Input.Password
+            className="input-box"
+            placeholder="Reenter your password"
+            value={cfmPassword}
+            onChange={(e) => setCfmPassword(e.target.value)}
+          />
+        </Form.Item>
 
         <Form.Item
           name="fname"
           label="First Name"
           rules={[{ required: true, message: "Please enter your first name!" }]}
           className="form-item"
-        ></Form.Item>
-        <Input
-          className="input-box"
-          placeholder="Enter your first name"
-          value={fname}
-          onChange={(e) => setFname(e.target.value)}
-        />
+        >
+          <Input
+            className="input-box"
+            placeholder="Enter your first name"
+            value={fname}
+            onChange={(e) => setFname(e.target.value)}
+          />
+        </Form.Item>
 
         <Form.Item
           name="lname"
           label="Last Name"
           rules={[{ required: true, message: "Please enter your last name!" }]}
           className="form-item"
-        ></Form.Item>
-        <Input
-          className="input-box"
-          placeholder="Enter your last name"
-          value={lname}
-          onChange={(e) => setLname(e.target.value)}
-        />
+        >
+          <Input
+            className="input-box"
+            placeholder="Enter your last name"
+            value={lname}
+            onChange={(e) => setLname(e.target.value)}
+          />
+        </Form.Item>
 
         <Form.Item className="form-button-container">
           <div style={{ display: "flex", justifyContent: "space-between" }}>

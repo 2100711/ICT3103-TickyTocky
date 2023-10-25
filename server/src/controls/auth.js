@@ -73,9 +73,10 @@ const register = async (req, res) => {
   const { f_name, l_name, email, password } = req.body;
   try {
     if (await userExists(email))
-      return res
-        .status(409)
-        .json({ error: "User already exist, please login instead." });
+      return res.status(409).json({
+        success: false,
+        error: "User already exist, please login instead.",
+      });
 
     // Salt and Hash password
     const saltRounds = 10;
@@ -93,9 +94,11 @@ const register = async (req, res) => {
 
     await newUser.save();
 
-    return res.status(201).json({ message: "User registered successfully." });
+    return res
+      .status(201)
+      .json({ success: true, message: "User registered successfully." });
   } catch (err) {
-    return res.status(500).json({ error: err });
+    return res.status(500).json({ success: false, error: err });
   }
 };
 
