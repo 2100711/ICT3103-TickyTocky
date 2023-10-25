@@ -1,13 +1,13 @@
 import express from "express";
 
 import {
-  isAuthenticated,
-  checkAuth,
-  register,
-  login,
-  logout,
-  generateOTP,
-  verifyOTP,
+    isAuthenticated,
+    checkAuth,
+    register,
+    login,
+    logout,
+    generateOTP,
+    verifyOTP,
 } from "../controls/auth.js";
 
 const authRouter = express.Router();

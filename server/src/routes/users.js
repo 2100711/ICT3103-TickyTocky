@@ -1,11 +1,11 @@
 import express from "express";
 const userRouter = express.Router();
 import {
-  createUser,
-  getAllUsersEmails,
-  getUser,
-  updateUser,
-  deleteUser,
+    createUser,
+    getAllUsersEmails,
+    getUser,
+    updateUser,
+    deleteUser,
 } from "../controls/users.js";
 
 import { isAuthenticated, isAdmin } from "../controls/auth.js";

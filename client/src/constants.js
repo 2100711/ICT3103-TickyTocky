@@ -20,9 +20,16 @@ export const UPDATE_CERT_API = `${CERTS_URL}/:certID`;
 export const DELETE_CERT_API = `${CERTS_URL}/`;
 
 // USER API
+export const CREATE_USER_API = `${USERS_URL}/`;
 export const GET_ALL_USERS_API = `${USERS_URL}/all-users`;
+export const GET_USER_API = `${USERS_URL}/:email`;
+export const UPDATE_USER_API = `${USERS_URL}/`;
+export const DELETE_USER_API = `${USERS_URL}/`;
 
 //AUTH API
-export const GET_AUTH_API = `${AUTH_URL}/check-auth`;
+export const CHECK_AUTH_API = `${AUTH_URL}/check-auth`;
+export const REGISTER_API = `${AUTH_URL}/register`;
 export const LOGIN_API = `${AUTH_URL}/login`;
 export const LOGOUT_API = `${AUTH_URL}/logout`;
+export const GENERATE_OTP_API = `${AUTH_URL}/generate-otp`;
+export const VERIFY_OTP_API = `${AUTH_URL}/verify-otp`;
