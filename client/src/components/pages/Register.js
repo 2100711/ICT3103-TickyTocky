@@ -103,7 +103,7 @@ export const Register = () => {
   };
 
   const validateFName = () => {
-    const nameRegex = /^[A-Za-z\s]{1,35}$/; // Is at least 1 character long and no more than 35 characters
+    const nameRegex = /^[A-Za-z]+$/i;
     if (nameRegex.test(fname)) {
       return true; // Validation successful
     } else {
@@ -117,7 +117,7 @@ export const Register = () => {
   };
 
   const validateLName = () => {
-    const nameRegex = /^[A-Za-z\s]{1,35}$/; // Is at least 1 character long and no more than 35 characters,  Includes only letters (either lowercase or uppercase) and spaces
+    const nameRegex = /^[A-Za-z]+$/i;
     if (nameRegex.test(lname)) {
       return true; // Validation successful
     } else {
