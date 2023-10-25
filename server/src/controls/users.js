@@ -1,4 +1,5 @@
 import { UserModel } from "../models/Users.js";
+import { createAccessLog } from "../controls/accessLogs.js"
 
 const createUser = async (req, res) => {
     try {
@@ -9,6 +10,20 @@ const createUser = async (req, res) => {
             l_name,
             encrypted_password: password,
         });
+        const ip_address = req.ip;
+        const user_agent = req.get('User-Agent');
+        const http_status_codes = res.status;
+        const requested_url = req.url;
+        const accessLogData = {
+            ip_address,
+            user_id: user,
+            user_agent,
+            http_status_codes,
+            requested_url,
+        }
+
+        const accessLog = createAccessLog(accessLogData);
+        console.log("accessLogaccessLogaccessLogaccessLog", accessLog);
 
         res.status(200).json({
             message: `User ${user.f_name} ${user.l_name} created`,
