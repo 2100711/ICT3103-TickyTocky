@@ -18,21 +18,13 @@ import {
 // to be added 
 // const app = express();
 
-<<<<<<< Updated upstream
-const validatePassword = (password) => {
-  const passwordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%])[A-Za-z\d!@#$%]{12,64}$/; // Minimum length of 12 characters. Maximum length of 64 characters.Include 1 lowercase letter [a-z], Include 1 uppercase letter [A-Z], Include 1 numeric digit (0-9), Include 1 special character (e.g., !, @, #,
-  return passwordRegex.test(password);
-};
-=======
 // // Rate limiting middleware
 // const loginLimiter = rateLimit({
 //   windowMs: 15 * 60 * 1000,  // 15 minutes
 //   max: 5,  // limit each IP to 5 login requests per windowMs
 // });
->>>>>>> Stashed changes
 
-app.post('/login', loginLimiter, login);
+// app.post('/login', loginLimiter, login);
 
 // // Backend validation functions
 // const validateEmail = (email) => {
@@ -110,20 +102,9 @@ const checkAuth = async (req, res) => {
 const register = async (req, res) => {
   const { f_name, l_name, email, password } = req.body;
 
-<<<<<<< Updated upstream
-  if (
-    !validateEmail(email) ||
-    !validatePassword(password) ||
-    !validateName(f_name) ||
-    !validateName(l_name)
-  ) {
-    return res.status(400).json({ error: "Invalid input format." });
-  }
-=======
   // if (!validateEmail(email) || !validatePassword(password) || !validateName(f_name) || !validateName(l_name)) {
   //   return res.status(400).json({ error: "Invalid input format." });
   // }
->>>>>>> Stashed changes
 
   try {
     if (await userExists(email))
@@ -166,11 +147,7 @@ const register = async (req, res) => {
       .status(201)
       .json({ success: true, message: "User registered successfully." });
   } catch (err) {
-<<<<<<< Updated upstream
-    return res.status(500).json({ success: false, error: err });
-=======
     return res.status(500).json({ error: err }); // TODO:  error: 'Server error'
->>>>>>> Stashed changes
   }
 };
 
@@ -333,8 +310,6 @@ const verifyOTP = async (req, res) => {
     res.status(500).json({ message: "An error occurred." });
   }
 };
-
-
 
 export {
   isAuthenticated,
