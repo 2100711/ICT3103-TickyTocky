@@ -17,11 +17,10 @@ import {
 import { userExists } from "../controls/auth.js";
 import { createPdfContent, generatePdfContent } from "../controls/pdf.js";
 
-// Function to generate a random alphanumeric string with the first three characters as random capital letters and the last three characters as random digits
 const generateRandomCertId = () => {
     const getRandomLetter = () =>
-        String.fromCharCode(65 + Math.floor(Math.random() * 26)); // A-Z
-    const getRandomDigit = () => String(Math.floor(Math.random() * 10)); // 0-9
+        String.fromCharCode(65 + Math.floor(Math.random() * 26));
+    const getRandomDigit = () => String(Math.floor(Math.random() * 10));
 
     let result = "";
     for (let i = 0; i < 3; i++) {
@@ -34,7 +33,6 @@ const generateRandomCertId = () => {
     return result;
 };
 
-// Function to check if the alphanumeric string exists in the database
 const checkIfCertIdExists = async (alphanumeric) => {
     const result = await CertModel.findOne({ cert_id: alphanumeric });
     return result !== null;
@@ -85,7 +83,6 @@ const createCert = async (req, res) => {
 
         const watch_id = await createWatch(watch, session);
 
-        // Create random cert-id
         let randomCertId = generateRandomCertId(6);
         let certIdExists = await checkIfCertIdExists(randomCertId);
         while (certIdExists) {
@@ -117,12 +114,9 @@ const createCert = async (req, res) => {
         });
 
         const ip_address = req.ip;
-        console.log("ipipip", ip_address);
-        const user = await UserModel.findOne({ email: user_email });
-        console.log("userusususus", user);
+        const user = await UserModel.findOne({ email: req.session.user.email });
         const user_agent = req.get('User-Agent');
         const http_status_codes = res.statusCode;
-        console.log("codcoddodod", http_status_codes);
         const requested_url = req.url;
         const accessLogData = {
             ip_address,
@@ -133,10 +127,8 @@ const createCert = async (req, res) => {
         }
 
         const accessLog = createAccessLog(accessLogData);
-        console.log("accessLogaccessLogaccessLogaccessLog", accessLog);
 
         await cert.save({ session });
-
         await session.commitTransaction();
         session.endSession();
 
@@ -146,27 +138,21 @@ const createCert = async (req, res) => {
             cert,
         });
     } catch (error) {
-        console.log(error);
         await session.abortTransaction();
         session.endSession();
         res.status(500).json({ success: false, message: "An error occurred" });
-        const watch_id = await createWatch(watch, session);
     }
 };
 
 const createCerts = async (req, res) => {
-    console.log("create certs", req.body);
     const session = await CertModel.startSession();
     try {
         session.startTransaction();
 
         const certDataArray = req.body;
-        console.log("certcertdatata", certDataArray);
-
         const pdfContentsArray = [];
 
         for (const certData of certDataArray) {
-            // Create a watch
             const watch = {
                 brand: certData.brand,
                 model_no: certData.model_no,
@@ -183,11 +169,8 @@ const createCerts = async (req, res) => {
                 crown_pusher: certData.crown_pusher,
             };
 
-            // Create the watch and get the watch_id
             const watch_id = await createWatch(watch, session);
-            console.log("watchwatch", watch_id);
 
-            // Create random cert-id
             let randomCertId = generateRandomCertId(6);
             let certIdExists = await checkIfCertIdExists(randomCertId);
             while (certIdExists) {
@@ -195,16 +178,15 @@ const createCerts = async (req, res) => {
                 certIdExists = await checkIfCertIdExists(randomCertId);
             }
 
-            // Create PDF content
             const pdfContent = await createPdfContent({
                 cert_id: randomCertId,
-                user_email: certData.user_email, // Add user_email or other relevant fields
-                validated_by: certData.validated_by, // Add validated_by or other relevant fields
-                date_of_validation: certData.date_of_validation, // Add date_of_validation or other relevant fields
+                user_email: certData.user_email,
+                validated_by: certData.validated_by,
+                date_of_validation: certData.date_of_validation,
                 watch_id,
-                issue_date: certData.issue_date, // Add issue_date or other relevant fields
-                expiry_date: certData.expiry_date, // Add expiry_date or other relevant fields
-                remarks: certData.remarks, // Add remarks or other relevant fields
+                issue_date: certData.issue_date,
+                expiry_date: certData.expiry_date,
+                remarks: certData.remarks,
             });
 
             const certs = new CertModel({
@@ -220,15 +202,28 @@ const createCerts = async (req, res) => {
             });
 
             pdfContentsArray.push(certs);
-            console.log("pdfContentsArraypdfContentsArray", pdfContentsArray);
         }
 
         const certs = await CertModel.insertMany(pdfContentsArray);
-        console.log("ceertscerts", certs);
 
         certs.forEach((cert, index) => {
             cert.pdf_content = pdfContentsArray[index];
         });
+
+        const ip_address = req.ip;
+        const user = await UserModel.findOne({ email: req.session.user.email });
+        const user_agent = req.get('User-Agent');
+        const http_status_codes = res.statusCode;
+        const requested_url = req.url;
+        const accessLogData = {
+            ip_address,
+            user_id: user._id,
+            user_agent,
+            http_status_codes,
+            requested_url,
+        }
+
+        const accessLog = createAccessLog(accessLogData);
 
         await session.commitTransaction();
         session.endSession();
@@ -239,7 +234,6 @@ const createCerts = async (req, res) => {
             certs,
         });
     } catch (error) {
-        console.log(error);
         await session.abortTransaction();
         session.endSession();
         res.status(500).json({
@@ -254,6 +248,21 @@ const getAllCerts = async (req, res) => {
         const certs = await CertModel.find({ pdf_content: { $ne: null } }).select(
             "-_id cert_id user_email pdf_content"
         );
+
+        const ip_address = req.ip;
+        const user = await UserModel.findOne({ email: req.session.user.email });
+        const user_agent = req.get('User-Agent');
+        const http_status_codes = res.statusCode;
+        const requested_url = req.url;
+        const accessLogData = {
+            ip_address,
+            user_id: user._id,
+            user_agent,
+            http_status_codes,
+            requested_url,
+        }
+
+        const accessLog = createAccessLog(accessLogData);
         res.status(200).json({
             success: true,
             message: "All certificates retrieved",
@@ -302,6 +311,21 @@ const getCert = async (req, res) => {
             }
         }
 
+        const ip_address = req.ip;
+        const user = await UserModel.findOne({ email: req.session.user.email });
+        const user_agent = req.get('User-Agent');
+        const http_status_codes = res.statusCode;
+        const requested_url = req.url;
+        const accessLogData = {
+            ip_address,
+            user_id: user._id,
+            user_agent,
+            http_status_codes,
+            requested_url,
+        }
+
+        const accessLog = createAccessLog(accessLogData);
+
         const pdf_content = await generatePdfContent(cert);
 
         res
@@ -334,10 +358,8 @@ const transferOwnershipCert = async (req, res) => {
         )
             return res.status(401).json({ success: false, message: "Unauthorized." });
 
-        // Current cert_id to identify the record
         const query = { cert_id: cert_id };
 
-        // Create new random cert_id
         let randomCertId = generateRandomCertId(6);
         let certIdExists = await checkIfCertIdExists(randomCertId);
         while (certIdExists) {
@@ -360,6 +382,21 @@ const transferOwnershipCert = async (req, res) => {
                 .status(404)
                 .json({ success: false, message: "Certificate not found" });
         }
+
+        const ip_address = req.ip;
+        const user = await UserModel.findOne({ email: req.session.user.email });
+        const user_agent = req.get('User-Agent');
+        const http_status_codes = res.statusCode;
+        const requested_url = req.url;
+        const accessLogData = {
+            ip_address,
+            user_id: user._id,
+            user_agent,
+            http_status_codes,
+            requested_url,
+        }
+
+        const accessLog = createAccessLog(accessLogData);
 
         res.status(200).json({
             success: true,
@@ -458,6 +495,21 @@ const updateCert = async (req, res) => {
         await session.commitTransaction();
         session.endSession();
 
+        const ip_address = req.ip;
+        const user = await UserModel.findOne({ email: req.session.user.email });
+        const user_agent = req.get('User-Agent');
+        const http_status_codes = res.statusCode;
+        const requested_url = req.url;
+        const accessLogData = {
+            ip_address,
+            user_id: user._id,
+            user_agent,
+            http_status_codes,
+            requested_url,
+        }
+
+        const accessLog = createAccessLog(accessLogData);
+
         res.status(200).json({
             success: true,
             message: "Certificate updated",
@@ -496,6 +548,21 @@ const deleteCert = async (req, res) => {
 
         await session.commitTransaction();
         session.endSession();
+
+        const ip_address = req.ip;
+        const user = await UserModel.findOne({ email: req.session.user.email });
+        const user_agent = req.get('User-Agent');
+        const http_status_codes = res.statusCode;
+        const requested_url = req.url;
+        const accessLogData = {
+            ip_address,
+            user_id: user._id,
+            user_agent,
+            http_status_codes,
+            requested_url,
+        }
+
+        const accessLog = createAccessLog(accessLogData);
 
         res.status(200).json({
             success: true,
