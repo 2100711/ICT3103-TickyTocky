@@ -5,16 +5,17 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the application'
+                script {
+                    sh 'apt install -y nodejs npm'
+                }
                 dir('client') {
                     script {
-                        sh 'apt install -y nodejs npm'
                         echo 'Installing client dependencies'
                         sh 'npm install'
                     }
                 }
                 dir('server') {
                     script {
-                        // sh 'apt install -y nodejs npm'
                         echo 'Installing server dependencies'
                         sh 'npm install'
                     }
