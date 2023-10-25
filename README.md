@@ -22,7 +22,7 @@ npm install
 node src/index.js
 ```
 
-Run the following commands in /client:
+Run the following commands in a separate terminal in /client:
 
 ```
 npm install

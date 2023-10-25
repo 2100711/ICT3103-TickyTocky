@@ -5,12 +5,31 @@ import crypto from "crypto";
 
 import { UserModel } from "../models/Users.js";
 import { OtpModel } from "../models/Otp.js";
+import { createAccessLog } from "../controls/accessLogs.js";
+
 import {
   EMAIL_NAME,
   EMAIL_ADDR,
   EMAIL_PASS,
   EMAIL_USER,
 } from "../constants.js";
+
+// Backend validation functions
+const validateEmail = (email) => {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  return emailRegex.test(email);
+};
+
+const validatePassword = (password) => {
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%])[A-Za-z\d!@#$%]{12,64}$/; // Minimum length of 12 characters. Maximum length of 64 characters.Include 1 lowercase letter [a-z], Include 1 uppercase letter [A-Z], Include 1 numeric digit (0-9), Include 1 special character (e.g., !, @, #,
+  return passwordRegex.test(password);
+};
+
+const validateName = (name) => {
+  const nameRegex = /^[A-Za-z\s]{1,35}$/; // Is at least 1 character long and no more than 35 characters and Includes only letters (either lowercase or uppercase) and spaces
+  return nameRegex.test(name);
+};
 
 const isAuthenticated = (req, res, next) => {
   if (req.session.user) {
@@ -71,12 +90,21 @@ const checkAuth = async (req, res) => {
 
 const register = async (req, res) => {
   const { f_name, l_name, email, password } = req.body;
+
+  if (
+    !validateEmail(email) ||
+    !validatePassword(password) ||
+    !validateName(f_name) ||
+    !validateName(l_name)
+  ) {
+    return res.status(400).json({ error: "Invalid input format." });
+  }
+
   try {
     if (await userExists(email))
-      return res.status(409).json({
-        success: false,
-        error: "User already exist, please login instead.",
-      });
+      return res
+        .status(409)
+        .json({ error: "User already exist, please login instead." });
 
     // Salt and Hash password
     const saltRounds = 10;
@@ -91,14 +119,26 @@ const register = async (req, res) => {
       encrypted_password: hashedPassword,
       // salt: saltedText,
     });
+    const ip_address = req.ip;
+    const user = await UserModel.findOne({ email: email });
+    const user_agent = req.get("User-Agent");
+    const http_status_codes = res.statusCode;
+    const requested_url = req.url;
+    const accessLogData = {
+      ip_address,
+      user_id: user,
+      user_agent,
+      http_status_codes,
+      requested_url,
+    };
+
+    const accessLog = createAccessLog(accessLogData);
 
     await newUser.save();
 
-    return res
-      .status(201)
-      .json({ success: true, message: "User registered successfully." });
+    return res.status(201).json({ message: "User registered successfully." });
   } catch (err) {
-    return res.status(500).json({ success: false, error: err });
+    return res.status(500).json({ error: err });
   }
 };
 
@@ -108,6 +148,19 @@ const login = async (req, res) => {
   console.log("password: ", password);
   try {
     const user = await UserModel.findOne({ email });
+    const ip_address = req.ip;
+    const user_agent = req.get("User-Agent");
+    const http_status_codes = res.statusCode;
+    const requested_url = req.url;
+    const accessLogData = {
+      ip_address,
+      user_id: user,
+      user_agent,
+      http_status_codes,
+      requested_url,
+    };
+
+    const accessLog = createAccessLog(accessLogData);
     console.log(user);
 
     if (!user || !(await bcrypt.compare(password, user.encrypted_password))) {
@@ -147,6 +200,21 @@ const login = async (req, res) => {
 };
 
 const logout = async (req, res) => {
+  const email = req.session.user.email;
+  const user = await UserModel.findOne({ email: email });
+  const ip_address = req.ip;
+  const user_agent = req.get("User-Agent");
+  const http_status_codes = res.statusCode;
+  const requested_url = req.url;
+  const accessLogData = {
+    ip_address,
+    user_id: user,
+    user_agent,
+    http_status_codes,
+    requested_url,
+  };
+
+  const accessLog = createAccessLog(accessLogData);
   req.session.destroy();
   return res.status(200).json({ success: true, message: "Logged out." });
 };

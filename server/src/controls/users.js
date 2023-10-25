@@ -1,4 +1,5 @@
 import { UserModel } from "../models/Users.js";
+import { createAccessLog } from "../controls/accessLogs.js"
 
 const createUser = async (req, res) => {
     try {
@@ -9,6 +10,20 @@ const createUser = async (req, res) => {
             l_name,
             encrypted_password: password,
         });
+        const ip_address = req.ip;
+        const user_id = await UserModel.findOne({ email: email });
+        const user_agent = req.get('User-Agent');
+        const http_status_codes = res.statusCode;
+        const requested_url = req.url;
+        const accessLogData = {
+            ip_address,
+            user_id: user_id._id,
+            user_agent,
+            http_status_codes,
+            requested_url,
+        }
+
+        const accessLog = createAccessLog(accessLogData);
 
         res.status(200).json({
             message: `User ${user.f_name} ${user.l_name} created`,
@@ -38,6 +53,19 @@ const getUser = async (req, res) => {
     try {
         const { email } = req.params;
         const user = await UserModel.findOne({ email: email });
+        const ip_address = req.ip;
+        const user_agent = req.get('User-Agent');
+        const http_status_codes = res.statusCode;
+        const requested_url = req.url;
+        const accessLogData = {
+            ip_address,
+            user_id: user._id,
+            user_agent,
+            http_status_codes,
+            requested_url,
+        }
+
+        const accessLog = createAccessLog(accessLogData);
 
         if (user) {
             res.status(200).json({
@@ -53,6 +81,20 @@ const getUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
     const { f_name, l_name, email } = req.body;
+    const ip_address = req.ip;
+    const user = await UserModel.findOne({ email: email });
+    const user_agent = req.get('User-Agent');
+    const http_status_codes = res.statusCode;
+    const requested_url = req.url;
+    const accessLogData = {
+        ip_address,
+        user_id: user._id,
+        user_agent,
+        http_status_codes,
+        requested_url,
+    }
+
+    const accessLog = createAccessLog(accessLogData);
     try {
         const updatedUser = await UserModel.findOneAndUpdate({ email }, {
             $set: { f_name, l_name },
@@ -73,6 +115,20 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
     const { email } = req.body;
+    const ip_address = req.ip;
+    const user = await UserModel.findOne({ email: email });
+    const user_agent = req.get('User-Agent');
+    const http_status_codes = res.statusCode;
+    const requested_url = req.url;
+    const accessLogData = {
+        ip_address,
+        user_id: user._id,
+        user_agent,
+        http_status_codes,
+        requested_url,
+    }
+
+    const accessLog = createAccessLog(accessLogData);
     try {
         const result = await UserModel.deleteOne({ email });
 
