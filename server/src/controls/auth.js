@@ -2,6 +2,7 @@ import express from "express";
 import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
+import rateLimit from 'express-rate-limit'; 
 
 import { UserModel } from "../models/Users.js";
 import { OtpModel } from "../models/Otp.js";
@@ -14,22 +15,40 @@ import {
   EMAIL_USER,
 } from "../constants.js";
 
-// Backend validation functions
-const validateEmail = (email) => {
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-  return emailRegex.test(email);
-};
+// to be added 
+// const app = express();
 
+<<<<<<< Updated upstream
 const validatePassword = (password) => {
   const passwordRegex =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%])[A-Za-z\d!@#$%]{12,64}$/; // Minimum length of 12 characters. Maximum length of 64 characters.Include 1 lowercase letter [a-z], Include 1 uppercase letter [A-Z], Include 1 numeric digit (0-9), Include 1 special character (e.g., !, @, #,
   return passwordRegex.test(password);
 };
+=======
+// // Rate limiting middleware
+// const loginLimiter = rateLimit({
+//   windowMs: 15 * 60 * 1000,  // 15 minutes
+//   max: 5,  // limit each IP to 5 login requests per windowMs
+// });
+>>>>>>> Stashed changes
 
-const validateName = (name) => {
-  const nameRegex = /^[A-Za-z\s]{1,35}$/; // Is at least 1 character long and no more than 35 characters and Includes only letters (either lowercase or uppercase) and spaces
-  return nameRegex.test(name);
-};
+app.post('/login', loginLimiter, login);
+
+// // Backend validation functions
+// const validateEmail = (email) => {
+//   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+//   return emailRegex.test(email);
+// };
+
+// const validatePassword = (password) => {
+//   const passwordRegex =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%])[A-Za-z\d!@#$%]{12,64}$/; // Minimum length of 12 characters. Maximum length of 64 characters.Include 1 lowercase letter [a-z], Include 1 uppercase letter [A-Z], Include 1 numeric digit (0-9), Include 1 special character (e.g., !, @, #, 
+//   return passwordRegex.test(password);
+// };
+
+// const validateName = (name) => {
+//   const nameRegex = /^[A-Za-z\s]{1,35}$/; // Is at least 1 character long and no more than 35 characters and Includes only letters (either lowercase or uppercase) and spaces
+//   return nameRegex.test(name);
+// };
 
 const isAuthenticated = (req, res, next) => {
   if (req.session.user) {
@@ -91,6 +110,7 @@ const checkAuth = async (req, res) => {
 const register = async (req, res) => {
   const { f_name, l_name, email, password } = req.body;
 
+<<<<<<< Updated upstream
   if (
     !validateEmail(email) ||
     !validatePassword(password) ||
@@ -99,6 +119,11 @@ const register = async (req, res) => {
   ) {
     return res.status(400).json({ error: "Invalid input format." });
   }
+=======
+  // if (!validateEmail(email) || !validatePassword(password) || !validateName(f_name) || !validateName(l_name)) {
+  //   return res.status(400).json({ error: "Invalid input format." });
+  // }
+>>>>>>> Stashed changes
 
   try {
     if (await userExists(email))
@@ -141,7 +166,11 @@ const register = async (req, res) => {
       .status(201)
       .json({ success: true, message: "User registered successfully." });
   } catch (err) {
+<<<<<<< Updated upstream
     return res.status(500).json({ success: false, error: err });
+=======
+    return res.status(500).json({ error: err }); // TODO:  error: 'Server error'
+>>>>>>> Stashed changes
   }
 };
 
@@ -229,7 +258,7 @@ const generateOTP = async (req, res) => {
       return res.status(400).json({ error: "Email is required." });
     }
 
-    const token = generateRandomOTP();
+    const token = generateRandomOTP(); //TODO: change random seed generated using a cryptographically secure pseudo-random number generator (CSPRNG).
 
     const doc = await OtpModel.create({
       user_email: email,
@@ -304,6 +333,8 @@ const verifyOTP = async (req, res) => {
     res.status(500).json({ message: "An error occurred." });
   }
 };
+
+
 
 export {
   isAuthenticated,
