@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { UserModel } from "./Users.js"
 
 const AccessLogSchema = new mongoose.Schema({
     ip_address: {
@@ -7,7 +8,8 @@ const AccessLogSchema = new mongoose.Schema({
         required: false, // TODO: get from nginx?
     },
     user_id: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: UserModel,
         required: true,
     },
     user_agent: {
@@ -27,6 +29,7 @@ const AccessLogSchema = new mongoose.Schema({
     timestamps: {
         type: String,
         required: true,
+        default: new Date(),
     },
 });
 
