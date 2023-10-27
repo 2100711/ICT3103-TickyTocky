@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, Input, Button, notification } from "antd";
 import { MailOutlined, LockOutlined, UserOutlined } from "@ant-design/icons"; // Import icons
@@ -57,7 +57,7 @@ export const Register = () => {
                     name="password"
                     rules={[
                         { required: true, message: "Please enter your password!" },
-                        { pattern: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#\$%^&\+=])(?!.*\s).{14,128}$/, message: "Password must be at least 14 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#$%^&+=)." },
+{ pattern: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#%^&+=])(?!.*\s).{14,128}$/, message: "Password must be at least 14 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#%^&+=)." },
                     ]}
                     className="form-item"
                 >
@@ -96,7 +96,7 @@ export const Register = () => {
                     name="f_name"
                     rules={[
                         { required: true, message: "Please enter your first name!" },
-                        { pattern: /^[A-Za-z\s-']{2,50}$/, message: "Please enter a valid English name with 2 to 50 characters. Use only letters, spaces, hyphens, and single quotes."}
+                        { pattern: /^[A-Za-z\s-']{2,50}$/, message: "First name must be between 2 to 50 characters. Use only letters, spaces, hyphens, and single quotes."}
                     ]}
                     className="form-item"
                 >
@@ -111,7 +111,7 @@ export const Register = () => {
                     name="l_name"
                     rules={[
                         { required: true, message: "Please enter your last name!" },
-                        { pattern: /^[A-Za-z\s-']{2,50}$/, message: "Please enter a valid English name with 2 to 50 characters. Use only letters, spaces, hyphens, and single quotes."}
+                        { pattern: /^[A-Za-z\s-']{2,50}$/, message: "Last name must be between 2 to 50 characters. Use only letters, spaces, hyphens, and single quotes."}
                     ]}
                     className="form-item"
                 >

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Pagination, Input, Popconfirm, message } from "antd";
+import { Table, Button, Input, Popconfirm, message } from "antd";
 import { getAllCerts, getCert, deleteCert } from "../../api/certs";
 
 export const CertTable = () => {
     const [certs, setCerts] = useState([]);
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize] = useState(2);
+    const [pageSize] = useState(5);
     const [searchText, setSearchText] = useState("");
     const [originalCerts, setOriginalCerts] = useState([]);
 

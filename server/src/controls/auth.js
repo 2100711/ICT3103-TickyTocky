@@ -24,39 +24,6 @@ import {
 
 // app.post('/login', loginLimiter, login);
 
-// // Backend validation functions
-const validateEmail = (email) => {
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-    return emailRegex.test(email);
-};
-
-const validatePassword = (password) => {
-    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#\$%^&\+=])(?!.*\s).{14,128}$/;
-    return passwordRegex.test(password);
-};
-
-const validateName = (name) => {
-    const nameRegex = /^[A-Za-z\s-']{2,50}$/;
-    return nameRegex.test(name);
-};
-
-const validateRegistrationInput = async (req, res, next) => {
-    const { email, password, name } = req.body;
-
-    if (!validateEmail(email)) {
-        return res.status(400).json({ error: 'Invalid email address' });
-    }
-
-    if (!validatePassword(password)) {
-        return res.status(400).json({ error: 'Invalid password' });
-    }
-
-    if (!validateName(name)) {
-        return res.status(400).json({ error: 'Invalid name' });
-    }
-    next();
-};
-
 const isAuthenticated = (req, res, next) => {
     if (req.session.user) {
         next();
@@ -280,5 +247,4 @@ export {
     logout,
     generateOTP,
     verifyOTP,
-    validateRegistrationInput,
 };

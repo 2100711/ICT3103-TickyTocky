@@ -12,7 +12,7 @@ export const MONGODB_CONNECTION = `mongodb+srv://${DB_USER}:${DB_PASS}@testingau
 // Error message
 export const INTERNAL_SERVER_ERROR = "Internal Server Error";
 
-//Email variables
+// Email variables
 export const EMAIL_NAME = process.env.EMAIL_NAME;
 export const EMAIL_ADDR = process.env.EMAIL_ADDR;
 export const EMAIL_USER = process.env.EMAIL_USER;

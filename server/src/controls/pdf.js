@@ -41,10 +41,27 @@ async function createPdfContent(data) {
     const lines = [
         { text: "Certificate Details", isBold: true },
         `Certificate ID: ${data.cert_id}`,
-        // Add other certificate data here
+        `Email: ${data.user_email}`,
+        `Validated By: ${data.validated_by}`,
+        `Date of Validation: ${data.date_of_validation}`,
+        `Issue Date: ${data.issue_date}`,
+        `Expiry Date: ${data.expiry_date}`,
+        `Remarks: ${data.remarks}`,
         { text: "Watch Details", isBold: true },
         `Brand: ${data.watch_id.brand}`,
-        // Add other watch details here
+        `Model Numbers: ${data.watch_id.model_no}`,
+        `Model Name: ${data.watch_id.model_name}`,
+        `Movement: ${data.watch_id.movement}`,
+        `Case Material: ${data.watch_id.case_material}`,
+        `Bracelet/Strap Material: ${data.watch_id.bracelet_strap_material}`,
+        `Year of Production: ${data.watch_id.yop}`,
+        `Gender: ${data.watch_id.gender}`,
+        { text: "Serial Number Details", isBold: true },
+        `Case Serial Numbers: ${data.watch_id.serial_id.case_serial}`,
+        `Model Numbers: ${data.watch_id.serial_id.movement_serial}`,
+        `Model Name: ${data.watch_id.serial_id.dial}`,
+        `Movement: ${data.watch_id.serial_id.bracelet_strap}`,
+        `Case Material: ${data.watch_id.serial_id.crown_pusher}`,
     ];
 
     // Loop through lines and add to the page

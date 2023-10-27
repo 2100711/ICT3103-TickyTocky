@@ -7,16 +7,13 @@ import mongoose from "mongoose";
 
 // Generate a random certificate ID
 const generateRandomCertId = () => {
-    const getRandomLetter = () =>
-        String.fromCharCode(65 + Math.floor(Math.random() * 26));
-    const getRandomDigit = () => String(Math.floor(Math.random() * 10));
-
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const charLength = characters.length;
     let result = "";
-    for (let i = 0; i < 3; i++) {
-        result += getRandomLetter();
-    }
-    for (let i = 0; i < 3; i++) {
-        result += getRandomDigit();
+
+    for (let i = 0; i < 16; i++) {
+        const randomIndex = Math.floor(Math.random() * charLength);
+        result += characters.charAt(randomIndex);
     }
 
     return result;
@@ -25,14 +22,14 @@ const generateRandomCertId = () => {
 // Check if a certificate ID exists in the database
 const checkIfCertIdExists = async (alphanumeric) => {
     const result = await CertModel.findOne({ cert_id: alphanumeric });
-    return result !== null;
+    return !!result; // Convert to boolean
 };
 
 const createCert = async (req, res) => {
     const session = await CertModel.startSession();
-    try {
-        session.startTransaction();
+    session.startTransaction();
 
+    try {
         const {
             user_email,
             validated_by,
@@ -72,12 +69,10 @@ const createCert = async (req, res) => {
         };
 
         const watch_id = await createWatch(watch, session);
+        let randomCertId = generateRandomCertId(16);
 
-        let randomCertId = generateRandomCertId(6);
-        let certIdExists = await checkIfCertIdExists(randomCertId);
-        while (certIdExists) {
-            randomCertId = generateRandomCertId(6);
-            certIdExists = await checkIfCertIdExists(randomCertId);
+        while (await checkIfCertIdExists(randomCertId)) {
+            randomCertId = generateRandomCertId(16);
         }
 
         const pdfContent = await createPdfContent({
@@ -121,9 +116,9 @@ const createCert = async (req, res) => {
 
 const createCerts = async (req, res) => {
     const session = await CertModel.startSession();
-    try {
-        session.startTransaction();
+    session.startTransaction();
 
+    try {
         const certDataArray = req.body;
         const pdfContentsArray = [];
 
@@ -145,12 +140,10 @@ const createCerts = async (req, res) => {
             };
 
             const watch_id = await createWatch(watch, session);
+            let randomCertId = generateRandomCertId(16);
 
-            let randomCertId = generateRandomCertId(6);
-            let certIdExists = await checkIfCertIdExists(randomCertId);
-            while (certIdExists) {
-                randomCertId = generateRandomCertId(6);
-                certIdExists = await checkIfCertIdExists(randomCertId);
+            while (await checkIfCertIdExists(randomCertId)) {
+                randomCertId = generateRandomCertId(16);
             }
 
             const pdfContent = await createPdfContent({
@@ -164,7 +157,7 @@ const createCerts = async (req, res) => {
                 remarks: certData.remarks,
             });
 
-            const certs = new CertModel({
+            pdfContentsArray.push({
                 cert_id: randomCertId,
                 user_email: certData.user_email,
                 validated_by: certData.validated_by,
@@ -175,15 +168,9 @@ const createCerts = async (req, res) => {
                 remarks: certData.remarks,
                 pdf_content: pdfContent,
             });
-
-            pdfContentsArray.push(certs);
         }
 
         const certs = await CertModel.insertMany(pdfContentsArray);
-
-        certs.forEach((cert, index) => {
-            cert.pdf_content = pdfContentsArray[index];
-        });
 
         await session.commitTransaction();
         session.endSession();
@@ -205,14 +192,12 @@ const createCerts = async (req, res) => {
 
 const getAllCerts = async (req, res) => {
     try {
-        const certs = await CertModel.find({ pdf_content: { $ne: null } }).select(
-            "-_id cert_id user_email pdf_content"
-        );
+        const certs = await CertModel.find({ pdf_content: { $ne: null } }, { _id: 0, cert_id: 1, user_email: 1, pdf_content: 1 });
 
         res.status(200).json({
             success: true,
             message: "All certificates retrieved",
-            certs: certs,
+            certs,
         });
     } catch (error) {
         res.status(500).json({ success: false, message: "An error occurred" });
@@ -222,14 +207,7 @@ const getAllCerts = async (req, res) => {
 const getCert = async (req, res) => {
     try {
         const cert_id = req.params.certID;
-        const cert = await CertModel.findOne({ cert_id: cert_id }, { _id: 0 }).populate({
-            path: "watch_id",
-            select: "-_id",
-            populate: {
-                path: "serial_id",
-                select: "-_id",
-            },
-        });
+        const cert = await findCertificateByCertId(cert_id);
 
         if (!cert) {
             return res
@@ -239,28 +217,14 @@ const getCert = async (req, res) => {
 
         let isAdmin = {};
         if (req.session.user) {
-            isAdmin = await UserModel.findOne({
-                email: req.session.user.email,
-            }).select("-_id role");
+            isAdmin = await findUserRoleByEmail(req.session.user.email);
         }
 
-        if (!req.session.user || req.session.user.email !== cert.user_email) {
-            if (
-                cert.watch_id &&
-                cert.watch_id.serial_id &&
-                isAdmin.role !== "admin"
-            ) {
-                cert.watch_id.serial_id.case_serial = "XXXXXX";
-                cert.watch_id.serial_id.movement_serial = "XXXXXX";
-                cert.watch_id.serial_id.dial = "XXXXXX";
-                cert.watch_id.serial_id.bracelet_strap = "XXXXXX";
-                cert.watch_id.serial_id.crown_pusher = "XXXXXX";
-            }
+        if (!isUserAuthorized(req.session.user, cert.user_email, isAdmin.role)) {
+            obfuscateSensitiveData(cert);
         }
 
-        const accessLog = createAccessLog(accessLogData);
-
-        const pdf_content = await generatePdfContent(cert);
+        const pdf_content = await createPdfContent(cert);
 
         res.status(200).json({
             success: true,
@@ -272,6 +236,35 @@ const getCert = async (req, res) => {
         res.status(500).json({ success: false, message: "An error occurred" });
     }
 };
+
+async function findCertificateByCertId(cert_id) {
+
+    return await CertModel.findOne({ cert_id }, { _id: 0 }).populate({
+        path: "watch_id",
+        select: "-_id",
+        populate: {
+            path: "serial_id",
+            select: "-_id",
+        },
+    });
+}
+
+async function findUserRoleByEmail(email) {
+    return await UserModel.findOne({ email }).select("-_id role");
+}
+
+function isUserAuthorized(sessionUser, certUserEmail, adminRole) {
+    return sessionUser && sessionUser.email === certUserEmail && adminRole !== "admin";
+}
+
+function obfuscateSensitiveData(cert) {
+    if (cert.watch_id && cert.watch_id.serial_id) {
+        const obfuscateFields = ["case_serial", "movement_serial", "dial", "bracelet_strap", "crown_pusher"];
+        for (const field of obfuscateFields) {
+            cert.watch_id.serial_id[field] = "XXXXXX";
+        }
+    }
+}
 
 const transferOwnershipCert = async (req, res) => {
     try {

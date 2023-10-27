@@ -4,32 +4,32 @@ import { SerialNumberModel } from "./SerialNumbers.js";
 const WatchSchema = new mongoose.Schema({
     brand: {
         type: String,
-        maxlength: 255,
+        maxlength: 100,
         required: true,
     },
     model_no: {
         type: String,
-        maxlength: 255,
+        maxlength: 10,
         required: true,
     },
     model_name: {
         type: String,
-        maxlength: 255,
+        maxlength: 100,
         required: true,
     },
     movement: {
         type: String,
-        maxlength: 255,
+        maxlength: 100,
         required: true,
     },
     case_material: {
         type: String,
-        maxlength: 255,
+        maxlength: 100,
         required: true,
     },
     bracelet_strap_material: {
         type: String,
-        maxlength: 255,
+        maxlength: 100,
         required: true,
     },
     yop: {
@@ -38,8 +38,7 @@ const WatchSchema = new mongoose.Schema({
     },
     gender: {
         type: String,
-        maxlength: 1,
-        minlength: 1,
+        maxlength: 6,
         required: true,
     },
     serial_id: {

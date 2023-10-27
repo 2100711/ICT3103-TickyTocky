@@ -10,7 +10,7 @@ const AccessLogSchema = new mongoose.Schema({
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: UserModel,
-        required: true,
+        // required: true,
     },
     user_agent: {
         type: String,

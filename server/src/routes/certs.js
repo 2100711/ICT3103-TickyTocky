@@ -9,14 +9,14 @@ import {
     updateCert,
     deleteCert,
 } from "../controls/certs.js";
-
+import { validateCert } from "../controls/validation.js";
 import { isAuthenticated, isAdmin } from "../controls/auth.js";
 import {
     logRequest,
 } from "../controls/accessLogs.js";
 
-certRouter.post("/create-cert", isAuthenticated, isAdmin, createCert, logRequest); // Create a single certificate
-certRouter.post("/create-certs", isAuthenticated, isAdmin, createCerts, logRequest); // TODO: Batch create certificates
+certRouter.post("/create-cert", isAuthenticated, isAdmin, validateCert, createCert, logRequest); // Create a single certificate
+certRouter.post("/create-certs", isAuthenticated, isAdmin, validateCert, createCerts, logRequest); // TODO: Batch create certificates
 certRouter.get("/all-certs", getAllCerts, logRequest); // Get all certificates
 certRouter.get("/:certID", getCert, logRequest); // Get one certificate by ID
 // TODO: post -> getCertByEmail
