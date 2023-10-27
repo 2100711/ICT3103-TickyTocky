@@ -5,8 +5,8 @@ import "../styles/AboutUs.css";
 const { Title, Paragraph } = Typography;
 
 export const AboutUs = () => {
-  return (
-    <div className="about-us">
+    return (
+        <div className="about-us">
       <div className="content">
         <h2>About TickyTocky</h2>
         <p>
@@ -49,5 +49,5 @@ export const AboutUs = () => {
         </p>
       </div>
     </div>
-  );
+    );
 };

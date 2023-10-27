@@ -22,7 +22,6 @@ export async function register(req) {
 }
 
 export async function postLogin(req) {
-    console.log("dhdahdjakdka", req.body);
     return requestPost(LOGIN_API, { req });
 }
 

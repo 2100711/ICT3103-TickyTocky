@@ -1,5 +1,9 @@
 import { UserModel } from "../models/Users.js";
-import { createAccessLog } from "../controls/accessLogs.js"
+
+// Middleware to handle errors
+const handleError = (res, message, status = 500) => {
+    res.status(status).json({ success: false, message });
+};
 
 const createUser = async (req, res) => {
     try {
@@ -10,27 +14,14 @@ const createUser = async (req, res) => {
             l_name,
             encrypted_password: password,
         });
-        const ip_address = req.ip;
-        const user_id = await UserModel.findOne({ email: email });
-        const user_agent = req.get('User-Agent');
-        const http_status_codes = res.statusCode;
-        const requested_url = req.url;
-        const accessLogData = {
-            ip_address,
-            user_id: user_id._id,
-            user_agent,
-            http_status_codes,
-            requested_url,
-        }
-
-        const accessLog = createAccessLog(accessLogData);
 
         res.status(200).json({
+            success: true,
             message: `User ${user.f_name} ${user.l_name} created`,
             email: user.email,
         });
     } catch (error) {
-        res.status(500).json({ message: "An error occurred" });
+        handleError(res, "An error occurred");
     }
 };
 
@@ -39,13 +30,13 @@ const getAllUsersEmails = async (req, res) => {
         const users = await UserModel.find({}).select("email");
         const emails = users.map((user) => user.email);
 
-        return res.status(200).json({
+        res.status(200).json({
             success: true,
             message: "Get all user emails",
-            emails: emails,
+            emails,
         });
     } catch (error) {
-        res.status(500).json({ message: "An error occurred" });
+        handleError(res, "An error occurred");
     }
 };
 
@@ -53,94 +44,54 @@ const getUser = async (req, res) => {
     try {
         const { email } = req.params;
         const user = await UserModel.findOne({ email: email });
-        const ip_address = req.ip;
-        const user_agent = req.get('User-Agent');
-        const http_status_codes = res.statusCode;
-        const requested_url = req.url;
-        const accessLogData = {
-            ip_address,
-            user_id: user._id,
-            user_agent,
-            http_status_codes,
-            requested_url,
-        }
-
-        const accessLog = createAccessLog(accessLogData);
 
         if (user) {
             res.status(200).json({
+                success: true,
                 user,
             });
         } else {
-            res.status(404).json({ message: "User not found" });
+            res.status(404).json({ success: false, message: "User not found" });
         }
     } catch (error) {
-        res.status(500).json({ message: "An error occurred" });
+        handleError(res, "An error occurred");
     }
 };
 
 const updateUser = async (req, res) => {
     const { f_name, l_name, email } = req.body;
-    const ip_address = req.ip;
-    const user = await UserModel.findOne({ email: email });
-    const user_agent = req.get('User-Agent');
-    const http_status_codes = res.statusCode;
-    const requested_url = req.url;
-    const accessLogData = {
-        ip_address,
-        user_id: user._id,
-        user_agent,
-        http_status_codes,
-        requested_url,
-    }
-
-    const accessLog = createAccessLog(accessLogData);
     try {
-        const updatedUser = await UserModel.findOneAndUpdate({ email }, {
-            $set: { f_name, l_name },
-        }, { new: true });
+        const updatedUser = await UserModel.findOneAndUpdate({ email }, { $set: { f_name, l_name } }, { new: true });
 
         if (updatedUser) {
             res.status(200).json({
+                success: true,
                 message: "User updated successfully",
                 user: updatedUser,
             });
         } else {
-            res.status(404).json({ message: "User not found" });
+            res.status(404).json({ success: false, message: "User not found" });
         }
     } catch (error) {
-        res.status(500).json({ message: "An error occurred" });
+        handleError(res, "An error occurred");
     }
 };
 
 const deleteUser = async (req, res) => {
     const { email } = req.body;
-    const ip_address = req.ip;
-    const user = await UserModel.findOne({ email: email });
-    const user_agent = req.get('User-Agent');
-    const http_status_codes = res.statusCode;
-    const requested_url = req.url;
-    const accessLogData = {
-        ip_address,
-        user_id: user._id,
-        user_agent,
-        http_status_codes,
-        requested_url,
-    }
-
-    const accessLog = createAccessLog(accessLogData);
     try {
         const result = await UserModel.deleteOne({ email });
 
         if (result.deletedCount === 1) {
             res.status(200).json({
+                success: true,
                 message: "User deleted successfully",
             });
         } else {
-            res.status(404).json({ message: "User not found" });
+            res.status(404).json({ success: false, message: "User not found" });
         }
     } catch (error) {
-        res.status(500).json({ message: "An error occurred" });
+        handleError(res, "An error occurred");
     }
 };
 

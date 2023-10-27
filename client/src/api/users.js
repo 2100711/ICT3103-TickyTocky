@@ -8,7 +8,7 @@ import {
 } from "../constants";
 
 export async function createUser(req) {
-    return requestGet(CREATE_USER_API, { req });
+    return requestPost(CREATE_USER_API, { req });
 }
 
 export async function getAllUsers(req) {
@@ -16,13 +16,14 @@ export async function getAllUsers(req) {
 }
 
 export async function getUser(req) {
-    return requestGet(GET_USER_API);
+    const api = GET_USER_API.replace(":email", req);
+    return requestGet(api, { req });
 }
 
 export async function updateUser(req) {
-    return requestGet(UPDATE_USER_API, { req });
+    return requestPut(UPDATE_USER_API, req);
 }
 
 export async function deleteUser(req) {
-    return requestGet(DELETE_USER_API, { req });
+    return requestDelete(DELETE_USER_API, { req });
 }

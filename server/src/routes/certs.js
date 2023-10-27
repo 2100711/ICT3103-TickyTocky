@@ -11,14 +11,17 @@ import {
 } from "../controls/certs.js";
 
 import { isAuthenticated, isAdmin } from "../controls/auth.js";
+import {
+    logRequest,
+} from "../controls/accessLogs.js";
 
-certRouter.post("/create-cert", isAuthenticated, isAdmin, createCert); // Create a single certificate
-certRouter.post("/create-certs", isAuthenticated, isAdmin, createCerts); // TODO: Batch create certificates
-certRouter.get("/all-certs", getAllCerts); // Get all certificates
-certRouter.get("/:certID", getCert); // Get one certificate by ID
+certRouter.post("/create-cert", isAuthenticated, isAdmin, createCert, logRequest); // Create a single certificate
+certRouter.post("/create-certs", isAuthenticated, isAdmin, createCerts, logRequest); // TODO: Batch create certificates
+certRouter.get("/all-certs", getAllCerts, logRequest); // Get all certificates
+certRouter.get("/:certID", getCert, logRequest); // Get one certificate by ID
 // TODO: post -> getCertByEmail
-certRouter.put("/transfer-ownership", isAuthenticated, transferOwnershipCert);
-certRouter.put("/", isAuthenticated, isAdmin, updateCert); // Update a certificate by ID
-certRouter.delete("/", isAuthenticated, isAdmin, deleteCert); // Delete a certificate by ID
+certRouter.put("/transfer-ownership", isAuthenticated, transferOwnershipCert, logRequest);
+certRouter.put("/", isAuthenticated, isAdmin, updateCert, logRequest); // Update a certificate by ID
+certRouter.delete("/", isAuthenticated, isAdmin, deleteCert, logRequest); // Delete a certificate by ID
 
 export { certRouter };
