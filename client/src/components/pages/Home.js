@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Input, notification } from "antd";
+import { Button, Input, notification } from "antd";
 import { Document, Page, pdfjs } from "react-pdf";
 import { getCert } from "../../api/certs";
 
@@ -8,7 +8,7 @@ import "../styles/Home.css";
 export const Home = () => {
   const [searchInput, setSearchInput] = useState("");
   const [certificate, setCertificate] = useState(null);
-  const [pdfData, setPdfData] = useState(null); // State for decoded PDF data
+  const [pdfData, setPdfData] = useState(null);
 
   // Set up the worker source
   pdfjs.GlobalWorkerOptions.workerSrc =
@@ -16,34 +16,47 @@ export const Home = () => {
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    try {
-      const response = await getCert(searchInput);
-      if (response.success) {
-        notification.success({
-          message: "Certification Found",
-          description: "Certificate is valid",
-          duration: 5,
-        });
-        setCertificate(response.certificate);
-        // Decode and set the PDF data
-        setPdfData(atob(response.pdf_content));
-      } else {
-        notification.error({
-          message: "Certification Not Found",
-          description: "Certificate is invalid",
-          duration: 5,
-        });
-        setCertificate(null);
-        setPdfData(null);
-      }
-    } catch (error) {
-      console.error("Error in handleSearch:", error);
+
+    if (!searchInput) {
       notification.error({
-        message: "An error occurred",
-        description: "Please try again later",
+        message: "Invalid Input",
+        description: "Please enter a certification ID to search.",
         duration: 5,
       });
+      return;
+    } else {
+      try {
+        const response = await getCert(searchInput);
+        if (response.success) {
+          setCertificate(response.cert);
+          // Decode and set the PDF data
+          setPdfData(response.pdf_content);
+        }
+      } catch (error) {
+        setCertificate(null);
+        setPdfData(atob(null));
+        notification.error({
+          message: "Certification Not Found",
+          description:
+            "Please double confirm if the certification ID is correct.",
+          duration: 5,
+        });
+      }
     }
+  };
+
+  const viewPDF = () => {
+    const pdfWindow = window.open(``, "_blank", "height=1000,width=800");
+
+    if (!pdfWindow) {
+      alert("Please allow pop-ups for this website");
+    }
+
+    pdfWindow.document.write(
+      "<iframe width='100%' height='100%' src='data:application/pdf;base64, " +
+        encodeURI(pdfData) +
+        "'></iframe>"
+    );
   };
 
   return (
@@ -58,28 +71,21 @@ export const Home = () => {
           allowClear
         />
       </div>
-      <div className="certificate-info">
-        {certificate ? (
+      <div className="cert-info">
+        {searchInput && certificate ? (
           <div>
             <h3>Certificate Information</h3>
-            <p>Name: {certificate.name}</p>
-            <p>Issuer: {certificate.issuer}</p>
-            <p>Issue Date: {certificate.issueDate}</p>
+            <p>Certificate ID: {certificate.cert_id}</p>
+            <p>Issuer: {certificate.validated_by}</p>
+            <p>Issue Date: {certificate.issue_date}</p>
+            <Button type="primary" onClick={viewPDF}>
+              View Certificate
+            </Button>
           </div>
-        ) : (
+        ) : searchInput && !certificate ? (
           <p>No certificate found.</p>
-        )}
+        ) : null}
       </div>
-      {pdfData && (
-        <div className="pdf-viewer">
-          <Document
-            file={{ data: pdfData }}
-            options={{ workerSrc: pdfjs.GlobalWorkerOptions.workerSrc }}
-          >
-            <Page pageNumber={1} />
-          </Document>
-        </div>
-      )}
     </div>
   );
 };
