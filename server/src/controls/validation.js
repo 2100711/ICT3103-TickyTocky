@@ -25,7 +25,7 @@ const validateName = (firstName, lastName) => {
 };
 
 const checkDupEmail = async (email) => {
-  const dupEmail = await UserModel.findOne(email);
+  const dupEmail = await UserModel.findOne({ email });
   return dupEmail ? true : false;
 };
 
@@ -42,9 +42,9 @@ const checkDupEmail = async (email) => {
 export const validateRegister = async (req, res, next) => {
   const { email, password, f_name, l_name } = req.body;
 
-  const isDupEmail = checkDupEmail(email);
+  const isDupEmail = await checkDupEmail(email);
 
-  const isDupName = checkDupName(f_name, l_name);
+  // const isDupName = checkDupName(f_name, l_name);
 
   const errors = {
     conflict_409: [],
