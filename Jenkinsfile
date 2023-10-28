@@ -20,6 +20,9 @@ pipeline {
                         sh 'npm install'
                     }
                 }
+                script { //Test warning nextgen
+                    sh '/var/jenkins_home/apache-maven-3.6.3/bin/mvn --batch-mode -V -U -e clean verify -Dsurefire.useFile=false -Dmaven.test.failure.ignore'
+                }
             }
         }
 
@@ -40,6 +43,11 @@ pipeline {
                 }
             }
         }
+        stage('Analysis') {
+            steps {
+                sh '/var/jenkins_home/apache-maven-3.6.3/bin/mvn --batch-mode -V -U -e checkstyle:checkstyle pmd:pmd pmd:cpd findbugs:findbugs'
+            }
+        }// Test for warning next gen plugin
 
         stage('Deploy') {
             steps {
@@ -67,19 +75,7 @@ pipeline {
                     // This stage can include steps to deploy your application to the production environment
                 }
             }
-        }
-        // Test stages for warning next gen plugin
-        stage ('Build') {
-            steps {
-                sh '/var/jenkins_home/apache-maven-3.6.3/bin/mvn --batch-mode -V -U -e clean verify -Dsurefire.useFile=false -Dmaven.test.failure.ignore'
-            }
-        }
-        stage ('Analysis') {
-            steps {
-                sh '/var/jenkins_home/apache-maven-3.6.3/bin/mvn --batch-mode -V -U -e checkstyle:checkstyle pmd:pmd pmd:cpd findbugs:findbugs'
-            }
-        }// Till this portion for warning next gen plugin
-
+        }        
         // Add more stages as needed, such as database migrations, security scanning, and more.
     }
 
