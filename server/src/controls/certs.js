@@ -164,7 +164,7 @@ const getAllCerts = async (req, res) => {
   try {
     const certs = await CertModel.find(
       {},
-      { _id: 0, cert_id: 1, user_email: 1, pdf_content: 1 }
+      { _id: 0, cert_id: 1, user_email: 1 }
     );
 
     res.status(200).json({
