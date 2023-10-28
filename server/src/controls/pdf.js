@@ -87,7 +87,7 @@ async function createPdfContent(data) {
     }
     startY -= 20;
   }
-
+  pdfDoc.setTitle(data.cert_id);
   const pdfBytes = await pdfDoc.save();
   return Buffer.from(pdfBytes).toString("base64");
 }
