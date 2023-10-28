@@ -81,14 +81,14 @@ pipeline {
 
     // Global success and failure conditions for the entire pipeline
     post {
-        always {
-            junit testResults: '**/target/surefire-reports/TEST-*.xml'
-            recordIssues enabledForFailure: true, tools: [mavenConsole(), java(), javaDoc()]
-            recordIssues enabledForFailure: true, tool: checkStyle()
-            recordIssues enabledForFailure: true, tool: spotBugs(pattern:'**/target/findbugsXml.xml')
-            recordIssues enabledForFailure: true, tool: cpd(pattern: '**/target/cpd.xml')
-            recordIssues enabledForFailure: true, tool: pmdParser(pattern: '**/target/pmd.xml')
-        }
+        // always {
+        //     junit testResults: '**/target/surefire-reports/TEST-*.xml'
+        //     recordIssues enabledForFailure: true, tools: [mavenConsole(), java(), javaDoc()]
+        //     recordIssues enabledForFailure: true, tool: checkStyle()
+        //     recordIssues enabledForFailure: true, tool: spotBugs(pattern:'**/target/findbugsXml.xml')
+        //     recordIssues enabledForFailure: true, tool: cpd(pattern: '**/target/cpd.xml')
+        //     recordIssues enabledForFailure: true, tool: pmdParser(pattern: '**/target/pmd.xml')
+        // }
         success {
             dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             echo "Pipeline successfully completed."
