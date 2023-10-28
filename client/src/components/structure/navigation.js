@@ -1,9 +1,7 @@
 import { AboutUs } from "../pages/AboutUs";
 import { Account } from "../pages/Account";
-import { AdminTest } from "../pages/AdminTest";
 import { Home } from "../pages/Home";
 import { Login } from "../pages/Login";
-import { Admin } from "../pages/Admin";
 import { Register } from "../pages/Register";
 import { OTPVerification } from "../pages/OTPVerification";
 import { ForgotPassword } from "../pages/ForgotPassword";
@@ -69,23 +67,5 @@ export const nav = [{
         isMenu: true,
         isPrivate: true,
         iconName: "UserOutlined", // Replace with the actual icon name
-    },
-    {
-        path: "/admin",
-        name: "Admin",
-        element: <Admin />,
-        isMenu: true,
-        isPrivate: true,
-        isPrivate2: true,
-        iconName: "LockOutlined", // Replace with the actual icon name
-    },
-    {
-        path: "/admintest",
-        name: "AdminTest",
-        element: <AdminTest />,
-        isMenu: true,
-        isPrivate: true,
-        isPrivate2: true,
-        iconName: "LockOutlined", // Replace with the actual icon name
     },
 ];

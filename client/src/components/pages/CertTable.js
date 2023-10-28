@@ -47,22 +47,22 @@ export const CertTable = () => {
         },
     ];
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                const response = await getAllCerts();
-                const data = response.certs;
-                setCerts(data);
-                setOriginalCerts(data);
-                setLoading(false);
-            } catch (error) {
-                console.error(error);
-                setLoading(false);
-            }
-        };
+    const fetchCertificates = async () => {
+        try {
+            setLoading(true);
+            const response = await getAllCerts();
+            const data = response.certs;
+            setCerts(data);
+            setOriginalCerts(data);
+            setLoading(false);
+        } catch (error) {
+            console.error(error);
+            setLoading(false);
+        }
+    };
 
-        fetchData();
+    useEffect(() => {
+        fetchCertificates();
     }, []);
 
     const handleViewPDF = async (cert) => {
@@ -156,9 +156,8 @@ export const CertTable = () => {
                     current: currentPage,
                     pageSize: pageSize,
                     total: certs.length,
-                    showSizeChanger: true,
-                    showQuickJumper: true,
                     onChange: handlePageChange,
+                    style: { textAlign: 'center' },
                 }}
             />
         </div>

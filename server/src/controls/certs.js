@@ -19,12 +19,6 @@ const generateRandomCertId = () => {
     return result;
 };
 
-// Check if a certificate ID exists in the database
-const checkIfCertIdExists = async (alphanumeric) => {
-    const result = await CertModel.findOne({ cert_id: alphanumeric });
-    return !!result; // Convert to boolean
-};
-
 const createCert = async (req, res) => {
     const session = await CertModel.startSession();
     session.startTransaction();
@@ -69,11 +63,7 @@ const createCert = async (req, res) => {
         };
 
         const watch_id = await createWatch(watch, session);
-        let randomCertId = generateRandomCertId(16);
-
-        while (await checkIfCertIdExists(randomCertId)) {
-            randomCertId = generateRandomCertId(16);
-        }
+        const randomCertId = generateRandomCertId(16);
 
         const pdfContent = await createPdfContent({
             cert_id: randomCertId,
@@ -140,11 +130,7 @@ const createCerts = async (req, res) => {
             };
 
             const watch_id = await createWatch(watch, session);
-            let randomCertId = generateRandomCertId(16);
-
-            while (await checkIfCertIdExists(randomCertId)) {
-                randomCertId = generateRandomCertId(16);
-            }
+            const randomCertId = generateRandomCertId(16);
 
             const pdfContent = await createPdfContent({
                 cert_id: randomCertId,
@@ -220,7 +206,7 @@ const getCert = async (req, res) => {
             isAdmin = await findUserRoleByEmail(req.session.user.email);
         }
 
-        if (!isUserAuthorized(req.session.user, cert.user_email, isAdmin.role)) {
+        if (!isUserAuthorized(req.session.user, cert.user_email, isAdmin)) {
             obfuscateSensitiveData(cert);
         }
 
@@ -254,7 +240,7 @@ async function findUserRoleByEmail(email) {
 }
 
 function isUserAuthorized(sessionUser, certUserEmail, adminRole) {
-    return sessionUser && sessionUser.email === certUserEmail && adminRole !== "admin";
+    return sessionUser && sessionUser.email === certUserEmail || adminRole === 'admin';
 }
 
 function obfuscateSensitiveData(cert) {
@@ -290,12 +276,7 @@ const transferOwnershipCert = async (req, res) => {
 
         const query = { cert_id: cert_id };
 
-        let randomCertId = generateRandomCertId(6);
-        let certIdExists = await checkIfCertIdExists(randomCertId);
-        while (certIdExists) {
-            randomCertId = generateRandomCertId(6);
-            certIdExists = await checkIfCertIdExists(randomCertId);
-        }
+        const randomCertId = generateRandomCertId(16);
 
         const update = {
             cert_id: randomCertId,

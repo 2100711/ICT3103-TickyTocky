@@ -3,12 +3,12 @@ import mongoose from "mongoose";
 const UserSchema = new mongoose.Schema({
     f_name: {
         type: String,
-        maxlength: 255,
+        maxlength: 50,
         required: true,
     },
     l_name: {
         type: String,
-        maxlength: 255,
+        maxlength: 50,
         required: true,
     },
     email: {

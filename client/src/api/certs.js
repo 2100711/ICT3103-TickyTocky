@@ -27,7 +27,6 @@ export async function getAllCerts(req) {
 
 export async function getCert(req) {
     const api = GET_CERT_API.replace(":certID", req);
-    console.log("hello", { req });
     return requestGet(api, { req });
     // return requestGet(GET_CERT_API, { req: { certID: req } });
 }

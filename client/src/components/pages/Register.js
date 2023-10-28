@@ -41,7 +41,7 @@ export const Register = () => {
                 <Form.Item
                     name="email"
                     rules={[
-                        { required: true, message: "Please enter your email!" },
+                        { required: true, message: "Email is required" },
                         { pattern: /^[a-zA-Z0-9._%+-]+@gmail\.com$/, message: "Only Gmail addresses are allowed" },
                     ]}
                     className="form-item"
@@ -56,7 +56,7 @@ export const Register = () => {
                 <Form.Item
                     name="password"
                     rules={[
-                        { required: true, message: "Please enter your password!" },
+                        { required: true, message: "Password is required" },
 { pattern: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#%^&+=])(?!.*\s).{14,128}$/, message: "Password must be at least 14 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#%^&+=)." },
                     ]}
                     className="form-item"
@@ -73,7 +73,7 @@ export const Register = () => {
                     dependencies={["password"]}
                     hasFeedback
                     rules={[
-                        { required: true, message: "Please reenter the same password!" },
+                        { required: true, message: "Please re-enter the same password" },
                         ({ getFieldValue }) => ({
                             validator(_, value) {
                                 if (!value || getFieldValue("password") === value) {
@@ -95,7 +95,7 @@ export const Register = () => {
                 <Form.Item
                     name="f_name"
                     rules={[
-                        { required: true, message: "Please enter your first name!" },
+                        { required: true, message: "First name is required" },
                         { pattern: /^[A-Za-z\s-']{2,50}$/, message: "First name must be between 2 to 50 characters. Use only letters, spaces, hyphens, and single quotes."}
                     ]}
                     className="form-item"
@@ -103,14 +103,15 @@ export const Register = () => {
                     <Input
                         className="input-box"
                         placeholder="Enter your first name"
-                        prefix={<UserOutlined />} // Icon for first name
+                        prefix={<UserOutlined />}
+                        maxLength={50} // Icon for first name
                     />
                 </Form.Item>
 
                 <Form.Item
                     name="l_name"
                     rules={[
-                        { required: true, message: "Please enter your last name!" },
+                        { required: true, message: "Last name is required" },
                         { pattern: /^[A-Za-z\s-']{2,50}$/, message: "Last name must be between 2 to 50 characters. Use only letters, spaces, hyphens, and single quotes."}
                     ]}
                     className="form-item"
@@ -118,7 +119,8 @@ export const Register = () => {
                     <Input
                         className="input-box"
                         placeholder="Enter your last name"
-                        prefix={<UserOutlined />} // Icon for last name
+                        prefix={<UserOutlined />}
+                        maxLength={50} // Icon for last name
                     />
                 </Form.Item>
 

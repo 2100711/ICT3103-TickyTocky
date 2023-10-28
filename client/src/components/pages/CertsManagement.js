@@ -6,25 +6,25 @@ import { getAllCerts } from "../../api/certs";
 import { CertTable } from "../pages/CertTable";
 import { ExcelUploadModal } from "../pages/ExcelUploadModal";
 
-export const Admin = () => {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [excelUploadModalVisible, setExcelUploadModalVisible] = useState(false);
+export const CertsManagement = () => {
+    const [modalVisible, setModalVisible] = useState(false);
+    const [excelUploadModalVisible, setExcelUploadModalVisible] = useState(false);
 
-  const showModal = () => {
-    setModalVisible(true);
-  };
+    const showModal = () => {
+        setModalVisible(true);
+    };
 
-  const showExcelUploadModal = () => {
-    setExcelUploadModalVisible(true);
-  };
+    const showExcelUploadModal = () => {
+        setExcelUploadModalVisible(true);
+    };
 
-  const handleCancel = () => {
-    setModalVisible(false);
-    setExcelUploadModalVisible(false);
-  };
+    const handleCancel = () => {
+        setModalVisible(false);
+        setExcelUploadModalVisible(false);
+    };
 
-  return (
-    <div>
+    return (
+        <div>
       <Button type="primary" onClick={showModal}>
         Open Modal
       </Button>
@@ -38,5 +38,5 @@ export const Admin = () => {
       <CertForm visible={modalVisible} onCancel={handleCancel} />
       <CertTable />
     </div>
-  );
+    );
 };

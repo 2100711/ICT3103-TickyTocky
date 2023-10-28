@@ -140,7 +140,7 @@ export const CertForm = ({ visible, onCancel }) => {
               { pattern: /^[A-Za-z0-9]{8}$/, message: "Dial serial numbers must be 8 characters long and contain only letters and numbers." },
               ]}
             >
-              <Input />
+              <Input maxLength={8}/>
             </Form.Item>
             <Form.Item 
             label="Bracelet/Strap Serial"
@@ -253,7 +253,7 @@ export const CertForm = ({ visible, onCancel }) => {
     format="YYYY"
     placeholder="Select year"
     picker="year"
-    disabledDate={(current) => current && current.year() < 1969}
+    disabledDate={current => current && (current.year() > new Date().getFullYear() || current.year() < 1969)}
   />
 </Form.Item>
             <Form.Item
@@ -267,7 +267,7 @@ export const CertForm = ({ visible, onCancel }) => {
   </Radio.Group>
 </Form.Item>
             <Form.Item>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" onClick={handleNext}>
                 Next
               </Button>
               <Button onClick={handlePrevious}>Previous</Button>
@@ -304,7 +304,7 @@ export const CertForm = ({ visible, onCancel }) => {
                 { pattern: /^[A-Za-z\s-']{2,50}$/, message: "Validated by must be between 2 to 50 characters. Use only letters, spaces, hyphens, and single quotes." },
               ]}
             >
-              <Input />
+              <Input maxLength={50}/>
             </Form.Item>
             <Form.Item
   label="Date of Validation"
@@ -316,7 +316,7 @@ export const CertForm = ({ visible, onCancel }) => {
     },
   ]}
 >
-  <DatePicker valueFormat="YYYY-MM-DD" format="YYYY-MM-DD" />
+  <DatePicker valueFormat="YYYY-MM-DD" format="YYYY-MM-DD" disabledDate={(current) => current && current.isAfter(new Date(), 'day')}/>
 </Form.Item>
 
 <Form.Item
@@ -328,15 +328,20 @@ export const CertForm = ({ visible, onCancel }) => {
       validator(_, value) {
         const dateOfValidation = getFieldValue("date_of_validation");
         if (!dateOfValidation || !value || dateOfValidation.isBefore(value)) {
-          return Promise.resolve();
+          // Check if the dates are not equal
+          if (!dateOfValidation || !value || !dateOfValidation.isSame(value, 'day')) {
+            return Promise.resolve();
+          }
+          return Promise.reject("Issue Date cannot be the same as Date of Validation");
         }
         return Promise.reject("Issue Date must come after Date of Validation");
       },
     }),
   ]}
 >
-  <DatePicker valueFormat="YYYY-MM-DD" format="YYYY-MM-DD" />
+  <DatePicker valueFormat="YYYY-MM-DD" format="YYYY-MM-DD" disabledDate={(current) => current && current.isAfter(new Date(), 'day')}/>
 </Form.Item>
+
 
 <Form.Item
   label="Expiry Date"
@@ -346,23 +351,39 @@ export const CertForm = ({ visible, onCancel }) => {
     ({ getFieldValue }) => ({
       validator(_, value) {
         const issueDate = getFieldValue("issue_date");
-        if (!issueDate || !value || issueDate.isBefore(value)) {
-          return Promise.resolve();
+        const dateOfValidation = getFieldValue("date_of_validation");
+
+        if (issueDate && value && issueDate.isSame(value, 'day')) {
+          return Promise.reject("Expiry Date cannot be the same as Issue Date");
         }
-        return Promise.reject("Expiry Date must come after Issue Date");
+
+        if (dateOfValidation && value && dateOfValidation.isSame(value, 'day')) {
+          return Promise.reject("Expiry Date cannot be the same as Date of Validation");
+        }
+
+        if (issueDate && value && issueDate.isAfter(value)) {
+          return Promise.reject("Expiry Date must come after Issue Date");
+        }
+
+        if (dateOfValidation && value && dateOfValidation.isAfter(value)) {
+          return Promise.reject("Expiry Date must come after Date of Validation");
+        }
+
+        return Promise.resolve();
       },
     }),
   ]}
 >
-  <DatePicker valueFormat="YYYY-MM-DD" format="YYYY-MM-DD" />
+  <DatePicker valueFormat="YYYY-MM-DD" format="YYYY-MM-DD" disabledDate={(current) => current && current.isBefore(new Date(), 'day')}/>
 </Form.Item>
+
 
             <Form.Item
               label="Remarks"
               name="remarks"
               rules={[{ required: true, message: "Please enter the remarks" }]}
             >
-              <Input />
+              <Input maxLength={255}/>
             </Form.Item>
             <Form.Item>
               <Button type="primary" htmlType="submit">
