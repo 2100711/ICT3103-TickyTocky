@@ -9,7 +9,7 @@ import {
     updateCert,
     deleteCert,
 } from "../controls/certs.js";
-import { validateCert } from "../controls/validation.js";
+import { validateCert, validateTransferOwnership } from "../controls/validation.js";
 import { isAuthenticated, isAdmin } from "../controls/auth.js";
 import {
     logRequest,
@@ -20,7 +20,7 @@ certRouter.post("/create-certs", isAuthenticated, isAdmin, validateCert, createC
 certRouter.get("/all-certs", getAllCerts, logRequest); // Get all certificates
 certRouter.get("/:certID", getCert, logRequest); // Get one certificate by ID
 // TODO: post -> getCertByEmail
-certRouter.put("/transfer-ownership", isAuthenticated, transferOwnershipCert, logRequest);
+certRouter.put("/transfer-ownership", isAuthenticated, validateTransferOwnership, transferOwnershipCert, logRequest);
 certRouter.put("/", isAuthenticated, isAdmin, updateCert, logRequest); // Update a certificate by ID
 certRouter.delete("/", isAuthenticated, isAdmin, deleteCert, logRequest); // Delete a certificate by ID
 
