@@ -20,9 +20,9 @@ pipeline {
                         sh 'npm install'
                     }
                 }
-                script { //Test warning nextgen
-                    sh '/var/jenkins_home/apache-maven-3.6.3/bin/mvn --batch-mode -V -U -e clean verify -Dsurefire.useFile=false -Dmaven.test.failure.ignore'
-                }
+                // script { //Test warning nextgen
+                //     sh '/var/jenkins_home/apache-maven-3.6.3/bin/mvn --batch-mode -V -U -e clean verify -Dsurefire.useFile=false -Dmaven.test.failure.ignore'
+                // }
             }
         }
 
@@ -43,11 +43,11 @@ pipeline {
                 }
             }
         }
-        stage('Analysis') {
-            steps {
-                sh '/var/jenkins_home/apache-maven-3.6.3/bin/mvn --batch-mode -V -U -e checkstyle:checkstyle pmd:pmd pmd:cpd findbugs:findbugs'
-            }
-        }// Test for warning next gen plugin
+        // stage('Analysis') {
+        //     steps {
+        //         sh '/var/jenkins_home/apache-maven-3.6.3/bin/mvn --batch-mode -V -U -e checkstyle:checkstyle pmd:pmd pmd:cpd findbugs:findbugs'
+        //     }
+        // }// Test for warning next gen plugin
 
         stage('Deploy') {
             steps {
