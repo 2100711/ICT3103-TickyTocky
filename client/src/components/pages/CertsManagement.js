@@ -7,36 +7,36 @@ import { CertTable } from "../pages/CertTable";
 import { ExcelUploadModal } from "../pages/ExcelUploadModal";
 
 export const CertsManagement = () => {
-    const [modalVisible, setModalVisible] = useState(false);
-    const [excelUploadModalVisible, setExcelUploadModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [excelUploadModalVisible, setExcelUploadModalVisible] = useState(false);
 
-    const showModal = () => {
-        setModalVisible(true);
-    };
+  const showModal = () => {
+    setModalVisible(true);
+  };
 
-    const showExcelUploadModal = () => {
-        setExcelUploadModalVisible(true);
-    };
+  const showExcelUploadModal = () => {
+    setExcelUploadModalVisible(true);
+  };
 
-    const handleCancel = () => {
-        setModalVisible(false);
-        setExcelUploadModalVisible(false);
-    };
+  const handleCancel = () => {
+    setModalVisible(false);
+    setExcelUploadModalVisible(false);
+  };
 
-    return (
-        <div>
-      <Button type="primary" onClick={showModal}>
-        Open Modal
-      </Button>
-      <Button type="primary" onClick={showExcelUploadModal}>
-        Open Excel Upload Modal
-      </Button>
+  return (
+    <div>
       <ExcelUploadModal
         visible={excelUploadModalVisible}
         onCancel={handleCancel}
       />
       <CertForm visible={modalVisible} onCancel={handleCancel} />
       <CertTable />
+      <Button type="primary" onClick={showModal}>
+        Create New Certification
+      </Button>
+      <Button type="primary" onClick={showExcelUploadModal}>
+        Bulk Upload Certifications
+      </Button>
     </div>
-    );
+  );
 };
