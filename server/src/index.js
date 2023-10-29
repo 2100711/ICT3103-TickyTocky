@@ -18,22 +18,6 @@ import { PORT, MONGODB_CONNECTION } from "./constants.js";
 
 const app = express();
 
-app.use(express.json());
-app.use(cors({ credentials: true, origin: "http://localhost:3000" })); // Comment this out if you are using nginx
-mongoose.connect(MONGODB_CONNECTION, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
-// Get the default connection
-const db = mongoose.connection;
-
-// For Content Security Policy
-app.use((req, res, next) => {
-  res.locals.cspNonce = crypto.randomBytes(16).toString('hex');
-  next();
-});
-
 // Helmet middleware for securing HTTP headers
 app.use(
   // sets X-Content-type-options: nosniff (by default)
@@ -56,12 +40,28 @@ app.use(
   }
 ));
 
+// For Content Security Policy
+app.use((req, res, next) => {
+  res.locals.cspNonce = crypto.randomBytes(16).toString('hex');
+  next();
+});
+
 // Cache-Control middleware
 app.use((req, res, next) => {
   // Set Cache-Control directives in the HTTP response
   res.setHeader('Cache-Control', 'max-age=3600, public'); // Example: Cache response for 1 hour (3600 seconds), allow public caching
   next();
 });
+
+app.use(express.json());
+//app.use(cors({ credentials: true, origin: "http://localhost:3000" })); // Comment this out if you are using nginx
+mongoose.connect(MONGODB_CONNECTION, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+// Get the default connection
+const db = mongoose.connection;
 
 // Sessions
 app.use(
