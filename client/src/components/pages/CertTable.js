@@ -54,6 +54,7 @@ export const CertTable = () => {
     try {
       setLoading(true);
       const response = await getAllCerts();
+      console.log("GETALLCERTS", response);
       const data = response.certs;
       setCerts(data);
       setOriginalCerts(data);

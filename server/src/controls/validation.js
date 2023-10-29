@@ -195,7 +195,14 @@ export const validateCert = async (req, res, next) => {
   const errors = {
     conflict_409: [],
     badRequest_400: [],
+    notFound_404: [],
   };
+
+  if (checkDupEmail) {
+    errors.notFound_404.push(
+      "User does not exist. Please provide a valid email."
+    );
+  }
 
   if (isDupSerial) {
     errors.conflict_409.push(
@@ -278,7 +285,11 @@ export const validateCert = async (req, res, next) => {
   }
 
   // Check for any validation errors
-  if (errors.conflict_409.length > 0 || errors.badRequest_400.length > 0) {
+  if (
+    errors.conflict_409.length > 0 ||
+    errors.badRequest_400.length > 0 ||
+    errors.notFound_404.length > 0
+  ) {
     const response = {};
 
     if (errors.conflict_409.length > 0) {
@@ -287,6 +298,10 @@ export const validateCert = async (req, res, next) => {
 
     if (errors.badRequest_400.length > 0) {
       response.badRequest_400 = errors.badRequest_400;
+    }
+
+    if (errors.notFound_404.length > 0) {
+      response.notFound_404 = errors.notFound_404;
     }
 
     return res.status(400).json(response);
