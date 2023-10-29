@@ -54,7 +54,7 @@ app.use(
     }
 
   }
-))
+));
 
 // Cache-Control middleware
 app.use((req, res, next) => {
