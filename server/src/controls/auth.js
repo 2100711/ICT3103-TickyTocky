@@ -6,12 +6,7 @@ import crypto from "crypto";
 import { UserModel } from "../models/Users.js";
 import { OtpModel } from "../models/Otp.js";
 
-import {
-  EMAIL_NAME,
-  EMAIL_ADDR,
-  EMAIL_PASS,
-  EMAIL_USER,
-} from "../constants.js";
+import { EMAIL_NAME, EMAIL_PASS, EMAIL_USER } from "../constants.js";
 
 // to be added
 // const app = express();
@@ -173,7 +168,12 @@ const generateOTP = async (req, res) => {
       token: token,
     });
 
-    emailToUser(email, token);
+    const send = await emailToUser(email, token);
+
+    console.log("send: ", send);
+    if (!send.success) {
+      return res.status(500).json({ message: send.message });
+    }
 
     return res.status(200).json({
       message: `otp created`,
@@ -185,9 +185,8 @@ const generateOTP = async (req, res) => {
 
 const emailToUser = async (email, token) => {
   const transporter = nodemailer.createTransport({
-    host: "sandbox.smtp.mailtrap.io",
-    port: 2525,
-    secure: false, // TODO: Set to true
+    service: "gmail",
+    // secure: false, // TODO: Set to true
     auth: {
       user: EMAIL_USER,
       pass: EMAIL_PASS,
@@ -205,19 +204,21 @@ const emailToUser = async (email, token) => {
   const mailOptions = {
     from: {
       name: EMAIL_NAME,
-      address: EMAIL_ADDR,
+      address: EMAIL_USER,
     },
     to: email,
     subject: "Ticky Tocky One-Time-Password",
     html: emailBody,
   };
 
-  transporter.sendMail(mailOptions, (err) => {
-    if (err) {
-      return res.status(500).json({ error: "Failed to send email." });
-    } else {
-      return res.status(200).json({ message: "Email sent." });
-    }
+  return new Promise((resolve, reject) => {
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        resolve({ success: false, message: "Failed to send email." });
+      } else {
+        resolve({ success: true, message: "Email sent." });
+      }
+    });
   });
 };
 
