@@ -158,10 +158,20 @@ const generateOTP = async (req, res) => {
   const { email } = req.body;
   try {
     if (!email) {
-      return res.status(400).json({ error: "Email is required." });
+      return res
+        .status(200)
+        .json({ success: false, message: "Email is required." });
     }
 
-    const token = generateRandomOTP(); //TODO: change random seed generated using a cryptographically secure pseudo-random number generator (CSPRNG).
+    // TODO: check if email exist in database
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      return res
+        .status(200)
+        .json({ success: false, message: "Email does not exist." });
+    }
+
+    const token = generateRandomOTP();
 
     const doc = await OtpModel.create({
       user_email: email,
@@ -172,14 +182,17 @@ const generateOTP = async (req, res) => {
 
     console.log("send: ", send);
     if (!send.success) {
-      return res.status(500).json({ message: send.message });
+      return res.status(500).json({ success: false, message: send.message });
     }
 
     return res.status(200).json({
+      success: true,
       message: `otp created`,
     });
   } catch (error) {
-    return res.status(500).json({ message: "An error occurred." });
+    return res
+      .status(500)
+      .json({ success: false, message: "An error occurred." });
   }
 };
 
@@ -227,16 +240,62 @@ const verifyOTP = async (req, res) => {
   try {
     const token = await OtpModel.findOne({ user_email: email, token: otp });
     if (!token) {
-      return res
-        .status(401)
-        .json({ message: "Incorrect OTP entered or OTP has expired." });
+      return res.status(401).json({
+        success: false,
+        message: "Incorrect OTP entered or OTP has expired.",
+      });
     }
 
     // TODO: create session so user can reset password?
 
-    return res.status(200).json({ message: "OTP verified." });
+    return res.status(200).json({
+      success: true,
+      message: "Your OTP has been successfully verified.",
+    });
   } catch (error) {
-    res.status(500).json({ message: "An error occurred." });
+    res.status(500).json({ success: false, message: "An error occurred." });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    if (!email) {
+      return res
+        .status(200)
+        .json({ success: false, message: "Email is required." });
+    }
+
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      return res
+        .status(200)
+        .json({ success: false, message: "Email does not exist." });
+    }
+
+    // TODO: add regex validation to password
+
+    // Salt and Hash password
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const updatedUser = await UserModel.findOneAndUpdate(
+      { email },
+      { $set: { encrypted_password: hashedPassword } },
+      { new: true }
+    );
+
+    if (updatedUser) {
+      res.status(200).json({
+        success: true,
+        message: "Password updated successfully",
+      });
+    } else {
+      res.status(404).json({ success: false, message: "An error occurred." });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: "An error occurred." });
   }
 };
 
@@ -250,4 +309,5 @@ export {
   logout,
   generateOTP,
   verifyOTP,
+  resetPassword,
 };
