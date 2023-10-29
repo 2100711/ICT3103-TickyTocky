@@ -7,37 +7,38 @@ import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import "../styles/Login.css";
 
 export const Login = () => {
-    const navigate = useNavigate();
-    const { login, user } = AuthData();
-    const [formData, setFormData] = useReducer(
-        (formData, newItem) => {
-            return { ...formData, ...newItem };
-        }, { email: "", password: "" }
-    );
-    const [errorMessage, setErrorMessage] = useState(null);
+  const navigate = useNavigate();
+  const { login, user } = AuthData();
+  const [formData, setFormData] = useReducer(
+    (formData, newItem) => {
+      return { ...formData, ...newItem };
+    },
+    { email: "", password: "" }
+  );
+  const [errorMessage, setErrorMessage] = useState(null);
 
-    useEffect(() => {
-        if (user.isAuthenticated) navigate("/");
-    });
+  useEffect(() => {
+    if (user.isAuthenticated) navigate("/");
+  });
 
-    const handleLogin = async () => {
-        const { success, message } = await login(formData.email, formData.password);
-        console.log("oidifoijfisnkc", success);
-        if (success) {
-            navigate("/account");
-        } else {
-            setErrorMessage(message);
-            // Display error message as a notification
-            notification.error({
-                message: "Login Error",
-                description: message,
-                duration: 5,
-            });
-        }
-    };
+  const handleLogin = async () => {
+    const { success, message } = await login(formData.email, formData.password);
 
-    return (
-        <div className="login-container">
+    if (success) {
+      navigate("/account");
+    } else {
+      setErrorMessage(message);
+      // Display error message as a notification
+      notification.error({
+        message: "Login Error",
+        description: message,
+        duration: 5,
+      });
+    }
+  };
+
+  return (
+    <div className="login-container">
       <div className="login-form">
         <div className="logo">
           <h2>Ticky Tocky</h2>
@@ -93,5 +94,5 @@ export const Login = () => {
         </Form>
       </div>
     </div>
-    );
+  );
 };
