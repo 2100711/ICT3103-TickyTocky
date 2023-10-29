@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import helmet from 'helmet'
+import crypto from 'crypto'
 
 import { authRouter } from "./routes/auth.js";
 import { userRouter } from "./routes/users.js";
