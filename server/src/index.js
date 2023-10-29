@@ -28,6 +28,41 @@ mongoose.connect(MONGODB_CONNECTION, {
 // Get the default connection
 const db = mongoose.connection;
 
+// For Content Security Policy
+app.use((req, res, next) => {
+  res.locals.cspNonce = crypto.randomBytes(16).toString('hex');
+  next();
+});
+
+// Helmet middleware for securing HTTP headers
+app.use(
+  // sets X-Content-type-options: nosniff (by default)
+  // sets X-DNS-prefetch-control: off (by default)
+  // sets X-Permitted-Cross-Domain-Policies: none (by default)
+  helmet({
+    contentSecurityPolicy:{
+      directives: {
+        scriptSrc: ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`],
+      }
+    },
+    // Deny X-Frame-Options
+    xFrameOptions: {action: "deny"},
+
+    // HSTS max age; included subdomains
+    strictTransportSecurity:{
+      maxAge: 31536000 //set to one year
+    }
+
+  }
+))
+
+// Cache-Control middleware
+app.use((req, res, next) => {
+  // Set Cache-Control directives in the HTTP response
+  res.setHeader('Cache-Control', 'max-age=3600, public'); // Example: Cache response for 1 hour (3600 seconds), allow public caching
+  next();
+});
+
 // Sessions
 app.use(
   session({
@@ -72,41 +107,6 @@ db.on("error", (err) => {
 // Listen for the "disconnected" event
 db.on("disconnected", () => {
   console.log("Mongoose connection disconnected");
-});
-
-// For Content Security Policy
-app.use((req, res, next) => {
-  res.locals.cspNonce = crypto.randomBytes(16).toString('hex');
-  next();
-});
-
-// Helmet middleware for securing HTTP headers
-app.use(
-  // sets X-Content-type-options: nosniff (by default)
-  // sets X-DNS-prefetch-control: off (by default)
-  // sets X-Permitted-Cross-Domain-Policies: none (by default)
-  helmet({
-    contentSecurityPolicy:{
-      directives: {
-        scriptSrc: ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`],
-      }
-    },
-    // Deny X-Frame-Options
-    xFrameOptions: {action: "deny"},
-
-    // HSTS max age; included subdomains
-    strictTransportSecurity:{
-      maxAge: 31536000 //set to one year
-    }
-
-  }
-))
-
-// Cache-Control middleware
-app.use((req, res, next) => {
-  // Set Cache-Control directives in the HTTP response
-  res.setHeader('Cache-Control', 'max-age=3600, public'); // Example: Cache response for 1 hour (3600 seconds), allow public caching
-  next();
 });
 
 app.get("/", (req, res) => res.send("Dockerizing Node Application"));
