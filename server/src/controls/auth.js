@@ -2,7 +2,7 @@ import express from "express";
 import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
-import rateLimit from 'express-rate-limit';
+// import rateLimit from 'express-rate-limit';
 import { UserModel } from "../models/Users.js";
 import { OtpModel } from "../models/Otp.js";
 
