@@ -1,23 +1,10 @@
-import express from "express";
 import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
-import rateLimit from "express-rate-limit";
 import { UserModel } from "../models/Users.js";
 import { OtpModel } from "../models/Otp.js";
 
 import { EMAIL_NAME, EMAIL_PASS, EMAIL_USER } from "../constants.js";
-
-// to be added
-// const app = express();
-
-// // Rate limiting middleware
-//  const loginLimiter = rateLimit({
-//    windowMs: 15 * 60 * 1000,  // 15 minutes
-//    max: 5,  // limit each IP to 5 login requests per windowMs
-//  });
-
-// app.post('/login', loginLimiter, login);
 
 const isAuthenticated = (req, res, next) => {
   if (req.session.user) {
