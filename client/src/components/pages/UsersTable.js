@@ -9,7 +9,13 @@ import {
 } from "../../api/users";
 import { UserForm } from "./UserForm";
 
-export const UsersTable = ({ showModal, visible, onCancel }) => {
+export const UsersTable = ({
+  showModal,
+  visible,
+  onCancel,
+  reFetchUsers,
+  setReFetchUsers,
+}) => {
   const [users, setUsers] = useState([]);
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(false);
@@ -56,6 +62,7 @@ export const UsersTable = ({ showModal, visible, onCancel }) => {
       const data = response.emails.map((email) => ({ email }));
       setUsers(data);
       setOriginalUsers(data);
+      setReFetchUsers(false);
       setLoading(false);
     } catch (error) {
       console.error(error);
@@ -65,7 +72,7 @@ export const UsersTable = ({ showModal, visible, onCancel }) => {
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [reFetchUsers]);
 
   const handleUpdateUserButton = async (user) => {
     try {

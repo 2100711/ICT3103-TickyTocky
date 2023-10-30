@@ -180,7 +180,6 @@ const generateOTP = async (req, res) => {
 
     const send = await emailToUser(email, token);
 
-    console.log("send: ", send);
     if (!send.success) {
       return res.status(500).json({ success: false, message: send.message });
     }

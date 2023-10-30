@@ -55,7 +55,7 @@ export const UserForm = ({ user, visible, onCancel }) => {
     <Modal
       forceRender
       title="User Form"
-      visible={visible}
+      open={visible}
       onCancel={handleCancel}
       footer={null}
       width={600}

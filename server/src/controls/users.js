@@ -1,6 +1,8 @@
 import { UserModel } from "../models/Users.js";
 import { CertModel } from "../models/Certs.js";
 import { deleteWatch } from "./watches.js";
+import { userExists } from "./auth.js";
+import bcrypt from "bcrypt";
 
 // Middleware to handle errors
 const handleError = (res, message, status = 500) => {
@@ -9,18 +11,38 @@ const handleError = (res, message, status = 500) => {
 
 const createUser = async (req, res) => {
   try {
-    const { f_name, l_name, password, email } = req.body;
-    const user = await UserModel.create({
-      email,
-      f_name,
-      l_name,
-      encrypted_password: password,
+    const { f_name, l_name, password, email, account_lock, role } = req.body;
+    if (await userExists(email))
+      return res.status(409).json({
+        success: false,
+        error: "User already exist.",
+      });
+
+    // Salt and Hash password
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create new user
+    const newUser = new UserModel({
+      f_name: f_name,
+      l_name: l_name,
+      email: email,
+      encrypted_password: hashedPassword,
+      account_lock: account_lock,
+      role: role,
+      // salt: saltedText,
     });
+
+    await newUser.save();
+
+    if (!newUser) {
+      handleError(res, "An error occurred");
+    }
 
     res.status(200).json({
       success: true,
-      message: `User ${user.f_name} ${user.l_name} created`,
-      email: user.email,
+      message: `User ${newUser.f_name} ${newUser.l_name} created successfully.`,
     });
   } catch (error) {
     handleError(res, "An error occurred");
@@ -117,7 +139,6 @@ const deleteUser = async (req, res) => {
     session.startTransaction();
     if (certs && certs.length > 0) {
       for (const cert of certs) {
-        console.log("CERT: ", cert);
         await deleteWatch(cert.watch_id, session);
       }
       const user_email = certs[0].user_email;
@@ -138,7 +159,6 @@ const deleteUser = async (req, res) => {
       res.status(404).json({ success: false, message: "User not found" });
     }
   } catch (error) {
-    console.log("ERROERRR", error);
     await session.abortTransaction();
     session.endSession();
     handleError(res, "An error occurred");

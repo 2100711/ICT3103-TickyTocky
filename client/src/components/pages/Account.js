@@ -107,7 +107,7 @@ export const Account = () => {
             </div>
             <Modal
               title="Edit Profile"
-              visible={editProfileModalVisible}
+              open={editProfileModalVisible}
               onOk={handleSaveProfile}
               onCancel={() => setEditProfileModalVisible(false)}
             >
