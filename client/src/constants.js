@@ -17,6 +17,7 @@ export const CREATE_CERT_API = `${CERTS_URL}/create-cert`;
 export const CREATE_CERTS_API = `${CERTS_URL}/create-certs`;
 export const GET_ALL_CERTS_API = `${CERTS_URL}/all-certs`;
 export const GET_CERT_API = `${CERTS_URL}/:certID`;
+export const GET_CERTS_BY_EMAIL_API = `${CERTS_URL}/email/:email`;
 export const UPDATE_CERT_API = `${CERTS_URL}/:certID`;
 export const DELETE_CERT_API = `${CERTS_URL}/`;
 

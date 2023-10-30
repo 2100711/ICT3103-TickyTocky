@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Table, Button, Input, Popconfirm, message } from "antd";
-import { getAllCerts, getCert, deleteCert } from "../../api/certs";
+import {
+  getAllCerts,
+  getCert,
+  deleteCert,
+  getCertsByEmail,
+} from "../../api/certs";
 
-export const CertTable = () => {
+export const CertTable = ({ role, email }) => {
   const [certs, setCerts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -37,14 +42,24 @@ export const CertTable = () => {
           <Button type="primary" onClick={() => handleDownloadPDF(cert)}>
             Download PDF
           </Button>
-          <Popconfirm
-            title="Are you sure you want to delete this certificate?"
-            onConfirm={() => handleDeleteCert(cert.cert_id)}
-          >
-            <Button type="primary" danger>
-              Delete
+          {role === "admin" && (
+            <Popconfirm
+              title="Are you sure you want to delete this certificate?"
+              onConfirm={() => handleDeleteCert(cert.cert_id)}
+            >
+              <Button type="primary" danger>
+                Delete
+              </Button>
+            </Popconfirm>
+          )}
+          {role !== "admin" && (
+            <Button
+              type="primary"
+              onClick={() => handleTransferOwnsershipModal}
+            >
+              Transfer Ownership
             </Button>
-          </Popconfirm>
+          )}
         </div>
       ),
     },
@@ -53,8 +68,10 @@ export const CertTable = () => {
   const fetchCertificates = async () => {
     try {
       setLoading(true);
-      const response = await getAllCerts();
-      console.log("GETALLCERTS", response);
+      const response =
+        role === "admin"
+          ? await getAllCerts()
+          : await getCertsByEmail({ email });
       const data = response.certs;
       setCerts(data);
       setOriginalCerts(data);
@@ -68,6 +85,10 @@ export const CertTable = () => {
   useEffect(() => {
     fetchCertificates();
   }, []);
+
+  const handleTransferOwnsershipModal = async () => {
+    console.log("OPEN TRANSFER OWNERSHIP MODAL");
+  };
 
   const handleViewPDF = async (cert) => {
     try {

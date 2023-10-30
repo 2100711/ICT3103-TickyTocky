@@ -15,7 +15,6 @@ export const PasswordReset = () => {
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
-      console.log(location.state.email);
       if (validatePassword() && validateCfmPassword()) {
         const response = await resetPassword({
           email: location.state.email,
