@@ -1,6 +1,7 @@
 import { notification } from "antd";
 import { WATCH_BRANDS, WATCH_MOVEMENTS, WATCH_CASE_MATERIALS, BRACELET_STRAP_MATERIALS, GENDER } from "../constants.js";
 import { getUser } from "../api/users";
+import { checkSerial } from "../api/serials";
 
 // SERIAL_NUMBERS
 const validateCaseSerial = (caseSerial) => {
@@ -28,22 +29,8 @@ const validateCrownPusher = (crownPusher) => {
     return crownPusherRegex.test(crownPusher);
 };
 
-const checkDupSerial = async (
-    case_serial,
-    movement_serial,
-    dial,
-    bracelet_strap,
-    crown_pusher
-) => {
-    const dupSerial = await SerialNumberModel.findOne({
-        $or: [
-            { case_serial },
-            { movement_serial },
-            { dial },
-            { bracelet_strap },
-            { crown_pusher },
-        ],
-    });
+const checkDupSerial = async (serial) => {
+    const dupSerial = await checkSerial(serial);
     return dupSerial ? true : false;
 };
 
@@ -147,13 +134,15 @@ export const validateCert = (case_serial,
     expiry_date,
     remarks, ) => {
 
-    const isDupSerial = checkDupSerial(
+    const {
         case_serial,
         movement_serial,
         dial,
         bracelet_strap,
-        crown_pusher
-    );
+        crown_pusher,
+    } = serial;
+
+    const isDupSerial = checkDupSerial(serial);
 
     const isDupEmail = checkDupEmail(user_email);
 

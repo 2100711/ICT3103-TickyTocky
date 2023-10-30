@@ -11,6 +11,7 @@ export const SERVER_URL = "http://localhost:3001";
 export const CERTS_URL = `${SERVER_URL}/certs`;
 export const USERS_URL = `${SERVER_URL}/users`;
 export const AUTH_URL = `${SERVER_URL}/auth`;
+export const SERIAL_URL = `${SERVER_URL}/serial`;
 
 // CERT API
 export const CREATE_CERT_API = `${CERTS_URL}/create-cert`;
@@ -20,6 +21,9 @@ export const GET_CERT_API = `${CERTS_URL}/:certID`;
 export const GET_CERTS_BY_EMAIL_API = `${CERTS_URL}/email/:email`;
 export const UPDATE_CERT_API = `${CERTS_URL}/:certID`;
 export const DELETE_CERT_API = `${CERTS_URL}/`;
+
+// SERIAL API
+export const CHECK_SERIAL = `${SERIAL_URL}/check-serial`;
 
 // USER API
 export const CREATE_USER_API = `${USERS_URL}/`;

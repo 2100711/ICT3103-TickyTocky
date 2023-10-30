@@ -7,13 +7,11 @@ import { validateCert } from "../../utils/validation";
 export const ExcelUploadModal = ({ visible, onCancel }) => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [isSubmitting, setSubmitting] = useState(false);
-    const [successMessage, setSuccessMessage] = useState(null);
 
     useEffect(() => {
         if (!visible) {
             // Reset form fields and feedback when the modal visibility changes
             setSelectedFile(null);
-            setSuccessMessage(null);
             setSubmitting(false);
         }
     }, [visible]);
@@ -30,8 +28,6 @@ export const ExcelUploadModal = ({ visible, onCancel }) => {
                 description: "Please select an Excel file before submitting.",
                 duration: 5,
             });
-            message.error("Please select an Excel file before submitting.");
-            return;
         }
 
         setSubmitting(true);
@@ -43,14 +39,17 @@ export const ExcelUploadModal = ({ visible, onCancel }) => {
             const customJsonData = transformData(fileData);
 
             const response = await createCerts(customJsonData);
-
-            if (response.success) {
-                setSuccessMessage("Certificates created successfully");
-            } else {
-                message.error("An error occurred while creating certificates");
-            }
+            notification.success({
+                message: "Certificate Creation Successful",
+                description: "The certificates have been successfully created and is now available for viewing and download. Thank you for using our services.",
+                duration: 5,
+            });
         } catch (error) {
-            message.error("An error occurred while creating certificates");
+            notification.error({
+                message: "Certificate Creation Failed",
+                description: "We apologize, but we encountered an issue while trying to create the certificates. Please try again later or contact our support team for assistance.",
+                duration: 5,
+            });
         } finally {
             setSubmitting(false);
         }
@@ -75,7 +74,6 @@ export const ExcelUploadModal = ({ visible, onCancel }) => {
             };
 
             reader.onerror = (error) => {
-                console.error("File reading error:", error);
                 reject(error);
             };
 

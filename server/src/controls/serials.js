@@ -100,7 +100,7 @@ const deleteSerial = async (serialId, session) => {
     }
 };
 
-const duplicateSerial = async (serial, session) => {
+const checkSerial = async (serial, session) => {
     try {
         const {
             case_serial,
@@ -133,5 +133,5 @@ export {
     getSerial,
     updateSerial,
     deleteSerial,
-    duplicateSerial,
+    checkSerial,
 };
