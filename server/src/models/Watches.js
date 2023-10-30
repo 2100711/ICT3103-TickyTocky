@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { SerialNumberModel } from "./SerialNumbers.js";
+import { SerialModel } from "./Serial.js";
 
 const WatchSchema = new mongoose.Schema({
     brand: {
@@ -43,7 +43,7 @@ const WatchSchema = new mongoose.Schema({
     },
     serial_id: {
         type: mongoose.Schema.Types.ObjectId, // Corrected usage
-        ref: SerialNumberModel,
+        ref: SerialModel,
         required: true,
     },
 });

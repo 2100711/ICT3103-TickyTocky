@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const SerialNumberSchema = new mongoose.Schema({
+const SerialSchema = new mongoose.Schema({
     case_serial: {
         type: String,
         maxlength: 8,
@@ -26,7 +26,7 @@ const SerialNumberSchema = new mongoose.Schema({
     },
 });
 
-export const SerialNumberModel = mongoose.model(
-    "serial_numbers",
-    SerialNumberSchema
+export const SerialModel = mongoose.model(
+    "serials",
+    SerialSchema
 );
