@@ -180,7 +180,10 @@ const getAllCerts = async (req, res) => {
 const getCert = async (req, res) => {
   try {
     const cert_id = req.params.certID;
+
     const cert = await findCertificateByCertId(cert_id);
+
+    console.log("CERT", cert);
 
     if (!cert) {
       return res
@@ -207,6 +210,36 @@ const getCert = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ success: false, message: "An error occurred" });
+  }
+};
+
+const getCertsByEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (email !== req.session.user?.email) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid request" });
+    }
+    const certs = await CertModel.find(
+      { user_email: email },
+      { _id: 0, cert_id: 1, user_email: 1 }
+    );
+    // console.log("CERTSBYEMAIL:", certs);
+    if (!certs) {
+      return res.status(200).json({
+        success: false,
+        message: "Certificates not found for this user",
+      });
+    }
+
+    console.log("CERTSBACKEND", certs);
+
+    return res
+      .status(200)
+      .json({ success: false, message: "Certificates retrieved", certs });
+  } catch (error) {
+    res.status(500).json({ message: "An error occurred" });
   }
 };
 
@@ -450,6 +483,7 @@ export {
   createCerts,
   getAllCerts,
   getCert,
+  getCertsByEmail,
   transferOwnershipCert,
   updateCert,
   deleteCert,

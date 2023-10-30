@@ -5,6 +5,7 @@ import {
   createCerts, // Import the batchCreateCertificates function
   getAllCerts,
   getCert,
+  getCertsByEmail,
   transferOwnershipCert,
   updateCert,
   deleteCert,

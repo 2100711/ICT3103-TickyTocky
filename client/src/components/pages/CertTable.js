@@ -14,7 +14,7 @@ export const CertTable = ({ role, email }) => {
   const [pageSize] = useState(5);
   const [searchText, setSearchText] = useState("");
   const [originalCerts, setOriginalCerts] = useState([]);
-
+  console.log("EMAILCERTTABLE", email);
   const columns = [
     {
       title: "Certificate ID",
@@ -72,6 +72,7 @@ export const CertTable = ({ role, email }) => {
         role === "admin"
           ? await getAllCerts()
           : await getCertsByEmail({ email });
+      console.log("FETCHCERTIFICATEMEMBER: ", response);
       const data = response.certs;
       setCerts(data);
       setOriginalCerts(data);
@@ -92,6 +93,7 @@ export const CertTable = ({ role, email }) => {
 
   const handleViewPDF = async (cert) => {
     try {
+      console.log("handleviewpdf:", cert);
       setLoading(true);
       const response = await getCert(cert.cert_id);
       const pdf = response.pdf_content;
