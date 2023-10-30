@@ -8,7 +8,6 @@ import rateLimit from "express-rate-limit"; //added
 import { authRouter } from "./routes/auth.js";
 import { userRouter } from "./routes/users.js";
 import { certRouter } from "./routes/certs.js";
-import { serialRouter } from "./routes/serial.js";
 
 import { PORT, MONGODB_CONNECTION } from "./constants.js";
 
@@ -58,7 +57,6 @@ app.use(apiLimiter); // Apply rate limiter middleware to all routes
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
 app.use("/certs", certRouter);
-app.use("/serial", certRouter);
 
 // Listen for the "connected" event
 db.on("connected", () => {

@@ -100,38 +100,10 @@ const deleteSerial = async (serialId, session) => {
     }
 };
 
-const checkSerial = async (serial, session) => {
-    try {
-        const {
-            case_serial,
-            movement_serial,
-            dial,
-            bracelet_strap,
-            crown_pusher,
-        } = serial;
-
-        const sessionOptions = session ? { session } : {};
-
-        const duplicateSerial = await SerialModel.findOne({
-            $or: [
-                { case_serial },
-                { movement_serial },
-                { dial },
-                { bracelet_strap },
-                { crown_pusher },
-            ],
-        });
-        return duplicateSerial ? true : false;
-    } catch (error) {
-        throw error;
-    }
-}
-
 export {
     createSerial,
     getAllSerials,
     getSerial,
     updateSerial,
     deleteSerial,
-    checkSerial,
 };

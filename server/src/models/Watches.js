@@ -33,7 +33,7 @@ const WatchSchema = new mongoose.Schema({
         required: true,
     },
     yop: {
-        type: Date,
+        type: Number,
         required: true,
     },
     gender: {
