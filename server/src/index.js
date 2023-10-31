@@ -15,6 +15,12 @@ import { PORT, MONGODB_CONNECTION } from "./constants.js";
 
 const app = express();
 
+// For Content Security Policy
+app.use((req, res, next) => {
+  res.locals.cspNonce = crypto.randomBytes(16).toString('hex');
+  next();
+});
+
 // Helmet middleware for securing HTTP headers
 app.use(
   // sets X-Content-type-options: nosniff (by default)
@@ -36,12 +42,6 @@ app.use(
 
   }
 ));
-
-// For Content Security Policy
-app.use((req, res, next) => {
-  res.locals.cspNonce = crypto.randomBytes(16).toString('hex');
-  next();
-});
 
 // Cache-Control middleware
 app.use((req, res, next) => {
