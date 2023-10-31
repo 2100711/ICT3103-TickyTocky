@@ -52,7 +52,6 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({ credentials: true, origin: "http://localhost:3000" })); // Comment this out if you are using nginx
-
 mongoose.connect(MONGODB_CONNECTION, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
