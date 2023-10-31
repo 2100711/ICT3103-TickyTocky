@@ -8,6 +8,9 @@ services:
       dockerfile: Dockerfile-client # Specify the Dockerfile name
     ports:
       - "3000:3000"  # Map host port 3000 to container port 3000
+    labels: #Send Logs to promtail grafana
+      logging: "promtail" 
+      logging_jobname: "containerlogs"
     networks:
       - app-network
 
@@ -18,6 +21,9 @@ services:
       dockerfile: Dockerfile-server # Specify the Dockerfile name
     ports:
       - "3001:3001" # Map host port 3001 to container port 3001
+    labels: #Send Logs to promtail grafana
+      logging: "promtail" 
+      logging_jobname: "containerlogs"
     networks:
       - app-network
 
@@ -28,6 +34,9 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    labels: #Send Logs to promtail grafana
+      logging: "promtail" 
+      logging_jobname: "containerlogs"
     volumes:
       #- ./client/public:/var/www/html
       - ./nginx-conf:/etc/nginx/conf.d #Nginx configuration file
@@ -49,6 +58,9 @@ services:
     ports:
       - "8080:8080"  # Map port 8080 on your host to port 8080 in the container
       - "50000:50000"
+    labels: #Send Logs to promtail grafana
+      logging: "promtail" 
+      logging_jobname: "containerlogs"
     volumes:
       - ./jenkins_home:/var/jenkins_home  # Persist Jenkins data
       - /var/run/docker.sock:/var/run/docker.sock  # Mount the Docker socket
@@ -64,6 +76,9 @@ services:
     image: grafana/loki:2.9.0
     ports:
       - "3100:3100"
+    labels: #Send Logs to promtail grafana
+      logging: "promtail" 
+      logging_jobname: "containerlogs"
     volumes:
       - ./loki:/etc/loki
     command: -config.file=/etc/loki/loki-config.yml
@@ -76,6 +91,11 @@ services:
     volumes:
       - /var/log:/var/log
       - ./promtail:/etc/promtail
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels: #Send Logs to promtail grafana
+      logging: "promtail" 
+      logging_jobname: "containerlogs"
     command: -config.file=/etc/promtail/promtail-config.yml
     networks:
       - app-network
@@ -88,6 +108,9 @@ services:
     image: grafana/grafana:latest
     ports:
       - "3200:3000"
+    labels: #Send Logs to promtail grafana
+      logging: "promtail" 
+      logging_jobname: "containerlogs"
     networks:
       - app-network
     depends_on:
