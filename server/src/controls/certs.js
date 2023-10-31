@@ -85,12 +85,15 @@ const createCert = async (req, res) => {
     await session.commitTransaction();
     session.endSession();
 
+    req.certificate_id = cert.cert_id
+
     res.status(201).json({
       success: true,
       message: "Certificate created",
       cert,
     });
   } catch (error) {
+    console.log(error)
     await session.abortTransaction();
     session.endSession();
     res.status(500).json({ success: false, message: "An error occurred" });

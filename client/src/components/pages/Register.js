@@ -61,9 +61,9 @@ export const Register = () => {
             { required: true, message: "Password is required" },
             {
               pattern:
-                /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#%^&+=])(?!.*\s).{14,128}$/,
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+).{12,64}$/,
               message:
-                "Password must be at least 14 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#%^&+=).",
+                "Password must be 12-64 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (e.g., !, @, #, $, %).",
             },
           ]}
           className="form-item"
