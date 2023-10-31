@@ -3,6 +3,8 @@ import cors from "cors";
 import mongoose from "mongoose";
 import session from "express-session";
 import MongoStore from "connect-mongo";
+import helmet from 'helmet'
+import crypto from 'crypto'
 import rateLimit from "express-rate-limit"; //added
 
 import { authRouter } from "./routes/auth.js";
@@ -13,8 +15,43 @@ import { PORT, MONGODB_CONNECTION } from "./constants.js";
 
 const app = express();
 
+// Helmet middleware for securing HTTP headers
+app.use(
+  // sets X-Content-type-options: nosniff (by default)
+  // sets X-DNS-prefetch-control: off (by default)
+  // sets X-Permitted-Cross-Domain-Policies: none (by default)
+  helmet({
+    contentSecurityPolicy:{
+      directives: {
+        scriptSrc: ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`],
+      }
+    },
+    // Deny X-Frame-Options
+    xFrameOptions: {action: "deny"},
+
+    // HSTS max age; included subdomains
+    strictTransportSecurity:{
+      maxAge: 31536000 //set to one year
+    }
+
+  }
+));
+
+// For Content Security Policy
+app.use((req, res, next) => {
+  res.locals.cspNonce = crypto.randomBytes(16).toString('hex');
+  next();
+});
+
+// Cache-Control middleware
+app.use((req, res, next) => {
+  // Set Cache-Control directives in the HTTP response
+  res.setHeader('Cache-Control', 'max-age=3600, public'); // Example: Cache response for 1 hour (3600 seconds), allow public caching
+  next();
+});
+
 app.use(express.json());
-app.use(cors({ credentials: true, origin: "http://localhost:3000" })); // Comment this out if you are using nginx
+//app.use(cors({ credentials: true, origin: "http://localhost:3000" })); // Comment this out if you are using nginx
 mongoose.connect(MONGODB_CONNECTION, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
