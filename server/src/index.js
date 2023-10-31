@@ -46,7 +46,7 @@ app.use((req, res, next) => {
 // Cache-Control middleware
 app.use((req, res, next) => {
   // Set Cache-Control directives in the HTTP response
-  res.setHeader('Cache-Control', 'max-age=3600, public'); // Example: Cache response for 1 hour (3600 seconds), allow public caching
+  res.setHeader('Cache-Control', 'no-cache'); 
   next();
 });
 
@@ -73,7 +73,7 @@ app.use(
         store: new MongoStore({
             client: db.getClient(),
             crypto: {
-                secret: "squirrel",
+                secret: "squirrel", // TO BE CHANGED: should also be stored in an environment variable rather than being hard-coded.
             },
             autoRemove: "interval",
             autoRemoveInterval: 1, // checks every 1 minute to delete sessions that have expired
