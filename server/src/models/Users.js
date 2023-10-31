@@ -15,6 +15,7 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
+        // match: [/^[a-zA-Z0-9._%+-]{1,64}@gmail\.com$/, 'Please use a valid email address.'],
     },
     email_verified: {
         type: Boolean,
