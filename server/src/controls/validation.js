@@ -60,7 +60,7 @@ export const validateRegister = async (req, res, next) => {
 
   if (!validatePassword(password)) {
     errors.badRequest_400.push(
-      "Invalid password. Password must be at least 14 characters long and include a combination of letters, numbers, and special characters."
+      "Invalid password. Password must be within 12 to 64 characters long, and include a combination of uppercase characters, lowercase characters, numbers, and special characters."
     );
   }
 

@@ -3,8 +3,22 @@ import nodemailer from "nodemailer";
 import crypto from "crypto";
 import { UserModel } from "../models/Users.js";
 import { OtpModel } from "../models/Otp.js";
+// import { check, validationResult } from 'express-validator';  // Import express-validator
 
-import { EMAIL_NAME, EMAIL_PASS, EMAIL_USER } from "../constants.js";
+
+// import { EMAIL_NAME, EMAIL_PASS, EMAIL_USER } from "../constants.js";
+
+// const registerValidation = [
+//   check('f_name').trim().isLength({ min: 1 }).withMessage('First name is required'),
+//   check('l_name').trim().isLength({ min: 1 }).withMessage('Last name is required'),
+//   check('email').trim().isEmail().withMessage('Invalid email address'),
+//   check('password').trim().isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
+// ];
+
+// const loginValidation = [
+//   check('email').trim().isEmail().withMessage('Invalid email address'),
+//   check('password').trim().isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
+// ];
 
 const isAuthenticated = (req, res, next) => {
   if (req.session.user) {
