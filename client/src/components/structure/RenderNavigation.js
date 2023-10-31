@@ -42,7 +42,6 @@ export const RenderMenu = () => {
     if (success) {
       navigate("/");
     }
-    console.log(message); // TODO: Remove
   };
 
   const location = useLocation();

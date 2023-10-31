@@ -1,21 +1,37 @@
 import React, { useState } from "react";
-import { Form, Input, Button, notification } from "antd";
-import { Link } from "react-router-dom";
+import { Form, Input, Button, notification, Alert, Space, Spin } from "antd";
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/ForgotPassword.css";
+import { generateOTP } from "../../api/auth";
 
 export const ForgotPassword = () => {
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = () => {
-    // TODO: Handle password reset request logic here
-    if (validateEmail()) {
-      console.log("Email is valid");
+  const navigate = useNavigate();
+
+  const handleSubmit = async () => {
+    try {
+      if (validateEmail()) {
+        setLoading(true);
+        const response = await generateOTP({ email });
+        if (response.success) {
+          setLoading(false);
+          openNotification(
+            "info",
+            "Password Reset Email Sent",
+            "If the email you provided is in our system you will receive instructions to reset your password."
+          );
+          // navigate
+          navigate("/otp", { state: { email: email } });
+        } else {
+          setLoading(false);
+          openNotification("error", "Error", response.message);
+        }
+      }
+    } catch (error) {
+      setLoading(false);
     }
-    openNotification(
-      "info",
-      "Password Reset Email Sent",
-      "If the email you provided is in our system you will receive instructions to reset your password."
-    );
   };
 
   const openNotification = (type, message, description) => {
@@ -40,29 +56,31 @@ export const ForgotPassword = () => {
   };
 
   return (
-    <div className="forgot-password-container">
-      <Form onFinish={handleSubmit} className="forgot-password-form">
-        <h2>Forgot Password</h2>
-        <p>An OTP will be sent to the email provided below.</p>
-        <Form.Item
-          name="email"
-          rules={[{ required: true, message: "Please enter your email" }]}
-        >
-          <Input
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Send Code
-          </Button>
-        </Form.Item>
-        <p>
-          Remember your password? <Link to="/login">Login</Link>
-        </p>
-      </Form>
-    </div>
+    <Spin tip="Loading..." size="large" spinning={loading}>
+      <div className="forgot-password-container">
+        <Form onFinish={handleSubmit} className="forgot-password-form">
+          <h2>Forgot Password</h2>
+          <p>An OTP will be sent to the email provided below.</p>
+          <Form.Item
+            name="email"
+            rules={[{ required: true, message: "Please enter your email" }]}
+          >
+            <Input
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Send Code
+            </Button>
+          </Form.Item>
+          <p>
+            Remember your password? <Link to="/login">Login</Link>
+          </p>
+        </Form>
+      </div>
+    </Spin>
   );
 };

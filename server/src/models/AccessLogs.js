@@ -27,7 +27,7 @@ const AccessLogSchema = new mongoose.Schema({
         required: true,
     },
     timestamps: {
-        type: String,
+        type: Date,
         required: true,
         default: new Date(),
     },

@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Table, Button, Input, Popconfirm, message } from "antd";
-import { getAllCerts, getCert, deleteCert } from "../../api/certs";
+import {
+  getAllCerts,
+  getCert,
+  deleteCert,
+  getCertsByEmail,
+} from "../../api/certs";
 
-export const CertTable = () => {
+export const CertTable = ({ role, email }) => {
   const [certs, setCerts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(5);
   const [searchText, setSearchText] = useState("");
   const [originalCerts, setOriginalCerts] = useState([]);
-
+  console.log("EMAILCERTTABLE", email);
   const columns = [
     {
       title: "Certificate ID",
@@ -37,14 +42,24 @@ export const CertTable = () => {
           <Button type="primary" onClick={() => handleDownloadPDF(cert)}>
             Download PDF
           </Button>
-          <Popconfirm
-            title="Are you sure you want to delete this certificate?"
-            onConfirm={() => handleDeleteCert(cert.cert_id)}
-          >
-            <Button type="primary" danger>
-              Delete
+          {role === "admin" && (
+            <Popconfirm
+              title="Are you sure you want to delete this certificate?"
+              onConfirm={() => handleDeleteCert(cert.cert_id)}
+            >
+              <Button type="primary" danger>
+                Delete
+              </Button>
+            </Popconfirm>
+          )}
+          {role !== "admin" && (
+            <Button
+              type="primary"
+              onClick={() => handleTransferOwnsershipModal}
+            >
+              Transfer Ownership
             </Button>
-          </Popconfirm>
+          )}
         </div>
       ),
     },
@@ -53,7 +68,11 @@ export const CertTable = () => {
   const fetchCertificates = async () => {
     try {
       setLoading(true);
-      const response = await getAllCerts();
+      const response =
+        role === "admin"
+          ? await getAllCerts()
+          : await getCertsByEmail({ email });
+      console.log("FETCHCERTIFICATEMEMBER: ", response);
       const data = response.certs;
       setCerts(data);
       setOriginalCerts(data);
@@ -68,8 +87,13 @@ export const CertTable = () => {
     fetchCertificates();
   }, []);
 
+  const handleTransferOwnsershipModal = async () => {
+    console.log("OPEN TRANSFER OWNERSHIP MODAL");
+  };
+
   const handleViewPDF = async (cert) => {
     try {
+      console.log("handleviewpdf:", cert);
       setLoading(true);
       const response = await getCert(cert.cert_id);
       const pdf = response.pdf_content;

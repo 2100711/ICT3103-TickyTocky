@@ -25,9 +25,12 @@ const logRequest = async (req, res, next) => {
         requested_url,
     };
 
+    console.log("accessLogData ", req.session.user);
+
     try {
         // Create the access log
-        await createLog(accessLogData);
+        const log = await createLog(accessLogData);
+        console.log("loglog ", log);
         next();
     } catch (error) {
         // Handle the error (log it or respond to the client)

@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Form, Input, Button, notification } from "antd";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Form, Input, Button, notification, Spin } from "antd";
 import "../styles/OTPVerification.css";
+import { verifyOTP } from "../../api/auth";
 
 export const OTPVerification = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [totalSeconds, setTotalSeconds] = useState(300);
   const [timerActive, setTimerActive] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -41,21 +44,23 @@ export const OTPVerification = () => {
     }
   }, [totalSeconds, timerActive]);
 
-  const handleSubmit = (values) => {
-    // TODO: Implement the OTP verification logic
-    if (values.otp === "1234") {
+  const handleSubmit = async (values) => {
+    setLoading(true);
+    const response = await verifyOTP({
+      email: location.state.email,
+      otp: values.otp,
+    });
+    if (response.success) {
+      setLoading(false);
       openNotification(
         "success",
         "Success",
         "Your OTP have been successfully verified."
       );
-      navigate("/account");
+      navigate("/resetpassword", { state: { email: location.state.email } });
     } else {
-      openNotification(
-        "error",
-        "OTP Verification Failed",
-        "Please enter the correct OTP."
-      );
+      setLoading(false);
+      openNotification("error", "OTP Verification Failed", response.message);
     }
   };
 
@@ -71,29 +76,31 @@ export const OTPVerification = () => {
   };
 
   return (
-    <div className="otp-container">
-      <Form onFinish={handleSubmit} className="otp-form">
-        <h2 className="otp-form-h2">OTP Verification</h2>
-        <Form.Item
-          name="otp"
-          rules={[{ required: true, message: "Please enter your OTP" }]}
-          className="otp-item"
-        >
-          <Input placeholder="Enter OTP" className="otp-input-box" />
-        </Form.Item>
-        <Form.Item className="otp-button-container">
-          <Button type="primary" htmlType="submit">
-            Verify
-          </Button>
-          {timerActive ? (
-            `\nResend OTP in ${formatTime(totalSeconds)}`
-          ) : (
-            <Button type="default" onClick={resendOTP}>
-              Resend Code
+    <Spin tip="Loading..." size="large" spinning={loading}>
+      <div className="otp-container">
+        <Form onFinish={handleSubmit} className="otp-form">
+          <h2 className="otp-form-h2">OTP Verification</h2>
+          <Form.Item
+            name="otp"
+            rules={[{ required: true, message: "Please enter your OTP" }]}
+            className="otp-item"
+          >
+            <Input placeholder="Enter OTP" className="otp-input-box" />
+          </Form.Item>
+          <Form.Item className="otp-button-container">
+            <Button type="primary" htmlType="submit">
+              Verify
             </Button>
-          )}
-        </Form.Item>
-      </Form>
-    </div>
+            {timerActive ? (
+              `\nResend OTP in ${formatTime(totalSeconds)}`
+            ) : (
+              <Button type="default" onClick={resendOTP}>
+                Resend Code
+              </Button>
+            )}
+          </Form.Item>
+        </Form>
+      </div>
+    </Spin>
   );
 };

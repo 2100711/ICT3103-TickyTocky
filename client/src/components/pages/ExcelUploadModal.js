@@ -1,18 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, Form, Button, message } from 'antd';
+import React, { useState, useEffect } from "react";
+import { Modal, Form, Button, notification, message } from "antd";
 import { createCerts } from "../../api/certs";
-import * as XLSX from 'xlsx';
+import * as XLSX from "xlsx";
+import { validateExcelData } from "../../utils/validation";
 
 export const ExcelUploadModal = ({ visible, onCancel }) => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [isSubmitting, setSubmitting] = useState(false);
-    const [successMessage, setSuccessMessage] = useState(null);
 
     useEffect(() => {
         if (!visible) {
             // Reset form fields and feedback when the modal visibility changes
             setSelectedFile(null);
-            setSuccessMessage(null);
             setSubmitting(false);
         }
     }, [visible]);
@@ -24,49 +23,95 @@ export const ExcelUploadModal = ({ visible, onCancel }) => {
 
     const handleFormSubmit = async () => {
         if (!selectedFile) {
-            message.error('Please select an Excel file before submitting.');
+            notification.error({
+                message: "Excel file is required",
+                description: "Please select an Excel file before submitting.",
+                duration: 5,
+            });
             return;
         }
 
         setSubmitting(true);
 
         try {
-            const formData = new FormData();
-            formData.append('excelFile', selectedFile);
             const fileData = await parseExcelFile(selectedFile);
-            const customJsonData = transformData(fileData);
 
-            const response = await createCerts(customJsonData);
+            if (fileData.length > 0) {
+                const response = await createCerts(fileData);
 
-            if (response.success) {
-                setSuccessMessage('Certificates created successfully');
-            } else {
-                message.error('An error occurred while creating certificates');
+                if (response.success) {
+                    notification.success({
+                        message: "Certificate Creation Successful",
+                        description: "The certificates have been successfully created and are now available for viewing and download.",
+                        duration: 5,
+                    });
+                } else {
+                    notification.error({
+                        message: "Certificate Creation Failed",
+                        description: "An issue occurred while trying to create the certificates.",
+                        duration: 5,
+                    });
+                }
             }
         } catch (error) {
-            message.error('An error occurred while creating certificates');
+            notification.error({
+                message: "Certificate Creation Failed",
+                description: "An issue occurred while trying to create the certificates.",
+                duration: 5,
+            });
         } finally {
             setSubmitting(false);
         }
     };
 
-    const parseExcelFile = (file) => {
-        return new Promise((resolve, reject) => {
+    const parseExcelFile = async (file) => {
+        return new Promise(async (resolve, reject) => {
             const reader = new FileReader();
 
-            reader.onload = (e) => {
-                const workbook = XLSX.read(e.target.result, { type: 'array' });
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-                const data = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false });
+            reader.onload = async (e) => {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: "array" });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+                        header: 1,
+                        raw: false,
+                    });
 
-                data.shift(); // Remove the header
+                    // Assuming the first row contains column headers (keys)
+                    const headers = jsonData[0];
+                    const jsonArray = jsonData.slice(1).map(row => {
+                        const obj = {};
+                        headers.forEach((header, index) => {
+                            obj[header] = row[index];
+                        });
+                        return obj;
+                    });
 
-                resolve(data);
+                    console.log(jsonArray);
+
+                    const validationErrors = validateExcelData(jsonArray);
+
+                    if (validationErrors.length === 0) {
+                        resolve(jsonData);
+                    } else {
+                        const uniqueValidationErrors = new Set(validationErrors);
+                        const uniqueErrorsArray = Array.from(uniqueValidationErrors);
+                        for (const uniqueError of uniqueErrorsArray) {
+                            message.error({
+                                content: uniqueError,
+                                duration: 10,
+                            });
+                        }
+                        reject(uniqueErrorsArray);
+                    }
+                } catch (error) {
+                    reject(error);
+                }
             };
 
             reader.onerror = (error) => {
-                console.error('File reading error:', error);
                 reject(error);
             };
 
@@ -74,60 +119,27 @@ export const ExcelUploadModal = ({ visible, onCancel }) => {
         });
     };
 
-    const transformData = (data) => {
-        const jsonData = [];
-
-        for (let row of data) {
-            jsonData.push({
-                brand: row[0],
-                model_no: row[1],
-                model_name: row[2],
-                movement: row[3],
-                case_material: row[4],
-                bracelet_strap_material: row[5],
-                yop: row[6],
-                gender: row[7],
-                case_serial: row[8],
-                movement_serial: row[9],
-                dial: row[10],
-                bracelet_strap: row[11],
-                crown_pusher: row[12],
-                user_email: row[13],
-                validated_by: row[14],
-                date_of_validation: row[15],
-                issue_date: row[16],
-                expiry_date: row[17],
-                remarks: row[18],
-            });
-        }
-
-        return jsonData;
-    };
-
     return (
         <Modal
-            title="Upload Excel File"
-            visible={visible}
-            onCancel={onCancel}
-            footer={null}
-        >
-            <Form>
-                <Form.Item label="Select Excel File">
-                    <input type="file" accept=".xlsx" onChange={handleFileChange} />
-                </Form.Item>
-                <Form.Item>
-                    <Button
-                        type="primary"
-                        onClick={handleFormSubmit}
-                        disabled={isSubmitting}
-                    >
-                        Submit
-                    </Button>
-                </Form.Item>
-                {successMessage && (
-                    <p style={{ color: 'green' }}>{successMessage}</p>
-                )}
-            </Form>
-        </Modal>
+      title="Upload Excel File"
+      visible={visible}
+      onCancel={onCancel}
+      footer={null}
+    >
+      <Form>
+        <Form.Item label="Select Excel File">
+          <input type="file" accept=".xlsx" onChange={handleFileChange} />
+        </Form.Item>
+        <Form.Item>
+          <Button
+            type="primary"
+            onClick={handleFormSubmit}
+            disabled={isSubmitting}
+          >
+            Submit
+          </Button>
+        </Form.Item>
+      </Form>
+    </Modal>
     );
 };

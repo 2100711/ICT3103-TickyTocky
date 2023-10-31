@@ -1,11 +1,11 @@
 import { WatchModel } from "../models/Watches.js";
 import {
-    createSerialNumbers,
-    getAllSerialNumbers,
-    getSerialNumbers,
-    updateSerialNumbers,
-    deleteSerialNumbers,
-} from "../controls/serialNumbers.js";
+    createSerial,
+    getAllSerials,
+    getSerial,
+    updateSerial,
+    deleteSerial,
+} from "../controls/serials.js";
 
 const createWatch = async (watch, session) => {
     try {
@@ -25,14 +25,14 @@ const createWatch = async (watch, session) => {
             gender,
         } = watch;
         const sessionOptions = session ? { session } : {};
-        const serialNumbers = {
+        const serial = {
             case_serial,
             movement_serial,
             dial,
             bracelet_strap,
             crown_pusher,
         };
-        const serial_id = await createSerialNumbers(serialNumbers, session);
+        const serial_id = await createSerial(serial, session);
         const watchData = new WatchModel({
             brand,
             model_no,
@@ -95,7 +95,7 @@ const updateWatch = async (watch, session) => {
         if (!watchData) {
             throw new Error("Watch not found.");
         }
-        const serialNumbers = {
+        const serial = {
             serial_id: watchData.serial_id,
             case_serial,
             movement_serial,
@@ -103,7 +103,7 @@ const updateWatch = async (watch, session) => {
             bracelet_strap,
             crown_pusher,
         };
-        const serial_id = await updateSerialNumbers(serialNumbers, session);
+        const serial_id = await updateSerial(serial, session);
         const updatedWatch = await WatchModel.findByIdAndUpdate(
             watch_id, {
                 brand,
@@ -135,7 +135,7 @@ const deleteWatch = async (watch_id, session) => {
         if (!watch) {
             throw new Error("Watch not found.");
         }
-        const deletedSerial = await deleteSerialNumbers(watch.serial_id, session);
+        const deletedSerial = await deleteSerial(watch.serial_id, session);
         const deletedWatch = await WatchModel.findByIdAndRemove(watch_id, {
             ...sessionOptions,
         });

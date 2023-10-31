@@ -1,28 +1,10 @@
-import express from "express";
 import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
-import rateLimit from 'express-rate-limit';
 import { UserModel } from "../models/Users.js";
 import { OtpModel } from "../models/Otp.js";
 
-import {
-  EMAIL_NAME,
-  EMAIL_ADDR,
-  EMAIL_PASS,
-  EMAIL_USER,
-} from "../constants.js";
-
-// to be added
-// const app = express();
-
-// // Rate limiting middleware
-// const loginLimiter = rateLimit({
-//   windowMs: 15 * 60 * 1000,  // 15 minutes
-//   max: 5,  // limit each IP to 5 login requests per windowMs
-// });
-
-// app.post('/login', loginLimiter, login);
+import { EMAIL_NAME, EMAIL_PASS, EMAIL_USER } from "../constants.js";
 
 const isAuthenticated = (req, res, next) => {
   if (req.session.user) {
@@ -114,9 +96,15 @@ const register = async (req, res) => {
   }
 };
 
-const login = async (req, res) => {
-  const { email, password } = req.body;
+const login = async (req, res, next) => { 
   try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      // throw new error;
+      return res
+        .status(400)
+        .json({ success: false, message: "Please enter your email and password" }); 
+    }
     const user = await UserModel.findOne({ email });
 
     if (!user || !(await bcrypt.compare(password, user.encrypted_password))) {
@@ -145,16 +133,26 @@ const login = async (req, res) => {
 
     await req.session.save();
 
+    req.user = user;
+    res.status(201);
+
+    next();
+
     return res
       .status(201)
       .json({ success: true, message: "Login successful.", role: user.role });
   } catch (error) {
+    res.status(500);
     console.error(error);
+    next();
     return res.status(500).json({ success: false, message: "Server error." });
   }
 };
 
-const logout = async (req, res) => {
+const logout = async (req, res, next) => {
+  const user = await UserModel.findOne({ email: req.session.user.email }); // try catch
+  req.user = user;
+  next();
   req.session.destroy();
   return res.status(200).json({ success: true, message: "Logged out." });
 };
@@ -163,31 +161,47 @@ const generateOTP = async (req, res) => {
   const { email } = req.body;
   try {
     if (!email) {
-      return res.status(400).json({ error: "Email is required." });
+      return res
+        .status(200)
+        .json({ success: false, message: "Email is required." });
     }
 
-    const token = generateRandomOTP(); //TODO: change random seed generated using a cryptographically secure pseudo-random number generator (CSPRNG).
+    // TODO: check if email exist in database
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      return res
+        .status(200)
+        .json({ success: false, message: "Email does not exist." });
+    }
+
+    const token = generateRandomOTP();
 
     const doc = await OtpModel.create({
       user_email: email,
       token: token,
     });
 
-    emailToUser(email, token);
+    const send = await emailToUser(email, token);
+
+    if (!send.success) {
+      return res.status(500).json({ success: false, message: send.message });
+    }
 
     return res.status(200).json({
+      success: true,
       message: `otp created`,
     });
   } catch (error) {
-    return res.status(500).json({ message: "An error occurred." });
+    return res
+      .status(500)
+      .json({ success: false, message: "An error occurred." });
   }
 };
 
 const emailToUser = async (email, token) => {
   const transporter = nodemailer.createTransport({
-    host: "sandbox.smtp.mailtrap.io",
-    port: 2525,
-    secure: false, // TODO: Set to true
+    service: "gmail",
+    // secure: false, // TODO: Set to true
     auth: {
       user: EMAIL_USER,
       pass: EMAIL_PASS,
@@ -205,19 +219,21 @@ const emailToUser = async (email, token) => {
   const mailOptions = {
     from: {
       name: EMAIL_NAME,
-      address: EMAIL_ADDR,
+      address: EMAIL_USER,
     },
     to: email,
     subject: "Ticky Tocky One-Time-Password",
     html: emailBody,
   };
 
-  transporter.sendMail(mailOptions, (err) => {
-    if (err) {
-      return res.status(500).json({ error: "Failed to send email." });
-    } else {
-      return res.status(200).json({ message: "Email sent." });
-    }
+  return new Promise((resolve, reject) => {
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        resolve({ success: false, message: "Failed to send email." });
+      } else {
+        resolve({ success: true, message: "Email sent." });
+      }
+    });
   });
 };
 
@@ -226,16 +242,62 @@ const verifyOTP = async (req, res) => {
   try {
     const token = await OtpModel.findOne({ user_email: email, token: otp });
     if (!token) {
-      return res
-        .status(401)
-        .json({ message: "Incorrect OTP entered or OTP has expired." });
+      return res.status(401).json({
+        success: false,
+        message: "Incorrect OTP entered or OTP has expired.",
+      });
     }
 
     // TODO: create session so user can reset password?
 
-    return res.status(200).json({ message: "OTP verified." });
+    return res.status(200).json({
+      success: true,
+      message: "Your OTP has been successfully verified.",
+    });
   } catch (error) {
-    res.status(500).json({ message: "An error occurred." });
+    res.status(500).json({ success: false, message: "An error occurred." });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    if (!email) {
+      return res
+        .status(200)
+        .json({ success: false, message: "Email is required." });
+    }
+
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      return res
+        .status(200)
+        .json({ success: false, message: "Email does not exist." });
+    }
+
+    // TODO: add regex validation to password
+
+    // Salt and Hash password
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const updatedUser = await UserModel.findOneAndUpdate(
+      { email },
+      { $set: { encrypted_password: hashedPassword } },
+      { new: true }
+    );
+
+    if (updatedUser) {
+      res.status(200).json({
+        success: true,
+        message: "Password updated successfully",
+      });
+    } else {
+      res.status(404).json({ success: false, message: "An error occurred." });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: "An error occurred." });
   }
 };
 
@@ -249,4 +311,5 @@ export {
   logout,
   generateOTP,
   verifyOTP,
+  resetPassword,
 };

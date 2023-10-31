@@ -1,18 +1,47 @@
 import React, { useState } from "react";
-import { Form, Input, Button, notification } from "antd";
-import { Link } from "react-router-dom"; // If using React Router for navigation
+import { Form, Input, Button, notification, Spin } from "antd";
+import { Link, useLocation } from "react-router-dom"; // If using React Router for navigation
 import "../styles/ForgotPassword.css"; // You can reuse the CSS for the password reset page
+import { resetPassword } from "../../api/auth";
 
 export const PasswordReset = () => {
   const [passwordUpdated, setPasswordUpdated] = useState(false);
   const [password, setPassword] = useState("");
   const [cfmPassword, setCfmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (values) => {
-    // TODO: Implement password reset logic
-    if (validatePassword() && validateCfmPassword()) {
-      console.log("Password reset successful");
-      setPasswordUpdated(true);
+  const location = useLocation();
+
+  const handleSubmit = async (values) => {
+    try {
+      setLoading(true);
+      if (validatePassword() && validateCfmPassword()) {
+        const response = await resetPassword({
+          email: location.state.email,
+          password,
+        });
+        if (response.success) {
+          setLoading(false);
+          setPasswordUpdated(true);
+        } else {
+          setLoading(false);
+          setPasswordUpdated(false);
+          notification.error({
+            message: "Error",
+            description: response.message,
+            duration: 5,
+          });
+        }
+        // console.log("Password reset successful");
+      }
+    } catch (error) {
+      setLoading(false);
+      setPasswordUpdated(false);
+      notification.error({
+        message: "Error",
+        description: error.message,
+        duration: 5,
+      });
     }
   };
 
@@ -44,52 +73,63 @@ export const PasswordReset = () => {
   };
 
   return (
-    <div className="forgot-password-container">
-      <Form onFinish={handleSubmit} className="forgot-password-form">
-        <h2>Password Reset</h2>
-        {passwordUpdated ? (
-          <p>
-            Your password has been successfully updated. Click{" "}
-            <Link to="/login">Login</Link> to continue.
-          </p>
-        ) : (
-          <>
-            <Form.Item
-              name="password"
-              rules={[
-                { required: true, message: "Please enter your new password" },
-              ]}
-            >
-              <Input.Password
-                type="password"
-                placeholder="New Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </Form.Item>
+    <Spin tip="Loading..." size="large" spinning={loading}>
+      <div className="forgot-password-container">
+        <Form onFinish={handleSubmit} className="forgot-password-form">
+          <h2>Password Reset</h2>
+          {passwordUpdated ? (
+            <p>
+              Your password has been successfully updated. Click{" "}
+              <Link to="/login">Login</Link> to continue.
+            </p>
+          ) : (
+            <>
+              <Form.Item
+                name="password"
+                rules={[
+                  { required: true, message: "Please enter your new password" },
+                  {
+                    pattern:
+                      /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#%^&+=])(?!.*\s).{14,128}$/,
+                    message:
+                      "Password must be at least 14 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#%^&+=).",
+                  },
+                ]}
+              >
+                <Input.Password
+                  type="password"
+                  placeholder="New Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </Form.Item>
 
-            <Form.Item
-              name="confirmPassword"
-              rules={[
-                { required: true, message: "Please confirm your new password" },
-              ]}
-            >
-              <Input.Password
-                type="password"
-                placeholder="Confirm Password"
-                value={cfmPassword}
-                onChange={(e) => setCfmPassword(e.target.value)}
-              />
-            </Form.Item>
+              <Form.Item
+                name="confirmPassword"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please confirm your new password",
+                  },
+                ]}
+              >
+                <Input.Password
+                  type="password"
+                  placeholder="Confirm Password"
+                  value={cfmPassword}
+                  onChange={(e) => setCfmPassword(e.target.value)}
+                />
+              </Form.Item>
 
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-                Update Password
-              </Button>
-            </Form.Item>
-          </>
-        )}
-      </Form>
-    </div>
+              <Form.Item>
+                <Button type="primary" htmlType="submit">
+                  Update Password
+                </Button>
+              </Form.Item>
+            </>
+          )}
+        </Form>
+      </div>
+    </Spin>
   );
 };

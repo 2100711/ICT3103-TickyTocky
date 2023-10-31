@@ -30,7 +30,7 @@ export const CertsManagement = () => {
         onCancel={handleCancel}
       />
       <CertForm visible={modalVisible} onCancel={handleCancel} />
-      <CertTable />
+      <CertTable role="admin" />
       <Button type="primary" onClick={showModal}>
         Create New Certification
       </Button>
