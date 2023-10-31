@@ -59,6 +59,40 @@ services:
     networks:
       - app-network
 
+  loki:
+    container_name: loki
+    image: grafana/loki:2.9.0
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki:/etc/loki
+    command: -config.file=/etc/loki/loki-config.yml
+    networks:
+      - app-network
+
+  promtail:
+    container_name: promtail
+    image: grafana/promtail:2.9.0
+    volumes:
+      - /var/log:/var/log
+      - ./promtail:/etc/promtail
+    command: -config.file=/etc/promtail/promtail-config.yml
+    networks:
+      - app-network
+
+  grafana:
+    container_name: grafana
+    user: root
+    volumes:
+      - ./grafana:/var/lib/grafana
+    image: grafana/grafana:latest
+    ports:
+      - "3200:3000"
+    networks:
+      - app-network
+    depends_on:
+      - loki
+
 networks:
   app-network:
     driver: bridge
