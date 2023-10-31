@@ -96,9 +96,15 @@ const register = async (req, res) => {
   }
 };
 
-const login = async (req, res) => {
-  const { email, password } = req.body;
+const login = async (req, res, next) => { 
   try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      // throw new error;
+      return res
+        .status(400)
+        .json({ success: false, message: "Please enter your email and password" }); 
+    }
     const user = await UserModel.findOne({ email });
 
     if (!user || !(await bcrypt.compare(password, user.encrypted_password))) {
@@ -127,16 +133,26 @@ const login = async (req, res) => {
 
     await req.session.save();
 
+    req.user = user;
+    res.status(201);
+
+    next();
+
     return res
       .status(201)
       .json({ success: true, message: "Login successful.", role: user.role });
   } catch (error) {
+    res.status(500);
     console.error(error);
+    next();
     return res.status(500).json({ success: false, message: "Server error." });
   }
 };
 
-const logout = async (req, res) => {
+const logout = async (req, res, next) => {
+  const user = await UserModel.findOne({ email: req.session.user.email }); // try catch
+  req.user = user;
+  next();
   req.session.destroy();
   return res.status(200).json({ success: true, message: "Logged out." });
 };

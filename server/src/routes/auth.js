@@ -18,7 +18,7 @@ const authRouter = express.Router();
 // TODO: Forgot Password?
 authRouter.get("/check-auth", isAuthenticated, checkAuth, logRequest);
 authRouter.post("/register", validateRegister, register, logRequest);
-authRouter.post("/login", logRequest, login);
+authRouter.post("/login", login, logRequest);
 authRouter.get("/logout", logout, logRequest);
 authRouter.post("/generate-otp", generateOTP, logRequest);
 authRouter.post("/verify-otp", verifyOTP, logRequest);

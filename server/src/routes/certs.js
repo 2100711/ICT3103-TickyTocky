@@ -12,6 +12,7 @@ import {
 } from "../controls/certs.js";
 import {
   validateCert,
+  validateCerts,
   validateTransferOwnership,
 } from "../controls/validation.js";
 import { isAuthenticated, isAdmin } from "../controls/auth.js";
@@ -30,7 +31,7 @@ certRouter.post(
   "/create-certs",
   isAuthenticated,
   isAdmin,
-  validateCert,
+  validateCerts,
   createCerts,
   logRequest
 ); // TODO: Batch create certificates
