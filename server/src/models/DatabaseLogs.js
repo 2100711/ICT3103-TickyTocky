@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const DatabaseLogSchema = new mongoose.Schema({
     certificate_id: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
     timestamps: {

@@ -12,10 +12,10 @@ const createLog = async (logData) => {
 };
 
 const logRequest = async (req, next) => {
-    const certificate_id = req.body.certificate_id;  // Assuming the data is sent in the request body
+    const certificate_id = req.certificate_id;  // Assuming the data is sent in the request body
     const timestamps = new Date().toISOString();  // Getting the current timestamp
     const query_type = req.method;  // Assuming the data is sent in the request body
-
+    console.log("smth");
 
     const databaseLogData = {
         certificate_id,
