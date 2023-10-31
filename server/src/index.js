@@ -77,7 +77,7 @@ app.use(
             },
             autoRemove: "interval",
             autoRemoveInterval: 1, // checks every 1 minute to delete sessions that have expired
-            ttl: 5 * 60, // sessions last for 5 minutes and session length will be added by 5 from current time if user interacts with backend server
+            ttl: 30 * 60, // sessions last for 30 minutes and session length will be added by 30 from current time if user interacts with backend server
         }),
     })
 );
