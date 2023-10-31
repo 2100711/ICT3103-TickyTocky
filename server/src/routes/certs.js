@@ -32,10 +32,9 @@ certRouter.post(
   isAuthenticated,
   isAdmin,
   validateCerts,
-  createCerts,
-  logRequest
-); // TODO: Batch create certificates
-certRouter.get("/all-certs", getAllCerts, logRequest); // Get all certificates
+  createCerts
+); // logRequest is called in createCerts
+certRouter.get("/all-certs", getAllCerts); // logRequest is called in getALlCerts
 certRouter.get("/:certID", getCert, logRequest); // Get one certificate by ID
 certRouter.post("/email", isAuthenticated, getCertsByEmail, logRequest);
 certRouter.put(

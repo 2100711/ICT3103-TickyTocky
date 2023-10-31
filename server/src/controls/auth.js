@@ -5,6 +5,37 @@ import { UserModel } from "../models/Users.js";
 import { OtpModel } from "../models/Otp.js";
 
 import { EMAIL_NAME, EMAIL_PASS, EMAIL_USER } from "../constants.js";
+import { createLog } from "./securityLogs.js";
+
+const lockAccount = async (user_id) => {
+  // lock account if attempt more than 5
+  try {
+    const result = await UserModel.updateOne(
+      { _id: user_id },
+      { $set: { account_lock: true } }
+    );
+    if (result.acknowledged) return true;
+    return false;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const unlockAccount = async (user_id, ip_address) => {
+  // when unlocking account, create security_log record to set login_attempts back to 0
+  try {
+    const resetLoginAttempt = {
+      user_id,
+      ip_address,
+      login_attempts: 0,
+    };
+    const result = await createLog(resetLoginAttempt);
+    if (result.acknowledged) return true;
+    return false;
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 const isAuthenticated = (req, res, next) => {
   if (req.session.user) {
@@ -96,18 +127,41 @@ const register = async (req, res) => {
   }
 };
 
-const login = async (req, res, next) => { 
+const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
       // throw new error;
-      return res
-        .status(400)
-        .json({ success: false, message: "Please enter your email and password" }); 
+      return res.status(400).json({
+        success: false,
+        message: "Please enter your email and password",
+      });
     }
+
     const user = await UserModel.findOne({ email });
 
-    if (!user || !(await bcrypt.compare(password, user.encrypted_password))) {
+    if (!user) {
+      // if no user found with email, client should not know that the email does not exist in the db.
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid credentials." });
+    }
+
+    if (user.account_lock) {
+      req._id = user._id;
+      req.attemptSuccess = false;
+      next();
+      return res.status(401).json({
+        success: false,
+        message:
+          "Account is locked. Reset your password or contact administrator to unlock your account.",
+      });
+    }
+
+    if (!(await bcrypt.compare(password, user.encrypted_password))) {
+      req._id = user._id;
+      req.attemptSuccess = false;
+      next();
       return res
         .status(401)
         .json({ success: false, message: "Invalid credentials." });
@@ -133,9 +187,8 @@ const login = async (req, res, next) => {
 
     await req.session.save();
 
-    req.user = user;
-    res.status(201);
-
+    req._id = user._id;
+    req.attemptSuccess = true;
     next();
 
     return res
@@ -149,10 +202,7 @@ const login = async (req, res, next) => {
   }
 };
 
-const logout = async (req, res, next) => {
-  const user = await UserModel.findOne({ email: req.session.user.email }); // try catch
-  req.user = user;
-  next();
+const logout = async (req, res) => {
   req.session.destroy();
   return res.status(200).json({ success: true, message: "Logged out." });
 };
@@ -275,8 +325,6 @@ const resetPassword = async (req, res) => {
         .json({ success: false, message: "Email does not exist." });
     }
 
-    // TODO: add regex validation to password
-
     // Salt and Hash password
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
@@ -284,9 +332,11 @@ const resetPassword = async (req, res) => {
 
     const updatedUser = await UserModel.findOneAndUpdate(
       { email },
-      { $set: { encrypted_password: hashedPassword } },
+      { $set: { encrypted_password: hashedPassword, account_lock: false } },
       { new: true }
     );
+
+    await unlockAccount(updatedUser._id, req.ip);
 
     if (updatedUser) {
       res.status(200).json({
@@ -297,11 +347,14 @@ const resetPassword = async (req, res) => {
       res.status(404).json({ success: false, message: "An error occurred." });
     }
   } catch (error) {
+    console.error(error);
     res.status(500).json({ success: false, message: "An error occurred." });
   }
 };
 
 export {
+  unlockAccount,
+  lockAccount,
   isAuthenticated,
   isAdmin,
   userExists,

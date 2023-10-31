@@ -10,18 +10,19 @@ import {
   verifyOTP,
   resetPassword,
 } from "../controls/auth.js";
-import { logRequest } from "../controls/accessLogs.js";
+import { logRequest as accessLogRequest } from "../controls/accessLogs.js";
+import { logRequest as securityLogRequest } from "../controls/securityLogs.js";
 import { validateRegister } from "../controls/validation.js";
 
 const authRouter = express.Router();
 
 // TODO: Forgot Password?
-authRouter.get("/check-auth", isAuthenticated, checkAuth, logRequest);
-authRouter.post("/register", validateRegister, register, logRequest);
-authRouter.post("/login", login, logRequest);
-authRouter.get("/logout", logout, logRequest);
-authRouter.post("/generate-otp", generateOTP, logRequest);
-authRouter.post("/verify-otp", verifyOTP, logRequest);
-authRouter.post("/reset-password", resetPassword, logRequest);
+authRouter.get("/check-auth", isAuthenticated, checkAuth, accessLogRequest);
+authRouter.post("/register", validateRegister, register, accessLogRequest);
+authRouter.post("/login", login, securityLogRequest);
+authRouter.get("/logout", logout, accessLogRequest);
+authRouter.post("/generate-otp", generateOTP, accessLogRequest);
+authRouter.post("/verify-otp", verifyOTP, accessLogRequest);
+authRouter.post("/reset-password", resetPassword, accessLogRequest);
 
 export { authRouter };

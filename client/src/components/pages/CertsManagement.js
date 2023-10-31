@@ -9,7 +9,7 @@ import { ExcelUploadModal } from "../pages/ExcelUploadModal";
 export const CertsManagement = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [excelUploadModalVisible, setExcelUploadModalVisible] = useState(false);
-
+  const [refetchCertForAdmin, setRefetchCertForAdmin] = useState(false);
   const showModal = () => {
     setModalVisible(true);
   };
@@ -28,9 +28,18 @@ export const CertsManagement = () => {
       <ExcelUploadModal
         visible={excelUploadModalVisible}
         onCancel={handleCancel}
+        setRefetchCertForAdmin={setRefetchCertForAdmin}
       />
-      <CertForm visible={modalVisible} onCancel={handleCancel} />
-      <CertTable role="admin" />
+      <CertForm
+        visible={modalVisible}
+        onCancel={handleCancel}
+        setRefetchCertForAdmin={setRefetchCertForAdmin}
+      />
+      <CertTable
+        role="admin"
+        setRefetchCertForAdmin={setRefetchCertForAdmin}
+        refetchCertForAdmin={refetchCertForAdmin}
+      />
       <Button type="primary" onClick={showModal}>
         Create New Certification
       </Button>

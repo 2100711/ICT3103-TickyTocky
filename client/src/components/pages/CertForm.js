@@ -1,107 +1,109 @@
 import React, { useState, useEffect } from "react";
 import {
-    Modal,
-    Button,
-    Form,
-    Input,
-    Select,
-    DatePicker,
-    Tabs,
-    Radio,
-    notification,
+  Modal,
+  Button,
+  Form,
+  Input,
+  Select,
+  DatePicker,
+  Tabs,
+  Radio,
+  notification,
 } from "antd";
 import { getAllUsers } from "../../api/users";
 import { createCert } from "../../api/certs";
 import jsPDF from "jspdf";
 import {
-    WATCH_BRANDS,
-    WATCH_MOVEMENTS,
-    WATCH_CASE_MATERIALS,
-    BRACELET_STRAP_MATERIALS,
+  WATCH_BRANDS,
+  WATCH_MOVEMENTS,
+  WATCH_CASE_MATERIALS,
+  BRACELET_STRAP_MATERIALS,
 } from "../../constants";
 
 const { TabPane } = Tabs;
 
-export const CertForm = ({ visible, onCancel }) => {
-    const [activeTab, setActiveTab] = useState("serial");
-    const [userEmails, setUserEmails] = useState([]);
-    const [loading, setLoading] = useState(true);
+export const CertForm = ({ visible, onCancel, setRefetchCertForAdmin }) => {
+  const [activeTab, setActiveTab] = useState("serial");
+  const [userEmails, setUserEmails] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    const [form] = Form.useForm();
+  const [form] = Form.useForm();
 
-    useEffect(() => {
-        getAllUsers()
-            .then((response) => {
-                setUserEmails(response.emails);
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.error("Error fetching user emails:", error);
-                setLoading(false);
-            });
-    }, []);
+  useEffect(() => {
+    getAllUsers()
+      .then((response) => {
+        setUserEmails(response.emails);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching user emails:", error);
+        setLoading(false);
+      });
+  }, []);
 
-    const handleTabChange = (key) => {
-        setActiveTab(key);
-    };
+  const handleTabChange = (key) => {
+    setActiveTab(key);
+  };
 
-    const handleCancel = () => {
-        onCancel();
-    };
+  const handleCancel = () => {
+    onCancel();
+  };
 
-    // TODO: handleNext and handlePrevious works but if in the next form there are empty fields, the next button would not work
-    const handleNext = () => {
-        // Handle the next button logic, e.g., validate and move to the next tab
-        setActiveTab((current) => {
-            return current === "serial" ? "watch" : "cert";
-        });
-    };
+  // TODO: handleNext and handlePrevious works but if in the next form there are empty fields, the next button would not work
+  const handleNext = () => {
+    // Handle the next button logic, e.g., validate and move to the next tab
+    setActiveTab((current) => {
+      return current === "serial" ? "watch" : "cert";
+    });
+  };
 
-    const handlePrevious = () => {
-        // Handle the previous button logic, e.g., move back to the previous tab
-        setActiveTab((current) => {
-            return current === "cert" ? "watch" : "serial";
-        });
-    };
+  const handlePrevious = () => {
+    // Handle the previous button logic, e.g., move back to the previous tab
+    setActiveTab((current) => {
+      return current === "cert" ? "watch" : "serial";
+    });
+  };
 
-    const handleFinish = async (values) => {
-        const yop = values.yop.$y;
-        const doc = new jsPDF();
-        doc.text("Certificate of Validation", 10, 10);
-        doc.text("User Email: " + values.user_email, 10, 30);
-        doc.text("Validated By: " + values.validated_by, 10, 40);
-        doc.text("Date of Validation: " + values.date_of_validation, 10, 50);
-        doc.text("Issue Date: " + values.issue_date, 10, 60);
-        doc.text("Expiry Date: " + values.expiry_date, 10, 70);
-        doc.text("Remarks: " + values.remarks, 10, 80);
+  const handleFinish = async (values) => {
+    const yop = values.yop.$y;
+    const doc = new jsPDF();
+    doc.text("Certificate of Validation", 10, 10);
+    doc.text("User Email: " + values.user_email, 10, 30);
+    doc.text("Validated By: " + values.validated_by, 10, 40);
+    doc.text("Date of Validation: " + values.date_of_validation, 10, 50);
+    doc.text("Issue Date: " + values.issue_date, 10, 60);
+    doc.text("Expiry Date: " + values.expiry_date, 10, 70);
+    doc.text("Remarks: " + values.remarks, 10, 80);
 
-        const pdfContent = doc.output("datauristring");
+    const pdfContent = doc.output("datauristring");
 
-        const data = { ...values, yop: yop, pdf_content: pdfContent };
-        try {
-            const response = await createCert(data);
+    const data = { ...values, yop: yop, pdf_content: pdfContent };
+    try {
+      const response = await createCert(data);
 
-            // Show a success notification
-            notification.success({
-                message: "Certificate Creation Successful",
-                description: "The certificate has been successfully created and is now available for viewing and download. Thank you for using our services.",
-                duration: 5,
-            });
+      // Show a success notification
+      notification.success({
+        message: "Certificate Creation Successful",
+        description:
+          "The certificate has been successfully created and is now available for viewing and download. Thank you for using our services.",
+        duration: 5,
+      });
+      setRefetchCertForAdmin(true);
+      // Close the modal
+      onCancel();
+    } catch (error) {
+      // Show an error notification
+      notification.error({
+        message: "Certificate Creation Failed",
+        description:
+          "We apologize, but we encountered an issue while trying to create the certificate. Please try again later or contact our support team for assistance.",
+        duration: 5,
+      });
+    }
+  };
 
-            // Close the modal
-            onCancel();
-        } catch (error) {
-            // Show an error notification
-            notification.error({
-                message: "Certificate Creation Failed",
-                description: "We apologize, but we encountered an issue while trying to create the certificate. Please try again later or contact our support team for assistance.",
-                duration: 5,
-            });
-        }
-    };
-
-    return (
-        <Modal
+  return (
+    <Modal
       title="Certificate Form"
       open={visible}
       onCancel={handleCancel}
@@ -493,5 +495,5 @@ export const CertForm = ({ visible, onCancel }) => {
         </TabPane>
       </Tabs>
     </Modal>
-    );
+  );
 };

@@ -1,7 +1,7 @@
 import { UserModel } from "../models/Users.js";
 import { CertModel } from "../models/Certs.js";
 import { deleteWatch } from "./watches.js";
-import { userExists } from "./auth.js";
+import { unlockAccount, userExists } from "./auth.js";
 import bcrypt from "bcrypt";
 
 // Middleware to handle errors
@@ -111,6 +111,8 @@ const updateUserAsAdmin = async (req, res) => {
   const { f_name, l_name, email, account_lock, email_verified, role } =
     req.body;
   try {
+    const currentUser = await UserModel.findOne({ email });
+
     const updatedUser = await UserModel.findOneAndUpdate(
       { email },
       { $set: { f_name, l_name, account_lock, email_verified, role } },
@@ -118,6 +120,11 @@ const updateUserAsAdmin = async (req, res) => {
     );
 
     if (updatedUser) {
+      // if previously, user's account was locked and now it's unlocked, reset login attempts
+      if (currentUser.account_lock && !updatedUser.account_lock) {
+        await unlockAccount(updatedUser._id, req.ip);
+      }
+
       res.status(200).json({
         success: true,
         message: "User updated successfully",

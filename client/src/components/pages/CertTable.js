@@ -9,7 +9,12 @@ import {
 import { TransferOwnershipModal } from "./TransferOwnershipModal";
 import { getAllUsers } from "../../api/users";
 
-export const CertTable = ({ role, email }) => {
+export const CertTable = ({
+  role,
+  email,
+  setRefetchCertForAdmin,
+  refetchCertForAdmin,
+}) => {
   const [certs, setCerts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -82,6 +87,9 @@ export const CertTable = ({ role, email }) => {
       setCerts(data);
       setOriginalCerts(data);
       setRefetchCert(false);
+      {
+        role === "admin" && setRefetchCertForAdmin(false);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -106,7 +114,7 @@ export const CertTable = ({ role, email }) => {
       role !== "admin" && fetchUserEmails();
     }
     setLoading(false);
-  }, [refetchCert]);
+  }, [refetchCert, refetchCertForAdmin]);
 
   const showTransferOwnsershipModal = (cert) => {
     // get emails filter current user email
