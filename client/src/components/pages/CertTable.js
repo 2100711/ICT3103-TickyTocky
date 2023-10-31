@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Input, Popconfirm, message } from "antd";
+import { Table, Button, Input, Popconfirm, message, notification } from "antd";
 import {
   getAllCerts,
   getCert,
   deleteCert,
   getCertsByEmail,
 } from "../../api/certs";
+import { TransferOwnershipModal } from "./TransferOwnershipModal";
+import { getAllUsers } from "../../api/users";
 
 export const CertTable = ({ role, email }) => {
   const [certs, setCerts] = useState([]);
@@ -14,7 +16,12 @@ export const CertTable = ({ role, email }) => {
   const [pageSize] = useState(5);
   const [searchText, setSearchText] = useState("");
   const [originalCerts, setOriginalCerts] = useState([]);
-  console.log("EMAILCERTTABLE", email);
+  const [transferOwnershipModalVisible, setTransferOwnershipModalVisible] =
+    useState(false);
+  const [emails, setUserEmails] = useState([]);
+  const [selectedCert, setSelectedCert] = useState([]);
+  const [refetchCert, setRefetchCert] = useState(false);
+
   const columns = [
     {
       title: "Certificate ID",
@@ -55,7 +62,7 @@ export const CertTable = ({ role, email }) => {
           {role !== "admin" && (
             <Button
               type="primary"
-              onClick={() => handleTransferOwnsershipModal}
+              onClick={() => showTransferOwnsershipModal(cert)}
             >
               Transfer Ownership
             </Button>
@@ -67,33 +74,52 @@ export const CertTable = ({ role, email }) => {
 
   const fetchCertificates = async () => {
     try {
-      setLoading(true);
       const response =
         role === "admin"
           ? await getAllCerts()
           : await getCertsByEmail({ email });
-      console.log("FETCHCERTIFICATEMEMBER: ", response);
       const data = response.certs;
       setCerts(data);
       setOriginalCerts(data);
-      setLoading(false);
+      setRefetchCert(false);
     } catch (error) {
       console.error(error);
-      setLoading(false);
+    }
+  };
+
+  const fetchUserEmails = async () => {
+    try {
+      const response = await getAllUsers();
+      if (response.success) {
+        const filteredEmails = response.emails.filter((item) => item !== email);
+        setUserEmails(filteredEmails);
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
   useEffect(() => {
+    setLoading(true);
     fetchCertificates();
-  }, []);
+    {
+      role !== "admin" && fetchUserEmails();
+    }
+    setLoading(false);
+  }, [refetchCert]);
 
-  const handleTransferOwnsershipModal = async () => {
-    console.log("OPEN TRANSFER OWNERSHIP MODAL");
+  const showTransferOwnsershipModal = (cert) => {
+    // get emails filter current user email
+    setTransferOwnershipModalVisible(true);
+    setSelectedCert(cert.cert_id);
+  };
+
+  const handleCancel = () => {
+    setTransferOwnershipModalVisible(false);
   };
 
   const handleViewPDF = async (cert) => {
     try {
-      console.log("handleviewpdf:", cert);
       setLoading(true);
       const response = await getCert(cert.cert_id);
       const pdf = response.pdf_content;
@@ -189,6 +215,16 @@ export const CertTable = ({ role, email }) => {
           style: { textAlign: "center" },
         }}
       />
+      {role !== "admin" && (
+        <TransferOwnershipModal
+          visible={transferOwnershipModalVisible}
+          onCancel={handleCancel}
+          emails={emails}
+          user_email={email}
+          cert_id={selectedCert}
+          setRefetchCert={setRefetchCert}
+        />
+      )}
     </div>
   );
 };

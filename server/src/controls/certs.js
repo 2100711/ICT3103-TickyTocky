@@ -85,7 +85,7 @@ const createCert = async (req, res) => {
     await session.commitTransaction();
     session.endSession();
 
-    req.certificate_id = cert.cert_id
+    req.certificate_id = cert.cert_id;
 
     res.status(201).json({
       success: true,
@@ -93,7 +93,7 @@ const createCert = async (req, res) => {
       cert,
     });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     await session.abortTransaction();
     session.endSession();
     res.status(500).json({ success: false, message: "An error occurred" });
@@ -228,15 +228,13 @@ const getCertsByEmail = async (req, res) => {
       { user_email: email },
       { _id: 0, cert_id: 1, user_email: 1 }
     );
-    // console.log("CERTSBYEMAIL:", certs);
+
     if (!certs) {
       return res.status(200).json({
         success: false,
         message: "Certificates not found for this user",
       });
     }
-
-    console.log("CERTSBACKEND", certs);
 
     return res
       .status(200)

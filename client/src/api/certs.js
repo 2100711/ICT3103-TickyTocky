@@ -12,6 +12,7 @@ import {
   GET_CERTS_BY_EMAIL_API,
   UPDATE_CERT_API,
   DELETE_CERT_API,
+  TRANSFER_OWNERSHIP_API,
 } from "../constants";
 
 export async function createCert(req) {
@@ -37,9 +38,13 @@ export async function getCertsByEmail(req) {
 }
 
 export async function updateCert(req) {
-  return requestPut(UPDATE_CERT_API, { req });
+  return requestPut(UPDATE_CERT_API, req);
 }
 
 export async function deleteCert(req) {
   return requestDelete(DELETE_CERT_API, { req });
+}
+
+export async function transferOwnership(req) {
+  return requestPut(TRANSFER_OWNERSHIP_API, req);
 }

@@ -41,6 +41,7 @@ export const RenderMenu = () => {
     const { success, message } = await logout();
     if (success) {
       navigate("/");
+      window.location.reload();
     }
   };
 
