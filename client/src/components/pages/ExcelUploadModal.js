@@ -99,7 +99,7 @@ export const ExcelUploadModal = ({ visible, onCancel }) => {
                         for (const uniqueError of uniqueErrorsArray) {
                             message.error({
                                 content: uniqueError,
-                                duration: 10,
+                                duration: 5,
                             });
                         }
                         reject(uniqueErrorsArray);
