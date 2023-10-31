@@ -402,6 +402,182 @@ export const validateCert = async (req, res, next) => {
     next();
 };
 
+export const validateCerts = async (req, res, next) =>{
+    const data = req.body;
+
+    const errors = {
+        conflict_409: [],
+        badRequest_400: [],
+        notFound_404: [],
+    };
+
+    console.log(data);
+
+    for (let row of data) {
+        const isDupSerial = await checkDupSerial(
+        row.case_serial,
+        row.movement_serial,
+        row.dial,
+        row.bracelet_strap,
+        row.crown_pusher,);
+
+        const isDupEmail = await checkDupEmail(row.user_email);
+        const isPastDate = checkPastDate(row.date_of_validation, row.issue_date);
+        const isFutureDate = checkFutureDate(row.expiry_date);
+
+        if (!isDupEmail) {
+        errors.notFound_404.push(
+            "User does not exist. Please provide a valid email."
+        );
+    }
+
+    if (isDupSerial) {
+        errors.conflict_409.push(
+            "A record with these serial numbers already exists. Please check and provide unique serial numbers."
+        );
+    }
+
+    if (!validateCaseSerial(row.case_serial)) {
+        errors.badRequest_400.push(
+            "Invalid Case serial numbers."
+        );
+    }
+
+    if (!validateMovementSerial(row.movement_serial)) {
+        errors.badRequest_400.push(
+            "Invalid Movement serial numbers."
+        );
+    }
+
+    if (!validateDial(row.dial)) {
+        errors.badRequest_400.push(
+            "Invalid Dial serial numbers."
+        );
+    }
+
+    if (!validateBraceletStrap(row.bracelet_strap)) {
+        errors.badRequest_400.push(
+            "Invalid Bracelet or strap serial numbers."
+        );
+    }
+
+    if (!validateCrownPusher(row.crown_pusher)) {
+        errors.badRequest_400.push(
+            "Invalid Crown pusher serial numbers."
+        );
+    }
+
+    if (!validateBrand(row.brand)) {
+        errors.badRequest_400.push(
+            `Invalid brand.`
+        );
+    }
+
+    if (!validateModelNumber(row.model_no)) {
+        errors.badRequest_400.push(
+            "Invalid Model number."
+        );
+    }
+
+    if (!validateModelName(row.model_name)) {
+        errors.badRequest_400.push(
+            "Invalid Model name."
+        );
+    }
+
+    if (!validateMovement(row.movement)) {
+        errors.badRequest_400.push(
+            `Invalid movmement.`
+        );
+    }
+
+    if (!validateCaseMaterial(row.case_material)) {
+        errors.badRequest_400.push(
+            `Invalid case material.`
+        );
+    }
+
+    if (!validateBraceletStrapMaterial(row.bracelet_strap_material)) {
+        errors.badRequest_400.push(
+            `Invalid bracelet/strap material.`
+        );
+    }
+
+    if (!validateYOP(row.yop)) {
+        errors.badRequest_400.push(
+            `Invalid year of production.`
+        );
+    }
+
+    if (!validateValidatedBy(row.validated_by)) {
+        errors.badRequest_400.push(
+            "Invalid Validator."
+        );
+    }
+
+    if (!isPastDate) {
+        errors.badRequest_400.push(
+            "Date of validation and issue date cannot be current or future date."
+        );
+    }
+
+    if (!isFutureDate) {
+        errors.badRequest_400.push("Expiry date cannot be current or past date.");
+    }
+
+    // Date validations
+    if (row.date_of_validation >= row.issue_date) {
+        errors.badRequest_400.push(
+            "The Date of Validation must occur before the Issue Date."
+        );
+    }
+
+    if (row.date_of_validation >= row.expiry_date) {
+        errors.badRequest_400.push(
+            "The Date of Validation must occur before the Expiry Date."
+        );
+    }
+
+    if (row.issue_date >= row.expiry_date) {
+        errors.badRequest_400.push(
+            "The Issue Date must occur before the Expiry Date."
+        );
+    }
+
+    if (!validateRemarks(row.remarks)) {
+        errors.badRequest_400.push(
+            "Remarks must not exceed 255 characters in length."
+        );
+    }
+}
+
+    // Check for any validation errors
+    if (
+        errors.conflict_409.length > 0 ||
+        errors.badRequest_400.length > 0 ||
+        errors.notFound_404.length > 0
+    ) {
+        const response = {};
+
+        if (errors.conflict_409.length > 0) {
+            response.conflict_409 = errors.conflict_409;
+        }
+
+        if (errors.badRequest_400.length > 0) {
+            response.badRequest_400 = errors.badRequest_400;
+        }
+
+        if (errors.notFound_404.length > 0) {
+            response.notFound_404 = errors.notFound_404;
+        }
+
+        return res.status(400).json(response);
+    }
+
+    // If there are no errors, proceed
+    next();
+};
+
 export const validateTransferOwnership = async (req, res, next) => {
     const { cert_id, current_email, next_email } = req.body;
 

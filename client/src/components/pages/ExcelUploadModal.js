@@ -89,12 +89,10 @@ export const ExcelUploadModal = ({ visible, onCancel }) => {
                         return obj;
                     });
 
-                    console.log(jsonArray);
-
                     const validationErrors = validateExcelData(jsonArray);
 
                     if (validationErrors.length === 0) {
-                        resolve(jsonData);
+                        resolve(jsonArray);
                     } else {
                         const uniqueValidationErrors = new Set(validationErrors);
                         const uniqueErrorsArray = Array.from(uniqueValidationErrors);
