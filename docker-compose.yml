@@ -134,26 +134,6 @@ services:
     depends_on:
       - loki
 
-  grafanamongo:
-    container_name: grafanamongo
-    build:
-      context: ./grafana
-      dockerfile: Dockerfile-grafanamongo
-    volumes:
-     - ./grafana:/var/lib/grafana
-     - /var/lib/grafana/plugins
-    ports:
-     - 3300:3000
-    labels: #Send Logs to promtail grafana
-      logging: "promtail" 
-      logging_jobname: "containerlogs"
-    environment:
-      - TZ=Asia/Singapore #Timezone for loggings
-    networks:
-      - app-network
-    depends_on:
-      - loki
-
 networks:
   app-network:
     driver: bridge
