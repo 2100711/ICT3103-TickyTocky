@@ -3,24 +3,9 @@ import nodemailer from "nodemailer";
 import crypto from "crypto";
 import { UserModel } from "../models/Users.js";
 import { OtpModel } from "../models/Otp.js";
-// import { check, validationResult } from 'express-validator';  // Import express-validator
+import sanitize from "mongo-sanitize";
 
 import { EMAIL_NAME, EMAIL_PASS, EMAIL_USER } from "../constants.js";
-import { createLog } from "./securityLogs.js";
-
-// import { EMAIL_NAME, EMAIL_PASS, EMAIL_USER } from "../constants.js";
-
-// const registerValidation = [
-//   check('f_name').trim().isLength({ min: 1 }).withMessage('First name is required'),
-//   check('l_name').trim().isLength({ min: 1 }).withMessage('Last name is required'),
-//   check('email').trim().isEmail().withMessage('Invalid email address'),
-//   check('password').trim().isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
-// ];
-
-// const loginValidation = [
-//   check('email').trim().isEmail().withMessage('Invalid email address'),
-//   check('password').trim().isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
-// ];
 
 const lockAccount = async (user_id) => {
   // lock account if attempt more than 5
@@ -76,7 +61,8 @@ const isAdmin = async (req, res, next) => {
 
 // Check if user exists
 const userExists = async (email) => {
-  const user = await UserModel.findOne({ email: email });
+  const sanitizedEmail = sanitize(email);
+  const user = await UserModel.findOne({ email: sanitizedEmail });
   if (user) {
     return true;
   }
@@ -111,6 +97,9 @@ const checkAuth = async (req, res) => {
 
 const register = async (req, res) => {
   const { f_name, l_name, email, password } = req.body;
+  const sanitizedEmail = sanitize(email);
+  const sanitizedFName = sanitize(f_name);
+  const sanitizedLName = sanitize(l_name);
 
   try {
     if (await userExists(email))
@@ -125,9 +114,9 @@ const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
     // Create new user
     const newUser = new UserModel({
-      f_name: f_name,
-      l_name: l_name,
-      email: email,
+      f_name: sanitizedFName,
+      l_name: sanitizedLName,
+      email: sanitizedEmail,
       encrypted_password: hashedPassword,
       // salt: saltedText,
     });
@@ -145,6 +134,7 @@ const register = async (req, res) => {
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+    const sanitizedEmail = sanitize(email);
     if (!email || !password) {
       // throw new error;
       return res.status(400).json({
@@ -152,8 +142,7 @@ const login = async (req, res, next) => {
         message: "Please enter your email and password",
       });
     }
-
-    const user = await UserModel.findOne({ email });
+    const user = await UserModel.findOne({ email: sanitizedEmail });
 
     if (!user) {
       // if no user found with email, client should not know that the email does not exist in the db.
@@ -224,6 +213,7 @@ const logout = async (req, res) => {
 
 const generateOTP = async (req, res) => {
   const { email } = req.body;
+  const sanitizedEmail = sanitize(email);
   try {
     if (!email) {
       return res
@@ -231,7 +221,8 @@ const generateOTP = async (req, res) => {
         .json({ success: false, message: "Email is required." });
     }
 
-    const user = await UserModel.findOne({ email });
+    // TODO: check if email exist in database
+    const user = await UserModel.findOne({ email: sanitizedEmail });
     if (!user) {
       return res
         .status(200)
@@ -375,6 +366,7 @@ const timeLeftOTP = async (req, res) => {
 
 const resetPassword = async (req, res) => {
   const { email, password } = req.body;
+  const sanitizedEmail = sanitize(email);
   try {
     if (!email) {
       return res
@@ -382,7 +374,7 @@ const resetPassword = async (req, res) => {
         .json({ success: false, message: "Email is required." });
     }
 
-    const user = await UserModel.findOne({ email });
+    const user = await UserModel.findOne({ email: sanitizedEmail });
     if (!user) {
       return res
         .status(200)
