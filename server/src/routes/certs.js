@@ -34,7 +34,7 @@ certRouter.post(
   validateCerts,
   createCerts
 ); // logRequest is called in createCerts
-certRouter.get("/all-certs", getAllCerts); // logRequest is called in getALlCerts
+certRouter.get("/all-certs", isAuthenticated, getAllCerts); // logRequest is called in getALlCerts
 certRouter.get("/:certID", getCert, logRequest); // Get one certificate by ID
 certRouter.post("/email", isAuthenticated, getCertsByEmail, logRequest);
 certRouter.put(
