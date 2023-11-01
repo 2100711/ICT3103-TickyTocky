@@ -27,12 +27,32 @@ async function requestHandler(
       body: body.req,
     };
   }
-  const response = await fetch(api, requestOptions);
-  const res = await response.json();
-  if (!response.ok) {
-    throw new Error(res.message);
+
+  try {
+    const response = await fetch(api, requestOptions);
+    console.log(response.status);
+
+    if (!response.ok) {
+      // Handle different error status codes here
+      if (response.status === 403) {
+        // Redirect to the Forbidden page
+        window.location.href = "/unauthorized";
+      } else if (response.status === 500) {
+        // Redirect to the Internal Server Error page
+        window.location.href = "/servererror";
+      } else if (response.status === 401) {
+      } else {
+        // Handle other error status codes here
+        throw new Error("An error occurred.");
+      }
+    }
+
+    const res = await response.json();
+    return res;
+  } catch (error) {
+    // Handle network errors or other exceptions here
+    throw error;
   }
-  return res;
 }
 
 export async function requestGet(api) {

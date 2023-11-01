@@ -6,8 +6,33 @@ import { Register } from "../pages/Register";
 import { OTPVerification } from "../pages/OTPVerification";
 import { ForgotPassword } from "../pages/ForgotPassword";
 import { PasswordReset } from "../pages/PasswordReset";
+import { NotFound } from "../errors/NotFound";
+import { ServerError } from "../errors/ServerError";
+import { Unauthorized } from "../errors/Unauthorized";
 
-export const nav = [{
+export const nav = [
+        {
+        path: "/unauthorized",
+        name: "Unauthorized",
+        element: <Unauthorized />,
+        isMenu: false,
+        isPrivate: false,
+    },
+        {
+        path: "/servererror",
+        name: "Server Error",
+        element: <ServerError />,
+        isMenu: false,
+        isPrivate: false,
+    },
+        {
+        path: "*",
+        name: "Not Found",
+        element: <NotFound />,
+        isMenu: false,
+        isPrivate: false,
+    },
+    {
         path: "/",
         name: "Home",
         element: <Home />,
