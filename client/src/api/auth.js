@@ -11,6 +11,7 @@ import {
   LOGOUT_API,
   GENERATE_OTP_API,
   VERIFY_OTP_API,
+  OTP_TIME_LEFT,
   RESET_PASSWORD_API,
 } from "../constants";
 
@@ -36,6 +37,10 @@ export async function generateOTP(req) {
 
 export async function verifyOTP(req) {
   return requestPost(VERIFY_OTP_API, { req });
+}
+
+export async function timeLeft(req) {
+  return requestPost(OTP_TIME_LEFT, { req });
 }
 
 export async function resetPassword(req) {

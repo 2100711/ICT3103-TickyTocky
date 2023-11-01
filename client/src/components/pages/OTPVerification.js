@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Form, Input, Button, notification, Spin } from "antd";
 import "../styles/OTPVerification.css";
-import { verifyOTP } from "../../api/auth";
+import { generateOTP, timeLeft, verifyOTP } from "../../api/auth";
 
 export const OTPVerification = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [totalSeconds, setTotalSeconds] = useState(300);
-  const [timerActive, setTimerActive] = useState(true);
+  const [email, setEmail] = useState("");
+  const [totalSeconds, setTotalSeconds] = useState(-1);
+  const [timerActive, setTimerActive] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const formatTime = (seconds) => {
@@ -28,51 +29,79 @@ export const OTPVerification = () => {
   };
 
   useEffect(() => {
+    if (email) {
+      getTimeLeftFromApi();
+    }
+  }, [email]);
+
+  useEffect(() => {
     if (timerActive && totalSeconds > 0) {
       const timer = setInterval(() => {
-        setTotalSeconds(totalSeconds - 1);
+        setTotalSeconds((prevTotalSeconds) => prevTotalSeconds - 1);
       }, 1000);
 
       return () => clearInterval(timer);
     } else if (totalSeconds === 0) {
       setTimerActive(false);
-      openNotification(
-        "warning",
-        "OTP Expired",
-        "Please request for a new OTP."
-      );
+      openNotification("warning", "OTP Expired", "Please request a new OTP.");
     }
-  }, [totalSeconds, timerActive]);
+  }, [totalSeconds]);
+
+  useEffect(() => {
+    if (location.state && location.state.email) {
+      setEmail(location.state.email);
+      window.history.replaceState({}, location.state);
+    }
+  }, [location.state]);
 
   const handleSubmit = async (values) => {
     setLoading(true);
     const response = await verifyOTP({
-      email: location.state.email,
+      email: email,
       otp: values.otp,
     });
     if (response.success) {
       setLoading(false);
-      openNotification(
-        "success",
-        "Success",
-        "Your OTP have been successfully verified."
-      );
-      navigate("/resetpassword", { state: { email: location.state.email } });
+      openNotification("success", "Success", "Your OTP has been verified.");
+      navigate("/resetpassword", { state: { email: email } });
     } else {
       setLoading(false);
       openNotification("error", "OTP Verification Failed", response.message);
     }
   };
 
-  const resendOTP = () => {
-    // TODO: Implement the resend OTP logic
-    setTimerActive(true);
-    setTotalSeconds(300);
-    openNotification(
-      "info",
-      "OTP Resent",
-      "Please check your inbox/junk folder for the new OTP."
-    );
+  const getTimeLeftFromApi = async () => {
+    try {
+      const response = await timeLeft({ email: email });
+
+      if (!response.time) {
+        setTotalSeconds(-1);
+      } else {
+        const { minutes, seconds } = response.time;
+        const initialSeconds = minutes * 60 + seconds;
+        setTotalSeconds(initialSeconds);
+        setTimerActive(true);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const resendOTP = async () => {
+    setLoading(true);
+    const generateOTPResponse = await generateOTP({ email: email });
+
+    if (generateOTPResponse.success) {
+      await getTimeLeftFromApi();
+      openNotification(
+        "info",
+        "OTP Resent",
+        "Please check your inbox/junk folder for the new OTP."
+      );
+    } else {
+      openNotification("error", "Error", "Please try again later.");
+    }
+    setLoading(false);
   };
 
   return (
@@ -88,15 +117,21 @@ export const OTPVerification = () => {
             <Input placeholder="Enter OTP" className="otp-input-box" />
           </Form.Item>
           <Form.Item className="otp-button-container">
-            <Button type="primary" htmlType="submit">
-              Verify
-            </Button>
-            {timerActive ? (
-              `\nResend OTP in ${formatTime(totalSeconds)}`
+            {!email ? (
+              <span style={{ color: "red" }}>Error</span>
             ) : (
-              <Button type="default" onClick={resendOTP}>
-                Resend Code
-              </Button>
+              <div>
+                <Button type="primary" htmlType="submit">
+                  Verify
+                </Button>
+                {timerActive ? (
+                  <span>{`Resend OTP in ${formatTime(totalSeconds)}`}</span>
+                ) : (
+                  <Button type="default" onClick={resendOTP}>
+                    Resend Code
+                  </Button>
+                )}
+              </div>
             )}
           </Form.Item>
         </Form>

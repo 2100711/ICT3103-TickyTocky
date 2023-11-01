@@ -17,11 +17,7 @@ export const ForgotPassword = () => {
         const response = await generateOTP({ email });
         if (response.success) {
           setLoading(false);
-          openNotification(
-            "info",
-            "Password Reset Email Sent",
-            "If the email you provided is in our system you will receive instructions to reset your password."
-          );
+          openNotification("info", "Password Reset Email Sent");
           // navigate
           navigate("/otp", { state: { email: email } });
         } else {

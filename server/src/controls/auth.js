@@ -231,12 +231,23 @@ const generateOTP = async (req, res) => {
         .json({ success: false, message: "Email is required." });
     }
 
-    // TODO: check if email exist in database
     const user = await UserModel.findOne({ email });
     if (!user) {
       return res
         .status(200)
         .json({ success: false, message: "Email does not exist." });
+    }
+
+    const isOtpExist = await OtpModel.findOne({ user_email: email });
+    if (isOtpExist) {
+      const currentTime = new Date();
+      const storedTime = isOtpExist.timestamps;
+      const timeDiff = currentTime.getTime() - storedTime.getTime();
+      const minutesLeft = Math.floor((15000 - timeDiff) / 60000); // 180000ms is 3 minutes // zaf: change back to 180000
+      return res.status(200).json({
+        success: false,
+        message: `Please wait ${minutesLeft} minutes to generate a new OTP.`,
+      });
     }
 
     const token = generateRandomOTP();
@@ -324,6 +335,44 @@ const verifyOTP = async (req, res) => {
   }
 };
 
+const timeLeftOTP = async (req, res) => {
+  const { email } = req.body;
+  try {
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required to retrieve time left.",
+      });
+    }
+    const isOtpExist = await OtpModel.findOne({ user_email: email });
+    if (isOtpExist) {
+      const currentTime = new Date();
+      const storedTime = isOtpExist.timestamps;
+      const timeDiff = currentTime.getTime() - storedTime.getTime();
+      const timeLeftInMs = 15000 - timeDiff; // 180000ms is 3 minutes // zaf: change back to 180000
+      const minutesLeft = Math.floor(timeLeftInMs / 60000);
+      const secondsLeft = Math.floor((timeLeftInMs % 60000) / 1000);
+
+      return res.status(200).json({
+        success: true,
+        message: "Successfully retrieved time left.",
+        time: { minutes: minutesLeft, seconds: secondsLeft },
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        message: "Incorrect OTP entered or OTP has expired.",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while retrieving time left.",
+    });
+  }
+};
+
 const resetPassword = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -379,5 +428,6 @@ export {
   logout,
   generateOTP,
   verifyOTP,
+  timeLeftOTP,
   resetPassword,
 };
