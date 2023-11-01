@@ -65,8 +65,10 @@ app.use(
     session({
         secret: "secret-key-from-env",
         cookie: {
+            secure: false, // Set to true for HTTPS
             httpOnly: true,
             signed: true,
+            sameSite: 'strict', // Helps mitigate CSRF attacks
         },
         resave: false,
         saveUninitialized: false,
