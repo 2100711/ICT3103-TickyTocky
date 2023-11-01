@@ -17,9 +17,20 @@ export const Login = () => {
   );
   const [errorMessage, setErrorMessage] = useState(null);
 
+  // useEffect(() => {
+  //   if (user.isAuthenticated) navigate("/");
+  // });
+
   useEffect(() => {
-    if (user.isAuthenticated) navigate("/");
-  });
+    // Check if the user is already authenticated, and if so, redirect to another page.
+    if (user.isAuthenticated) {
+      navigate("/"); // Change the destination URL as needed.
+    }
+  }, [user.isAuthenticated, navigate]);
+
+  if (user.isAuthenticated) {
+    return null; // Return null to prevent rendering the login page.
+  }
 
   const handleLogin = async () => {
     const { success, message } = await login(formData.email, formData.password);
