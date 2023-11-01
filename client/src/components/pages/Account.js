@@ -12,6 +12,7 @@ import {
   Input,
   message,
   Checkbox,
+  notification,
 } from "antd";
 import { getUser, updateUser } from "../../api/users";
 import { UserOutlined } from "@ant-design/icons";
@@ -19,6 +20,7 @@ import "../styles/Account.css";
 import { CertsManagement } from "./CertsManagement";
 import { UsersManagement } from "./UsersManagement";
 import { CertMember } from "./CertMember";
+import { resetPassword } from "../../api/auth";
 
 const { Text } = Typography;
 const { Item } = Form;
@@ -29,11 +31,22 @@ export const Account = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editProfileModalVisible, setEditProfileModalVisible] = useState(false);
+  const [resetPasswordModalVisible, setResetPasswordModalVisible] =
+    useState(false);
   const [form] = Form.useForm();
+  const [resetPasswordForm] = Form.useForm();
 
   useEffect(() => {
     fetchUser();
   }, []);
+
+  useEffect(() => {
+    resetPasswordForm.setFieldValue({
+      old_password: "",
+      new_password: "",
+      cfm_new_password: "",
+    });
+  }, [resetPasswordForm]);
 
   const fetchUser = async () => {
     const response = await getUser(user.email);
@@ -79,6 +92,56 @@ export const Account = () => {
     }
   };
 
+  const handleShowResetPasswordModal = () => {
+    setResetPasswordModalVisible(true);
+  };
+
+  const handleResetPassword = async (values) => {
+    console.log("HANDLERESETPASSWORD");
+    try {
+      setLoading(true);
+      console.log("resetpassVALUES", { ...values });
+      if (values.old_password === values.new_password) {
+        console.log("clientOLDPASS is clientNEWPASS");
+        notification.error({
+          message: "Error",
+          description: "Old and new password cannot be the same.",
+          duration: 5,
+        });
+      } else if (values.new_password !== values.cfm_new_password) {
+        notification.error({
+          message: "Error",
+          description: "New password and confirm password must be the same.",
+          duration: 5,
+        });
+      } else {
+        const response = await resetPassword({
+          email: userData.email,
+          password: values.new_password,
+        });
+        if (response.success) {
+          notification.success({
+            message: "Success",
+            description: "Password successfully reset.",
+            duration: 5,
+          });
+        } else {
+          console.log("ERRORFROMSERVER?", response);
+          notification.error({
+            message: "Error",
+            description: response.message,
+            duration: 5,
+          });
+        }
+      }
+
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.error(error);
+    }
+  };
+
   if (loading) {
     return <Spin size="large" />;
   }
@@ -107,6 +170,7 @@ export const Account = () => {
               </div>
             </div>
             <Modal
+              forceRender
               title="Edit Profile"
               open={editProfileModalVisible}
               onOk={handleSaveProfile}
@@ -142,6 +206,85 @@ export const Account = () => {
                   <Input placeholder="Last Name" maxLength={50} />
                 </Item>
               </Form>
+            </Modal>
+            <Modal
+              forceRender
+              title="Reset Password"
+              open={resetPasswordModalVisible}
+              onCancel={() => setResetPasswordModalVisible(false)}
+            >
+              <Spin tip="Loading..." size="large" spinning={loading}>
+                <Form
+                  onFinish={handleResetPassword}
+                  form={resetPasswordForm}
+                  layout="vertical"
+                >
+                  <Form.Item
+                    label="Old Password"
+                    name="old_password"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter your old password",
+                      },
+                      {
+                        pattern:
+                          /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#%^&+=])(?!.*\s).{14,128}$/,
+                        message:
+                          "Password must be at least 14 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#%^&+=).",
+                      },
+                    ]}
+                  >
+                    <Input.Password
+                      type="password"
+                      placeholder="Old Password"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    label="New Password"
+                    name="new_password"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter your new password",
+                      },
+                      {
+                        pattern:
+                          /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#%^&+=])(?!.*\s).{14,128}$/,
+                        message:
+                          "New Password must be at least 14 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#%^&+=).",
+                      },
+                    ]}
+                  >
+                    <Input.Password
+                      type="password"
+                      placeholder="New Password"
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Confirm New Password"
+                    name="cfm_new_password"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please confirm your new password",
+                      },
+                    ]}
+                  >
+                    <Input.Password
+                      type="password"
+                      placeholder="Confirm Password"
+                    />
+                  </Form.Item>
+
+                  <Form.Item>
+                    <Button type="primary" htmlType="submit">
+                      Reset Password
+                    </Button>
+                  </Form.Item>
+                </Form>
+              </Spin>
             </Modal>
           </TabPane>
           {user.role !== "admin" && (
@@ -207,7 +350,12 @@ export const Account = () => {
                   </Form.Item>
                   <Form.Item>
                     <Button type="primary">Save Settings</Button>
-                    <Button type="default">Reset Password</Button>
+                    <Button
+                      type="default"
+                      onClick={handleShowResetPasswordModal}
+                    >
+                      Reset Password
+                    </Button>
                   </Form.Item>
                 </Form>
               </div>
