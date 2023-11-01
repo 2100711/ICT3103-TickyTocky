@@ -42,7 +42,6 @@ export const Account = () => {
 
   useEffect(() => {
     resetPasswordForm.setFieldValue({
-      old_password: "",
       new_password: "",
       cfm_new_password: "",
     });
@@ -97,18 +96,9 @@ export const Account = () => {
   };
 
   const handleResetPassword = async (values) => {
-    console.log("HANDLERESETPASSWORD");
     try {
       setLoading(true);
-      console.log("resetpassVALUES", { ...values });
-      if (values.old_password === values.new_password) {
-        console.log("clientOLDPASS is clientNEWPASS");
-        notification.error({
-          message: "Error",
-          description: "Old and new password cannot be the same.",
-          duration: 5,
-        });
-      } else if (values.new_password !== values.cfm_new_password) {
+      if (values.new_password !== values.cfm_new_password) {
         notification.error({
           message: "Error",
           description: "New password and confirm password must be the same.",
@@ -126,7 +116,6 @@ export const Account = () => {
             duration: 5,
           });
         } else {
-          console.log("ERRORFROMSERVER?", response);
           notification.error({
             message: "Error",
             description: response.message,
@@ -219,27 +208,6 @@ export const Account = () => {
                   form={resetPasswordForm}
                   layout="vertical"
                 >
-                  <Form.Item
-                    label="Old Password"
-                    name="old_password"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please enter your old password",
-                      },
-                      {
-                        pattern:
-                          /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#%^&+=])(?!.*\s).{14,128}$/,
-                        message:
-                          "Password must be at least 14 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#%^&+=).",
-                      },
-                    ]}
-                  >
-                    <Input.Password
-                      type="password"
-                      placeholder="Old Password"
-                    />
-                  </Form.Item>
                   <Form.Item
                     label="New Password"
                     name="new_password"

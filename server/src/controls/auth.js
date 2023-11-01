@@ -386,13 +386,11 @@ const resetPassword = async (req, res) => {
     const salt = await bcrypt.genSalt(saltRounds);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    if (!(await bcrypt.compare(password, user.encrypted_password))) {
-      return res
-        .status(200)
-        .json({
-          success: false,
-          message: "Old and new password cannot be the same.",
-        });
+    if (await bcrypt.compare(password, user.encrypted_password)) {
+      return res.status(200).json({
+        success: false,
+        message: "Old and new password cannot be the same.",
+      });
     }
 
     const updatedUser = await UserModel.findOneAndUpdate(
