@@ -1,13 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, Input, Button, notification } from "antd";
 import { MailOutlined, LockOutlined, UserOutlined } from "@ant-design/icons"; // Import icons
 import "../styles/Register.css";
 import { register } from "../../api/auth";
+import { getCsrfTokenFromAPI } from "../../api/auth";
+import { AuthData } from "../../auth/AuthWrapper";
 
 export const Register = () => {
   const navigate = useNavigate();
+  const { login, user } = AuthData();
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (user.isAuthenticated) navigate("/");
+    else {
+      getCsrfTokenFromAPI();
+    }
+  }, []);
 
   const handleSubmit = async () => {
     try {

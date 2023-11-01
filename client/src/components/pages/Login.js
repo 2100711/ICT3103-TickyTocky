@@ -5,6 +5,7 @@ import { AuthData } from "../../auth/AuthWrapper";
 import { Form, Input, Button, Checkbox, notification } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import "../styles/Login.css";
+import { getCsrfTokenFromAPI } from "../../api/auth";
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -19,7 +20,10 @@ export const Login = () => {
 
   useEffect(() => {
     if (user.isAuthenticated) navigate("/");
-  });
+    else {
+      getCsrfTokenFromAPI();
+    }
+  }, []);
 
   const handleLogin = async () => {
     const { success, message } = await login(formData.email, formData.password);

@@ -40,6 +40,7 @@ export const GENERATE_OTP_API = `${AUTH_URL}/generate-otp`;
 export const VERIFY_OTP_API = `${AUTH_URL}/verify-otp`;
 export const OTP_TIME_LEFT = `${AUTH_URL}/timeleft-otp`;
 export const RESET_PASSWORD_API = `${AUTH_URL}/reset-password`;
+export const GENERATE_CSRF_TOKEN = `${AUTH_URL}/generate-csrf-token`;
 
 // WATCH BRANDS
 export const WATCH_BRANDS = [

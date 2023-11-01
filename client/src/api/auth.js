@@ -13,6 +13,7 @@ import {
   VERIFY_OTP_API,
   OTP_TIME_LEFT,
   RESET_PASSWORD_API,
+  GENERATE_CSRF_TOKEN,
 } from "../constants";
 
 export async function checkAuth(req) {
@@ -46,3 +47,17 @@ export async function timeLeft(req) {
 export async function resetPassword(req) {
   return requestPost(RESET_PASSWORD_API, { req });
 }
+
+export async function generateCSRFToken(req) {
+  return requestGet(GENERATE_CSRF_TOKEN, { req });
+}
+
+export const getCsrfTokenFromAPI = async () => {
+  try {
+    // Make an API call to retrieve the CSRF token
+    const response = await generateCSRFToken();
+    console.log("CSRFTOKEN", response);
+  } catch (error) {
+    console.error("Error fetching CSRF token: ", error);
+  }
+};

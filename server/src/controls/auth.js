@@ -39,6 +39,7 @@ const unlockAccount = async (user_id, ip_address) => {
 
 const isAuthenticated = (req, res, next) => {
   if (req.session.user) {
+    checkCSRFTokenSTP(req, res, next);
     next();
   } else {
     return res
@@ -415,6 +416,44 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const generateCSRFToken = async (req, res, next) => {
+  try {
+    const data = crypto.randomBytes(36).toString("base64"); //Generates pseudorandom data. The size argument is a number indicating the number of bytes to generate.
+    req.session.csrfToken = data; // Assigns a token parameter to the session.
+    res.cookie("CSRFToken", data, { httpOnly: true });
+    res.status(200).json({ success: true, message: "token created" });
+  } catch (e) {
+    res.status(500).json({ result: false, message: e.message });
+    return;
+  }
+};
+
+const checkCSRFTokenSTP = (req, res, next) => {
+  try {
+    const sessionUser = req.session.user;
+    const sessionCsrfToken = req.session.csrfToken;
+    const requestCsrfToken = req.cookies.CSRFToken; //The token sent within the request header.
+    console.log("SESSIONCSRFTOKEN", sessionCsrfToken);
+    console.log("REQUESTCSRFTOKEN", requestCsrfToken);
+    if (!sessionUser || !requestCsrfToken || !sessionCsrfToken) {
+      res.status(401).json({
+        result: false,
+        message: "Token has not been provided.",
+      });
+    }
+    if (requestCsrfToken !== sessionCsrfToken) {
+      res.status(401).json({
+        result: false,
+        message: "Invalid token.",
+      });
+    }
+    next();
+  } catch (e) {
+    res.status(500).json({ result: false, message: e.message });
+    return;
+  }
+};
+
 export {
   unlockAccount,
   lockAccount,
@@ -429,4 +468,6 @@ export {
   verifyOTP,
   timeLeftOTP,
   resetPassword,
+  generateCSRFToken,
+  checkCSRFTokenSTP,
 };
