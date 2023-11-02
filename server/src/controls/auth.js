@@ -123,7 +123,12 @@ const register = async (req, res) => {
     });
 
     req.isRegister = true;
-    checkCSRFTokenSTP(req, res);
+    const CSRFverified = checkCSRFTokenSTP(req, res); // check if csrf token exist
+    if (!CSRFverified.result) {
+      return res
+        .status(401)
+        .json({ success: false, message: CSRFverified.message });
+    }
 
     await newUser.save();
 
@@ -196,7 +201,13 @@ const login = async (req, res, next) => {
 
     await req.session.save();
 
-    checkCSRFTokenSTP(req, res, next); // check if csrf token exist before
+    req.isLogin = true;
+    const CSRFverified = checkCSRFTokenSTP(req, res); // check if csrf token exist
+    if (!CSRFverified.result) {
+      return res
+        .status(401)
+        .json({ success: false, message: CSRFverified.message });
+    }
 
     req._id = user._id;
     req.attemptSuccess = true;
@@ -444,7 +455,7 @@ const generateCSRFToken = async (req, res, next) => {
   }
 };
 
-const checkCSRFTokenSTP = (req, res, next) => {
+const checkCSRFTokenSTP = (req, res) => {
   try {
     const sessionUser = req.session.user;
     const sessionCsrfToken = req.session.csrfToken;
@@ -456,20 +467,46 @@ const checkCSRFTokenSTP = (req, res, next) => {
       // session.user is not needed for register
       delete req.isRegister;
       if (!requestCsrfToken || !sessionCsrfToken) {
-        return res.status(401).json({
+        return {
           result: false,
           message: "Token has not been provided.",
-        });
+        };
       }
       if (requestCsrfToken !== sessionCsrfToken) {
-        return res.status(401).json({
+        return {
           result: false,
           message: "Invalid token.",
-        });
+        };
       }
+      return { result: true };
+    } else if (req.isLogin) {
+      // cant return json here because the login function will try to return a second time in the login function
+      // so we return an object instead and let the login function handle it
+      delete req.isLogin;
+      if (!requestCsrfToken || !sessionCsrfToken || !sessionUser) {
+        if (sessionUser) {
+          req.session.destroy();
+        }
+        return {
+          result: false,
+          message: "Token has not been provided.",
+        };
+      }
+
+      if (requestCsrfToken !== sessionCsrfToken) {
+        res.clearCookie("CSRFToken");
+        res.cookie("CSRFToken", "", { expires: new Date(0) });
+        return {
+          result: false,
+          message: "Invalid token.",
+        };
+      }
+      return { result: true };
     } else {
       if (!requestCsrfToken || !sessionCsrfToken || !sessionUser) {
-        logout(req, res); // to clear session or cookie data or both
+        if (sessionUser) {
+          req.session.destroy();
+        }
         return res.status(401).json({
           result: false,
           message: "Token has not been provided.",
@@ -477,6 +514,8 @@ const checkCSRFTokenSTP = (req, res, next) => {
       }
 
       if (requestCsrfToken !== sessionCsrfToken) {
+        res.clearCookie("CSRFToken");
+        res.cookie("CSRFToken", "", { expires: new Date(0) });
         return res.status(401).json({
           result: false,
           message: "Invalid token.",
@@ -484,7 +523,9 @@ const checkCSRFTokenSTP = (req, res, next) => {
       }
     }
   } catch (e) {
-    return res.status(500).json({ result: false, message: e.message });
+    return res
+      .status(500)
+      .json({ result: false, message: "An error occurred" });
   }
 };
 
