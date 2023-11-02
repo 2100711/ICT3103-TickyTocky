@@ -18,6 +18,7 @@ apt-get install -y python3-pip
 
 # # Adding Google Chrome to the repositories
 # sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+rm -rf /etc/apt/sources.list.d/google-chrome.list
 
 apt-get update -y
 
@@ -28,11 +29,11 @@ wget -N https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chrom
 unzip ~/chromedriver_linux64.zip -d ~/
 rm ~/chromedriver_linux64.zip
 chmod +x ~/chromedriver
-ls -la ~/
-sh ~/chromedriver -v
+#ls -la ~/
+sh '~/chromedriver -v'
 
 # Add ChromeDriver to system PATH (optional)
-echo "export PATH=\$PATH:~/chromedriver" >> ~/.bashrc
+#echo "export PATH=\$PATH:~/chromedriver" >> ~/.bashrc
 
 # Additional dependencies can be installed here
 # e.g., libraries for headless mode, browser drivers for Firefox, etc.
