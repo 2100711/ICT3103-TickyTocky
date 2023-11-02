@@ -128,6 +128,7 @@ pipeline {
                 dir('server') {
                     script {
                         sh 'apt install -y nodejs npm'
+                        sh 'npm install -D mocha chai sinon'
                         sh 'npm test'
                     }
                 }
