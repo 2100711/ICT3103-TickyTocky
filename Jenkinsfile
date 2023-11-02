@@ -9,7 +9,7 @@ pipeline {
                     sh 'docker compose build frontend backend'
                     sh 'docker compose stop frontend backend'
                     sleep(time:20, unit: "SECONDS")
-                    sh 'docker compose rm frontend backend'
+                    sh 'docker rm frontend backend'
                     sleep(time:10, unit: "SECONDS")
                     sh 'docker ps'
                 }
@@ -19,7 +19,7 @@ pipeline {
             steps {
                 echo 'Deploying application'
                 script {
-                    sh 'docker compose up -d frontend backend'
+                    sh 'docker compose up -d --force-recreate frontend backend'
                     sh 'docker ps'
                 }
             }
