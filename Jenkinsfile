@@ -7,11 +7,34 @@ pipeline {
                 echo 'Building the application'
                 script {
                     sh 'docker compose build frontend backend'
+                }
+            }
+            post {
+                success {
+                    echo 'Build Success!'
+                }
+                failure {
+                    echo 'Failure sia you'
+                }
+            }
+        }
+        stage('Clean') {
+            steps {
+                echo 'Stopping existing application instance'
+                script {
                     sh 'docker compose stop frontend backend'
                     sleep(time:20, unit: "SECONDS")
-                    sh 'docker rm frontend backend'
-                    sleep(time:10, unit: "SECONDS")
+                    //sh 'docker rm frontend backend'
+                    //sleep(time:10, unit: "SECONDS")
                     sh 'docker ps'
+                }
+            }
+            post {
+                success {
+                    echo 'Containers Stopped!'
+                }
+                failure {
+                    echo 'Failure sia you'
                 }
             }
         }
