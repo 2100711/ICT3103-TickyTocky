@@ -22,8 +22,8 @@ wget -N https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chrom
 unzip ~/chromedriver_linux64.zip -d ~/
 rm ~/chromedriver_linux64.zip
 chmod +x ~/chromedriver
-#ls -la ~/
-root/chromedriver -v
+ls -la ~/
+~/chromedriver -v
 
 # Add ChromeDriver to system PATH (optional)
 #echo "export PATH=\$PATH:root/chromedriver" >> ~/.bashrc

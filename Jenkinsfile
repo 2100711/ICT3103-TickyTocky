@@ -18,26 +18,6 @@ pipeline {
                 }
             }
         }
-        // stage('Clean') {
-        //     steps {
-        //         echo 'Stopping existing application instance'
-        //         script {
-        //             sh 'docker container stop frontend backend'
-        //             //sleep(time:20, unit: "SECONDS")
-        //             sh 'docker container rm frontend backend'
-        //             //sleep(time:10, unit: "SECONDS")
-        //             sh 'docker ps'
-        //         }
-        //     }
-        //     post {
-        //         success {
-        //             echo 'Containers Stopped!'
-        //         }
-        //         failure {
-        //             echo 'Failure sia you'
-        //         }
-        //     }
-        // }
         stage('Deploy') {
             steps {
                 echo 'Deploying application'
@@ -59,14 +39,6 @@ pipeline {
             
             steps {
                 script {
-                    // sh 'apt-get update -y'
-                    //sh 'apt-get install -y python3 python3-pip'
-                    //sh 'pip3 install selenium'
-                    // sh 'apt-get install -y wget'
-                    // sh 'wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -'
-                    // sh "sh -c 'echo 'deb http://dl.google.com/linux/chrome/deb/ stable main' >> /etc/apt/sources.list'"
-                    // sh 'apt-get update -y'
-                    // sh 'apt-get install google-chrome-stable'
                     sh '${WORKSPACE}/tests/dependencyScript.sh'
                 }
             }
@@ -79,50 +51,50 @@ pipeline {
                 }
             }
         }
-        //stage('OWASP DependencyCheck') {
-        //    steps {
-        //        dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
-        //    }
-        //}
-        // stage('Frontend Test') {
-        //     parallel {
-        //         stage('Test 1 idk bro do what') {
-        //             steps {
-        //               script {
-        //                 echo 'Testing for idk test1 name bro'
-        //                     sh 'python3 ${WORKSPACE}/tests/seleniumTest.py'
-        //                 }
-        //             }
-        //             post {
-        //                 success {
-        //                     echo 'Passed with flying colors'
-        //                 }
-        //                 failure {
-        //                     echo 'Failure sia you'
-        //                 }
-        //             }
-        //         }
-        //         stage('Test 2 idk bro do what') {
-        //             steps {
-        //                 dir('tests') {
-        //                     script {
-        //                         echo 'Testing for idk test1 name bro'
-        //                         sh 'python3 ${WORKSPACE}/tests/seleniumTes2.py'
-        //                     }
-        //                 }
-        //             }
-        //             post {
-        //                 success {
-        //                     echo 'Passed with flying colors'
-        //                 }
-        //                 failure {
-        //                     echo 'Failure sia you'
-        //                 }
-        //             }
-        //         }
+        stage('OWASP DependencyCheck') {
+           steps {
+               dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
+           }
+        }
+        stage('Frontend Test') {
+            parallel {
+                stage('Test 1 idk bro do what') {
+                    steps {
+                      script {
+                        echo 'Testing for idk test1 name bro'
+                            sh 'python3 ${WORKSPACE}/tests/seleniumTest.py'
+                        }
+                    }
+                    post {
+                        success {
+                            echo 'Passed with flying colors'
+                        }
+                        failure {
+                            echo 'Failure sia you'
+                        }
+                    }
+                }
+                stage('Test 2 idk bro do what') {
+                    steps {
+                        dir('tests') {
+                            script {
+                                echo 'Testing for idk test1 name bro'
+                                sh 'python3 ${WORKSPACE}/tests/seleniumTes2.py'
+                            }
+                        }
+                    }
+                    post {
+                        success {
+                            echo 'Passed with flying colors'
+                        }
+                        failure {
+                            echo 'Failure sia you'
+                        }
+                    }
+                }
                 
-        //     }
-        // }
+            }
+        }
         stage('Backend Test') {
             steps {
                 dir('server') {
@@ -176,7 +148,7 @@ pipeline {
     // Global success and failure conditions for the entire pipeline
     post {
         success {
-            //dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+            dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             echo "Pipeline successfully completed."
             //sh 'docker-compose down frontend backend'
             sh 'docker system prune -f'
@@ -184,6 +156,7 @@ pipeline {
         }
         failure {
             echo "Pipeline failed. Please investigate."
+            sh 'docker system prune -f' // Temp cleaning of images
         }
     }
 }
