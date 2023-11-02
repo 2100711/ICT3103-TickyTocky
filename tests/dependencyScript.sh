@@ -31,7 +31,7 @@ mv -f ~/chromedriver /usr/local/bin/chromedriver
 chmod +x /usr/local/bin/chromedriver
 rm ~/chromedriver_linux64.zip
 
-sh chromedriver -v
+sh /usr/local/bin/chromedriver -v
 # Add ChromeDriver to system PATH (optional)
 # echo "export PATH=\$PATH:/usr/local/bin/chromedriver" >> ~/.bashrc
 

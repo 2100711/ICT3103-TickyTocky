@@ -88,11 +88,9 @@ pipeline {
         //     parallel {
         //         stage('Test 1 idk bro do what') {
         //             steps {
-        //                 dir('tests') {
-        //                     script {
-        //                         echo 'Testing for idk test1 name bro'
-        //                         sh 'python seleniumTest.py'
-        //                     }
+        //               script {
+        //                 echo 'Testing for idk test1 name bro'
+        //                     sh 'python3 ${WORKSPACE}/tests/seleniumTest.py'
         //                 }
         //             }
         //             post {
@@ -109,7 +107,7 @@ pipeline {
         //                 dir('tests') {
         //                     script {
         //                         echo 'Testing for idk test1 name bro'
-        //                         sh 'python seleniumTest.py'
+        //                         sh 'python3 ${WORKSPACE}/tests/seleniumTes2.py'
         //                     }
         //                 }
         //             }
@@ -125,24 +123,24 @@ pipeline {
                 
         //     }
         // }
-        // stage('Backend Test') {
-        //     steps {
-        //         dir('server') {
-        //             script {
-        //                 sh 'apt install -y nodejs npm'
-        //                 sh 'npm install'
-        //             }
-        //         }
-        //     }
-        //     post {
-        //         success {
-        //             echo 'Passed with flying colors'
-        //         }
-        //         failure {
-        //             echo 'Failure sia you'
-        //         }
-        //     }
-        // }
+        stage('Backend Test') {
+            steps {
+                dir('server') {
+                    script {
+                        sh 'apt install -y nodejs npm'
+                        sh 'npm test'
+                    }
+                }
+            }
+            post {
+                success {
+                    echo 'Passed with flying colors'
+                }
+                failure {
+                    echo 'Failure sia you'
+                }
+            }
+        }
         
         //stage('Deploy') {
         //    steps {
