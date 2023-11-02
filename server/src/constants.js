@@ -17,6 +17,10 @@ export const EMAIL_NAME = process.env.EMAIL_NAME;
 export const EMAIL_USER = process.env.EMAIL_USER;
 export const EMAIL_PASS = process.env.EMAIL_PASS;
 
+// Secrets
+export const SECRET = process.env.SECRET; // change to something more secure
+export const CRYPTOSECRET = process.env.CRYPTOSECRET; // change to someting more secure
+
 // WATCH BRANDS
 export const WATCH_BRANDS = [
     "Rolex",
