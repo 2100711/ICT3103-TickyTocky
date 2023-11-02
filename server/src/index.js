@@ -13,6 +13,7 @@ import { userRouter } from "./routes/users.js";
 import { certRouter } from "./routes/certs.js";
 
 import { PORT, MONGODB_CONNECTION } from "./constants.js";
+import { SECRET, CRYPTOSECRET } from "./constants.js";
 
 const app = express();
 
@@ -63,7 +64,7 @@ const db = mongoose.connection;
 // Sessions
 app.use(
   session({
-    secret: "secret-key-from-env",
+    secret: SECRET,
     cookie: {
       secure: false, // Set to true for HTTPS
       httpOnly: true,
@@ -75,7 +76,7 @@ app.use(
     store: new MongoStore({
       client: db.getClient(),
       crypto: {
-        secret: "squirrel", // TO BE CHANGED: should also be stored in an environment variable rather than being hard-coded.
+        secret: CRYPTOSECRET, // TO BE CHANGED: should also be stored in an environment variable rather than being hard-coded.
       },
       autoRemove: "interval",
       autoRemoveInterval: 1, // checks every 1 minute to delete sessions that have expired
