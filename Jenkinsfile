@@ -8,7 +8,7 @@ pipeline {
                 script {
                     sh 'docker compose build frontend backend'
                     sh 'docker compose stop frontend backend'
-                    sh 'docker rm frontend backend'
+                    //sh 'docker compose rm frontend backend'
                     sh 'docker ps'
                 }
             }
@@ -21,6 +21,14 @@ pipeline {
                     sh 'docker ps'
                 }
             }
+            post {
+                success {
+                    echo 'Deployed!'
+                }
+                failure {
+                    echo 'Failure sia you'
+                }
+            }
         }
         stage('Install dependencies for selenium') {
             steps {
@@ -28,6 +36,14 @@ pipeline {
                     script {
                         sh 'dependencyScript.sh'
                     }
+                }
+            }
+            post {
+                success {
+                    echo 'Installed!'
+                }
+                failure {
+                    echo 'Failure sia you'
                 }
             }
         }
@@ -115,7 +131,7 @@ pipeline {
             echo "Pipeline successfully completed."
             //sh 'docker-compose down frontend backend'
             sh 'docker system prune -f'
-            echo "Stopped Images Cleared"
+            echo "Removed Dangling Containers and Images"
         }
         failure {
             echo "Pipeline failed. Please investigate."
