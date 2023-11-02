@@ -56,13 +56,14 @@ pipeline {
             }
         }
         stage('Install dependencies for selenium') {
-            steps {
-                dir('tests') {
-                    script {
-                        sh 'dependencyScript.sh'
-                    }
-                }
+            script {
+                sh '${WORKSPACE}/tests/dependencyScript.sh'
             }
+            // steps {
+            //     dir('tests') {
+                    
+            //     }
+            // }
             post {
                 success {
                     echo 'Installed!'
