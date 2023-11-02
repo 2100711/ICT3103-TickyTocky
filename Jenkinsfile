@@ -6,49 +6,58 @@ pipeline {
             steps {
                 echo 'Building the application'
                 script {
-                    sh 'apt install -y nodejs npm'
+                    sh 'docker compose up --build -d frontend backend'
+                    sh 'docker ps'
                 }
-                dir('client') {
-                    script {
-                        echo 'Installing client dependencies'
-                        sh 'npm install'
-                    }
-                }
-                dir('server') {
-                    script {
-                        echo 'Installing server dependencies'
-                        sh 'npm install'
-                    }
-                }
-                // script { //Test warning nextgen
-                //     sh '/var/jenkins_home/apache-maven-3.6.3/bin/mvn --batch-mode -V -U -e clean verify -Dsurefire.useFile=false -Dmaven.test.failure.ignore'
-                // }
             }
         }
+        stage('Frontend UI Test') {
+            stage('Install dependencies for selenium') {
+                steps {
+                    dir('tests') {
+                        script {
+                            sh 'dependencyScript.sh'
+                        }
+                    }
+                }
+            }
+            stage('OWASP DependencyCheck') {
+                steps {
+                    dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
+                }
 
-        //stage('Test') {
-        //    steps {
-        //        dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
-        //        dir('client') {
-        //            script {
-        //                echo 'TODO: Add client tests'
-        //                // sh 'npm test' // Modify this line for your specific testing framework
-        //            }
-        //        }
-        //        dir('server') {
-        //            script {
-        //                echo 'TODO: Add server tests'
-        //                // sh 'npm test' // Modify this line for your specific testing framework
-        //            }
-        //        }
-        //    }
-        //}
-        // stage('Analysis') {
-        //     steps {
-        //         sh '/var/jenkins_home/apache-maven-3.6.3/bin/mvn --batch-mode -V -U -e checkstyle:checkstyle pmd:pmd pmd:cpd findbugs:findbugs'
-        //     }
-        // }// Test for warning next gen plugin
-
+            }
+			parallel {
+                stage('Test 1 idk bro do what') {
+                    steps {
+                        dir('tests') {
+                            script {
+                                echo 'Testing for idk test1 name bro'
+                                sh 'python seleniumTest.py'
+                            }
+                        }
+                    }
+                }
+                stage('Test 2 idk bro do what') {
+                    steps {
+                        dir('tests') {
+                            script {
+                                echo 'Testing for idk test1 name bro'
+                                sh 'python seleniumTest.py'
+                            }
+                        }
+                    }
+                }
+                post {
+                    success {
+                        echo 'Passed with flying colors'
+                    }
+                    failure {
+                        echo 'Failure sia you'
+                    }
+                }
+            }
+        }
         //stage('Deploy') {
         //    steps {
         //        dir('server') {
@@ -81,17 +90,12 @@ pipeline {
 
     // Global success and failure conditions for the entire pipeline
     post {
-        // always {
-        //     junit testResults: '**/target/surefire-reports/TEST-*.xml'
-        //     recordIssues enabledForFailure: true, tools: [mavenConsole(), java(), javaDoc()]
-        //     recordIssues enabledForFailure: true, tool: checkStyle()
-        //     recordIssues enabledForFailure: true, tool: spotBugs(pattern:'**/target/findbugsXml.xml')
-        //     recordIssues enabledForFailure: true, tool: cpd(pattern: '**/target/cpd.xml')
-        //     recordIssues enabledForFailure: true, tool: pmdParser(pattern: '**/target/pmd.xml')
-        // }
         success {
             dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             echo "Pipeline successfully completed."
+            sh 'docker-compose down frontend backend'
+            sh 'docker image prune -f'
+            echo "Image cleared"
         }
         failure {
             echo "Pipeline failed. Please investigate."

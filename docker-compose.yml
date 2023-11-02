@@ -49,12 +49,11 @@ services:
     depends_on:
       - frontend
       - backend
-      - jenkins
     networks:
       - app-network
       
   jenkins:
-    container_name: jenkins
+    container_name: jenkins-test
     build:
       context: ./jenkins_conf
       dockerfile: Dockerfile-jenkins # Specify the Dockerfile name
@@ -72,6 +71,7 @@ services:
       - ./jenkins_home:/var/jenkins_home  # Persist Jenkins data
       - /var/run/docker.sock:/var/run/docker.sock  # Mount the Docker socket
       - ./gracious-kare.cloud-ssl-bundle:/ssl/ #SSL certs directory
+      - ./:/repo
     deploy:
       resources:
         limits:
