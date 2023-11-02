@@ -27,9 +27,10 @@ apt-get update -y
 CHROME_DRIVER_VERSION="100.0.4896.20"
 wget -N https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip -P ~/
 unzip ~/chromedriver_linux64.zip -d ~/
-mv -f ~/chromedriver /usr/local/bin/chromedriver
-chmod +x /usr/local/bin/chromedriver
-rm ~/chromedriver_linux64.zip
+sh ls ~/
+# mv -f ~/chromedriver /usr/local/bin/chromedriver
+# chmod +x /usr/local/bin/chromedriver
+# rm ~/chromedriver_linux64.zip
 
 sh /usr/local/bin/chromedriver -v
 # Add ChromeDriver to system PATH (optional)
