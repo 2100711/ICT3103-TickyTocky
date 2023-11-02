@@ -23,9 +23,9 @@ pipeline {
                 echo 'Stopping existing application instance'
                 script {
                     sh 'docker container stop frontend backend'
-                    sleep(time:20, unit: "SECONDS")
+                    //sleep(time:20, unit: "SECONDS")
                     sh 'docker container rm frontend backend'
-                    sleep(time:10, unit: "SECONDS")
+                    //sleep(time:10, unit: "SECONDS")
                     sh 'docker ps'
                 }
             }

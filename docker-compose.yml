@@ -141,3 +141,4 @@ networks:
   app-network:
     driver: bridge
     name: ict3103-tickytocky
+    external: true
