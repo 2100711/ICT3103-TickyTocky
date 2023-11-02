@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha ./src/tests/*Tests.js",
     "start": "nodemon src/index.js"
   },
   "keywords": [],
@@ -28,5 +28,10 @@
     "nodemailer": "^6.9.5",
     "pdf-lib": "^1.17.1",
     "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "chai": "^4.3.10",
+    "mocha": "^10.2.0",
+    "sinon": "^17.0.1"
   }
 }

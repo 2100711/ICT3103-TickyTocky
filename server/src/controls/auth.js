@@ -214,7 +214,7 @@ const login = async (req, res, next) => {
     next();
 
     return res
-      .status(201)
+      .status(200)
       .json({ success: true, message: "Login successful.", role: user.role });
   } catch (error) {
     res.status(500);
