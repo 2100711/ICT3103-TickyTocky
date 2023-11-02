@@ -12,8 +12,8 @@ apt-get install -y python3-pip
 # Install Selenium Python bindings
 #pip3 install selenium
 
-# Install Google Chrome (replace with your preferred browser)
 apt-get update -y
+apt-get install libnss3
 
 # # Install ChromeDriver
 # # Download the appropriate version of ChromeDriver and install it
@@ -23,6 +23,7 @@ unzip ~/chromedriver_linux64.zip -d ~/
 rm ~/chromedriver_linux64.zip
 chmod +x ~/chromedriver
 ls -la ~/
+
 ~/chromedriver -v
 
 # Add ChromeDriver to system PATH (optional)

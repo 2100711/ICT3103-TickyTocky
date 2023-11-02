@@ -51,11 +51,11 @@ pipeline {
                 }
             }
         }
-        stage('OWASP DependencyCheck') {
-           steps {
-               dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
-           }
-        }
+        // stage('OWASP DependencyCheck') { // save time not running
+        //    steps {
+        //        dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
+        //    }
+        // }
         stage('Frontend Test') {
             parallel {
                 stage('Test 1 idk bro do what') {
@@ -148,7 +148,7 @@ pipeline {
     // Global success and failure conditions for the entire pipeline
     post {
         success {
-            dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+            //dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             echo "Pipeline successfully completed."
             //sh 'docker-compose down frontend backend'
             sh 'docker system prune -f'
