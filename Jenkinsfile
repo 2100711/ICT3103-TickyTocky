@@ -7,6 +7,7 @@ pipeline {
                 echo 'Building the application'
                 script {
                     sh 'docker compose build frontend backend'
+                    sh 'docker compose stop frontend backend'
                     sh 'docker rm frontend backend'
                     sh 'docker ps'
                 }
@@ -113,8 +114,8 @@ pipeline {
             //dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             echo "Pipeline successfully completed."
             //sh 'docker-compose down frontend backend'
-            sh 'docker image prune -f'
-            echo "Image cleared"
+            sh 'docker system prune -f'
+            echo "Stopped Images Cleared"
         }
         failure {
             echo "Pipeline failed. Please investigate."
