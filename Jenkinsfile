@@ -7,8 +7,7 @@ pipeline {
                 echo 'Building the application'
                 script {
                     sh 'docker compose build frontend backend'
-                    sh 'docker compose stop frontend backend'
-                    //sh 'docker compose rm frontend backend'
+                    sh 'docker compose stop frontend backend && docker compose rm frontend backend'
                     sh 'docker ps'
                 }
             }
