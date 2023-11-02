@@ -20,21 +20,19 @@ apt-get install -y python3-pip
 # sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
 
 apt-get update -y
-# apt-get install chromium-chromedriver
 
 # # Install ChromeDriver
 # # Download the appropriate version of ChromeDriver and install it
 CHROME_DRIVER_VERSION="100.0.4896.20"
 wget -N https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip -P ~/
 unzip ~/chromedriver_linux64.zip -d ~/
-ls ~/
-# mv -f ~/chromedriver /usr/local/bin/chromedriver
-# chmod +x /usr/local/bin/chromedriver
-# rm ~/chromedriver_linux64.zip
+rm ~/chromedriver_linux64.zip
+chmod +x ~/chromedriver
+ls -la ~/
+sh ~/chromedriver -v
 
-#sh /usr/local/bin/chromedriver -v
 # Add ChromeDriver to system PATH (optional)
-# echo "export PATH=\$PATH:/usr/local/bin/chromedriver" >> ~/.bashrc
+echo "export PATH=\$PATH:~/chromedriver" >> ~/.bashrc
 
 # Additional dependencies can be installed here
 # e.g., libraries for headless mode, browser drivers for Firefox, etc.
