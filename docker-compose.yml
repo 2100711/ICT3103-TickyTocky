@@ -3,6 +3,7 @@ version: "3.9" # Use the desired version of Docker Compose
 services:
   frontend:
     container_name: frontend
+    image: ict3103-tickytocky-frontend:latest
     build:  
       context: ./client # Specify the directory containing your React frontend application
       dockerfile: Dockerfile-client # Specify the Dockerfile name
@@ -18,6 +19,7 @@ services:
 
   backend:
     container_name: backend
+    image: ict3103-tickytocky-backend:latest
     build:
       context: ./server # Specify the directory containing your Node.js backend application
       dockerfile: Dockerfile-server # Specify the Dockerfile name
@@ -53,6 +55,7 @@ services:
       - app-network
       
   jenkins:
+    image: ict3103-tickytocky-jenkins:latest
     container_name: jenkins
     build:
       context: ./jenkins_conf

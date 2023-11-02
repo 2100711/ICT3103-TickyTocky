@@ -93,6 +93,24 @@ pipeline {
                 
             }
         }
+        stage('Backend Test') {
+            steps {
+                dir('server') {
+                    script {
+                        sh 'apt install -y nodejs npm'
+                        sh 'npm install'
+                    }
+                }
+            }
+            post {
+                success {
+                    echo 'Passed with flying colors'
+                }
+                failure {
+                    echo 'Failure sia you'
+                }
+            }
+        }
         
         //stage('Deploy') {
         //    steps {
