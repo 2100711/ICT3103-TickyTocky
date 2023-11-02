@@ -36,6 +36,14 @@ pipeline {
                             }
                         }
                     }
+                    post {
+                        success {
+                            echo 'Passed with flying colors'
+                        }
+                        failure {
+                            echo 'Failure sia you'
+                        }
+                    }
                 }
                 stage('Test 2 idk bro do what') {
                     steps {
@@ -46,15 +54,16 @@ pipeline {
                             }
                         }
                     }
-                }
-                post {
-                    success {
-                        echo 'Passed with flying colors'
+                    post {
+                        success {
+                            echo 'Passed with flying colors'
+                        }
+                        failure {
+                            echo 'Failure sia you'
+                        }
                     }
-                    failure {
-                        echo 'Failure sia you'
-                    }
                 }
+                
             }
         }
         
