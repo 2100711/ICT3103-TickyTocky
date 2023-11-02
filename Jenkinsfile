@@ -6,7 +6,17 @@ pipeline {
             steps {
                 echo 'Building the application'
                 script {
-                    sh 'docker compose up --build -d frontend backend'
+                    sh 'docker compose build frontend backend'
+                    sh 'docker rm frontend backend'
+                    sh 'docker ps'
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying application'
+                script {
+                    sh 'docker compose up -d frontend backend'
                     sh 'docker ps'
                 }
             }
@@ -102,7 +112,7 @@ pipeline {
         success {
             //dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             echo "Pipeline successfully completed."
-            sh 'docker-compose down frontend backend'
+            //sh 'docker-compose down frontend backend'
             sh 'docker image prune -f'
             echo "Image cleared"
         }
