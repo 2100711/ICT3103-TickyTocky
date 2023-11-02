@@ -9,7 +9,9 @@ pipeline {
                     sh 'docker compose build frontend backend'
                     sh 'docker compose stop frontend backend'
                     sleep(time:20, unit: "SECONDS")
-                    sh 'docker compose rm frontend backend && docker ps'
+                    sh 'docker compose rm frontend backend'
+                    sleep(time:10, unit: "SECONDS")
+                    sh 'docker ps'
                 }
             }
         }
