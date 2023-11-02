@@ -25,33 +25,35 @@ pipeline {
         //        dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
         //    }
         //}
-        parallel {
-            stage('Test 1 idk bro do what') {
-                steps {
-                    dir('tests') {
-                        script {
-                            echo 'Testing for idk test1 name bro'
-                            sh 'python seleniumTest.py'
+        stage('Frontend Test') {
+            parallel {
+                stage('Test 1 idk bro do what') {
+                    steps {
+                        dir('tests') {
+                            script {
+                                echo 'Testing for idk test1 name bro'
+                                sh 'python seleniumTest.py'
+                            }
                         }
                     }
                 }
-            }
-            stage('Test 2 idk bro do what') {
-                steps {
-                    dir('tests') {
-                        script {
-                            echo 'Testing for idk test1 name bro'
-                            sh 'python seleniumTest.py'
+                stage('Test 2 idk bro do what') {
+                    steps {
+                        dir('tests') {
+                            script {
+                                echo 'Testing for idk test1 name bro'
+                                sh 'python seleniumTest.py'
+                            }
                         }
                     }
                 }
-            }
-            post {
-                success {
-                    echo 'Passed with flying colors'
-                }
-                failure {
-                    echo 'Failure sia you'
+                post {
+                    success {
+                        echo 'Passed with flying colors'
+                    }
+                    failure {
+                        echo 'Failure sia you'
+                    }
                 }
             }
         }
