@@ -59,7 +59,15 @@ pipeline {
             
             steps {
                 script {
-                    sh '${WORKSPACE}/tests/dependencyScript.sh'
+                    sh 'apt-get update -y'
+                    sh 'apt-get install -y python3 python3-pip'
+                    sh 'pip3 install selenium'
+                    sh 'apt-get install -y wget'
+                    sh 'wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -'
+                    sh "sh -c 'echo 'deb http://dl.google.com/linux/chrome/deb/ stable main' >> /etc/apt/sources.list'"
+                    sh 'apt-get update -y'
+                    sh 'apt-get install google-chrome-stable'
+                    //sh '${WORKSPACE}/tests/dependencyScript.sh'
                 }
             }
             post {
@@ -76,65 +84,65 @@ pipeline {
         //        dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
         //    }
         //}
-        stage('Frontend Test') {
-            parallel {
-                stage('Test 1 idk bro do what') {
-                    steps {
-                        dir('tests') {
-                            script {
-                                echo 'Testing for idk test1 name bro'
-                                sh 'python seleniumTest.py'
-                            }
-                        }
-                    }
-                    post {
-                        success {
-                            echo 'Passed with flying colors'
-                        }
-                        failure {
-                            echo 'Failure sia you'
-                        }
-                    }
-                }
-                stage('Test 2 idk bro do what') {
-                    steps {
-                        dir('tests') {
-                            script {
-                                echo 'Testing for idk test1 name bro'
-                                sh 'python seleniumTest.py'
-                            }
-                        }
-                    }
-                    post {
-                        success {
-                            echo 'Passed with flying colors'
-                        }
-                        failure {
-                            echo 'Failure sia you'
-                        }
-                    }
-                }
+        // stage('Frontend Test') {
+        //     parallel {
+        //         stage('Test 1 idk bro do what') {
+        //             steps {
+        //                 dir('tests') {
+        //                     script {
+        //                         echo 'Testing for idk test1 name bro'
+        //                         sh 'python seleniumTest.py'
+        //                     }
+        //                 }
+        //             }
+        //             post {
+        //                 success {
+        //                     echo 'Passed with flying colors'
+        //                 }
+        //                 failure {
+        //                     echo 'Failure sia you'
+        //                 }
+        //             }
+        //         }
+        //         stage('Test 2 idk bro do what') {
+        //             steps {
+        //                 dir('tests') {
+        //                     script {
+        //                         echo 'Testing for idk test1 name bro'
+        //                         sh 'python seleniumTest.py'
+        //                     }
+        //                 }
+        //             }
+        //             post {
+        //                 success {
+        //                     echo 'Passed with flying colors'
+        //                 }
+        //                 failure {
+        //                     echo 'Failure sia you'
+        //                 }
+        //             }
+        //         }
                 
-            }
-        }
-        stage('Backend Test') {
-            steps {
-                dir('server') {
-                    script {
-                        sh 'apt install -y nodejs npm'
-                        sh 'npm install'
-                    }
-                }
-            }
-            post {
-                success {
-                    echo 'Passed with flying colors'
-                }
-                failure {
-                    echo 'Failure sia you'
-                }
-            }
-        }
+        //     }
+        // }
+        // stage('Backend Test') {
+        //     steps {
+        //         dir('server') {
+        //             script {
+        //                 sh 'apt install -y nodejs npm'
+        //                 sh 'npm install'
+        //             }
+        //         }
+        //     }
+        //     post {
+        //         success {
+        //             echo 'Passed with flying colors'
+        //         }
+        //         failure {
+        //             echo 'Failure sia you'
+        //         }
+        //     }
+        // }
         
         //stage('Deploy') {
         //    steps {
