@@ -12,7 +12,7 @@ const createLog = async (logData) => {
   }
 };
 
-const logRequest = async (req, next) => {
+const logRequest = async (req, res, next) => {
   try {
     // Extract necessary data from the request object
     const user_id = req._id;

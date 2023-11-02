@@ -122,12 +122,16 @@ const register = async (req, res) => {
       // salt: saltedText,
     });
 
+    req.isRegister = true;
+    checkCSRFTokenSTP(req, res);
+
     await newUser.save();
 
     return res
       .status(201)
       .json({ success: true, message: "User registered successfully." });
   } catch (err) {
+    console.log("ERRORRR", err);
     return res.status(500).json({ success: false, error: err });
   }
 };
@@ -192,6 +196,8 @@ const login = async (req, res, next) => {
 
     await req.session.save();
 
+    checkCSRFTokenSTP(req, res, next); // check if csrf token exist before
+
     req._id = user._id;
     req.attemptSuccess = true;
     next();
@@ -208,7 +214,9 @@ const login = async (req, res, next) => {
 };
 
 const logout = async (req, res) => {
-  req.session.destroy();
+  req.session.destroy(); // Destroy the session on the server side
+  res.clearCookie("CSRFToken"); // Clear the CSRFToken cookie
+  res.cookie("CSRFToken", "", { expires: new Date(0) }); // Set the cookie to expire immediately
   return res.status(200).json({ success: true, message: "Logged out." });
 };
 
@@ -419,9 +427,17 @@ const resetPassword = async (req, res) => {
 const generateCSRFToken = async (req, res, next) => {
   try {
     const data = crypto.randomBytes(36).toString("base64"); //Generates pseudorandom data. The size argument is a number indicating the number of bytes to generate.
-    req.session.csrfToken = data; // Assigns a token parameter to the session.
+    const existingCSRFToken = req.cookies.CSRFToken;
+    if (existingCSRFToken) {
+      res.clearCookie("CSRFToken");
+    }
     res.cookie("CSRFToken", data, { httpOnly: true });
-    res.status(200).json({ success: true, message: "token created" });
+    req.session.csrfToken = data; // Assigns a token parameter to the session.
+    console.log("GENERATECSRFTOKEN", data);
+    res.status(200).json({
+      success: true,
+      message: "token created",
+    });
   } catch (e) {
     res.status(500).json({ result: false, message: e.message });
     return;
@@ -432,25 +448,43 @@ const checkCSRFTokenSTP = (req, res, next) => {
   try {
     const sessionUser = req.session.user;
     const sessionCsrfToken = req.session.csrfToken;
-    const requestCsrfToken = req.cookies.CSRFToken; //The token sent within the request header.
-    console.log("SESSIONCSRFTOKEN", sessionCsrfToken);
+    const requestCsrfToken = req.cookies.CSRFToken; // The token sent within the request header.
+
     console.log("REQUESTCSRFTOKEN", requestCsrfToken);
-    if (!sessionUser || !requestCsrfToken || !sessionCsrfToken) {
-      res.status(401).json({
-        result: false,
-        message: "Token has not been provided.",
-      });
+
+    if (req.isRegister) {
+      // session.user is not needed for register
+      delete req.isRegister;
+      if (!requestCsrfToken || !sessionCsrfToken) {
+        return res.status(401).json({
+          result: false,
+          message: "Token has not been provided.",
+        });
+      }
+      if (requestCsrfToken !== sessionCsrfToken) {
+        return res.status(401).json({
+          result: false,
+          message: "Invalid token.",
+        });
+      }
+    } else {
+      if (!requestCsrfToken || !sessionCsrfToken || !sessionUser) {
+        logout(req, res); // to clear session or cookie data or both
+        return res.status(401).json({
+          result: false,
+          message: "Token has not been provided.",
+        });
+      }
+
+      if (requestCsrfToken !== sessionCsrfToken) {
+        return res.status(401).json({
+          result: false,
+          message: "Invalid token.",
+        });
+      }
     }
-    if (requestCsrfToken !== sessionCsrfToken) {
-      res.status(401).json({
-        result: false,
-        message: "Invalid token.",
-      });
-    }
-    next();
   } catch (e) {
-    res.status(500).json({ result: false, message: e.message });
-    return;
+    return res.status(500).json({ result: false, message: e.message });
   }
 };
 

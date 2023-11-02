@@ -290,7 +290,6 @@ async function findUserRoleByEmail(email) {
 }
 
 function isUserAuthorized(sessionUser, certUserEmail, adminRole) {
-  console.log(sessionUser);
   return (
     (sessionUser && sessionUser.email === certUserEmail) ||
     adminRole === "admin"

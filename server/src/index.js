@@ -61,6 +61,8 @@ mongoose.connect(MONGODB_CONNECTION, {
 // Get the default connection
 const db = mongoose.connection;
 
+app.use(cookieParser());
+
 // Sessions
 app.use(
   session({
@@ -84,8 +86,6 @@ app.use(
     }),
   })
 );
-
-app.use(cookieParser());
 
 const apiLimiter = rateLimit({
   windowMs: 1 * 1000, // 1 second

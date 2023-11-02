@@ -25,7 +25,7 @@ const logRequest = async (req, res, next) => {
     requested_url,
   };
 
-  console.log("accessLogData ", req.session.user);
+  // console.log("accessLogData ", req.session.user);
 
   try {
     // Create the access log

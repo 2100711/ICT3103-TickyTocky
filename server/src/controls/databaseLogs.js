@@ -14,7 +14,6 @@ const createLog = async (logData) => {
 const logRequest = async (req, next) => {
   const certificate_id = req.certificate_id; // Assuming the data is sent in the request body
   const query_type = req.method; // Assuming the data is sent in the request body
-  console.log("CERTIFICATEID", certificate_id);
   const databaseLogData = {
     certificate_id,
     query_type,
