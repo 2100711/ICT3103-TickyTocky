@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.16.7",
+    "chromedriver": "^119.0.0",
     "selenium-webdriver": "^4.15.0"
   }
 }
