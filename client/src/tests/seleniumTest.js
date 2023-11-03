@@ -8,7 +8,7 @@ const { Builder, By, Key, until } = require("selenium-webdriver");
   //   .setChromeOptions(options)
   //   .build();
 
-  let driver = new Builder().usingServer("http://localhost:4444").withCapabilities(capabilities).build();
+  let driver = new Builder().usingServer("http://localhost:4444").build();
 
   try {
     // Navigate to your React application's login page
