@@ -8,8 +8,10 @@ import {
   Switch,
   message,
   Spin,
+  notification,
 } from "antd";
 import { updateUserAsAdmin } from "../../api/users";
+import { generateOTP } from "../../api/auth";
 
 export const UserForm = ({ user, visible, onCancel }) => {
   const [form] = Form.useForm();
@@ -27,6 +29,13 @@ export const UserForm = ({ user, visible, onCancel }) => {
 
   const handleCancel = () => {
     onCancel();
+  };
+
+  const openNotification = (type, message, description) => {
+    notification[type]({
+      message,
+      description,
+    });
   };
 
   const handleFinish = async (values) => {
@@ -50,6 +59,23 @@ export const UserForm = ({ user, visible, onCancel }) => {
       );
     }
   };
+
+  const handleResetPassword = async () => {
+    try {
+        setLoading(true);
+        const response = await generateOTP({ email: user.email });
+        if (response.success) {
+          setLoading(false);
+          openNotification("info", "Password Reset Email Sent");
+        } else {
+          setLoading(false);
+          openNotification("error", "Error", response.message);
+        }
+      }
+    catch (error) {
+      setLoading(false);
+    }
+  }
 
   return (
     <Modal
@@ -122,6 +148,11 @@ export const UserForm = ({ user, visible, onCancel }) => {
             ]}
           >
             <Switch />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" onClick={handleResetPassword}>
+              Reset Password
+            </Button>
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">

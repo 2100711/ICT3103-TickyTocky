@@ -19,7 +19,7 @@ export const ForgotPassword = () => {
           setLoading(false);
           openNotification("info", "Password Reset Email Sent");
           // navigate
-          navigate("/otp", { state: { email: email } });
+          navigate("/login", { state: { email: email } });
         } else {
           setLoading(false);
           openNotification("error", "Error", response.message);

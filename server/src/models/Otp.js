@@ -6,7 +6,7 @@ const OtpSchema = new mongoose.Schema({
     required: true,
   },
   token: {
-    type: Number,
+    type: String,
     required: true,
   },
   timestamps: {
@@ -15,6 +15,12 @@ const OtpSchema = new mongoose.Schema({
     default: Date.now,
     index: true,
   },
+  is_used : {
+    type: Boolean,
+  default: false,
+    required: true,
+  }
 });
-OtpSchema.path("timestamps").index({ expires: 180 });
+OtpSchema.path("timestamps").index({ expires: 600 });
+
 export const OtpModel = mongoose.model("otp", OtpSchema);

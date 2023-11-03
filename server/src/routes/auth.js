@@ -7,9 +7,10 @@ import {
   login,
   logout,
   generateOTP,
-  verifyOTP,
-  timeLeftOTP,
+  // verifyOTP,
+  // timeLeftOTP,
   resetPassword,
+  updatePassword,
   generateCSRFToken,
   checkCSRFTokenSTP,
 } from "../controls/auth.js";
@@ -23,10 +24,11 @@ const authRouter = express.Router();
 authRouter.get("/check-auth", isAuthenticated, checkAuth, accessLogRequest);
 authRouter.post("/register", validateRegister, register, accessLogRequest);
 authRouter.post("/login", login, securityLogRequest);
-authRouter.get("/logout", logout, accessLogRequest);
+authRouter.get("/logout", logout);
 authRouter.post("/generate-otp", generateOTP, accessLogRequest);
-authRouter.post("/verify-otp", verifyOTP, accessLogRequest);
-authRouter.post("/timeleft-otp", timeLeftOTP, accessLogRequest);
+// authRouter.post("/verify-otp", verifyOTP, accessLogRequest);
+// authRouter.post("/timeleft-otp", timeLeftOTP, accessLogRequest);
 authRouter.post("/reset-password", resetPassword, accessLogRequest);
+authRouter.post("/update-password", updatePassword, accessLogRequest);
 authRouter.get("/generate-csrf-token", generateCSRFToken);
 export { authRouter };

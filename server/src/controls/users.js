@@ -9,8 +9,18 @@ const handleError = (res, message, status = 500) => {
   res.status(status).json({ success: false, message });
 };
 
-const createUser = async (req, res) => {
+const createUser = async (req, res, next) => {
   try {
+const admin = await UserModel.findOne({ email: req.session.user.email, role: "admin" });
+    if (!admin) {
+res.status(401).json({
+      success: false,
+      message: `Unauthorized`,
+    });
+    } else {
+          req.user_id = admin._id;
+    next();
+    }
     const { f_name, l_name, password, email, account_lock, role } = req.body;
     if (await userExists(email))
       return res.status(409).json({
@@ -64,8 +74,11 @@ const getAllUsersEmails = async (req, res) => {
   }
 };
 
-const getUser = async (req, res) => {
+const getUser = async (req, res, next) => {
   try {
+    const requested = await UserModel.findOne({ email: req.session.user.email});
+          req.user_id = requested._id;
+    next();
     const { email } = req.params;
     const user = await UserModel.findOne({ email: email }).select(
       "-_id -encrypted_password"
@@ -84,7 +97,7 @@ const getUser = async (req, res) => {
   }
 };
 
-const updateUser = async (req, res) => {
+const updateUser = async (req, res, next) => {
   const { f_name, l_name, email } = req.body;
   try {
     const updatedUser = await UserModel.findOneAndUpdate(
@@ -92,6 +105,9 @@ const updateUser = async (req, res) => {
       { $set: { f_name, l_name } },
       { new: true }
     );
+
+    req.user_id = updatedUser._id;
+    next();
 
     if (updatedUser) {
       res.status(200).json({
@@ -107,10 +123,20 @@ const updateUser = async (req, res) => {
   }
 };
 
-const updateUserAsAdmin = async (req, res) => {
+const updateUserAsAdmin = async (req, res, next) => {
   const { f_name, l_name, email, account_lock, email_verified, role } =
     req.body;
   try {
+    const admin = await UserModel.findOne({ email: req.session.user.email, role: "admin" });
+    if (!admin) {
+res.status(401).json({
+      success: false,
+      message: `Unauthorized`,
+    });
+    } else {
+          req.user_id = admin._id;
+    next();
+    }
     const currentUser = await UserModel.findOne({ email });
 
     const updatedUser = await UserModel.findOneAndUpdate(
@@ -138,10 +164,21 @@ const updateUserAsAdmin = async (req, res) => {
   }
 };
 
-const deleteUser = async (req, res) => {
+const deleteUser = async (req, res, next) => {
   const session = await CertModel.startSession();
   const { email } = req.body;
   try {
+
+          const admin = await UserModel.findOne({ email: req.session.user.email, role: "admin" });
+    if (!admin) {
+res.status(401).json({
+      success: false,
+      message: `Unauthorized`,
+    });
+    } else {
+          req.user_id = admin._id;
+    next();
+    }
     const certs = await CertModel.find({ user_email: email });
     session.startTransaction();
     if (certs && certs.length > 0) {
@@ -158,6 +195,7 @@ const deleteUser = async (req, res) => {
     session.endSession();
 
     if (result.deletedCount === 1) {
+
       res.status(200).json({
         success: true,
         message: "User deleted successfully",

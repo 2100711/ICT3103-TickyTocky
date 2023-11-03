@@ -20,7 +20,7 @@ import "../styles/Account.css";
 import { CertsManagement } from "./CertsManagement";
 import { UsersManagement } from "./UsersManagement";
 import { CertMember } from "./CertMember";
-import { resetPassword } from "../../api/auth";
+import { resetPassword, updatePassword } from "../../api/auth";
 
 const { Text } = Typography;
 const { Item } = Form;
@@ -95,17 +95,11 @@ export const Account = () => {
     setResetPasswordModalVisible(true);
   };
 
-  const handleResetPassword = async (values) => {
+  const handleResetPassword = async () => {
+    const values = await resetPasswordForm.validateFields();
     try {
       setLoading(true);
-      if (values.new_password !== values.cfm_new_password) {
-        notification.error({
-          message: "Error",
-          description: "New password and confirm password must be the same.",
-          duration: 5,
-        });
-      } else {
-        const response = await resetPassword({
+        const response = await updatePassword({
           email: userData.email,
           password: values.new_password,
         });
@@ -115,6 +109,7 @@ export const Account = () => {
             description: "Password successfully reset.",
             duration: 5,
           });
+          setResetPasswordModalVisible(false);
         } else {
           notification.error({
             message: "Error",
@@ -122,7 +117,6 @@ export const Account = () => {
             duration: 5,
           });
         }
-      }
 
       setLoading(false);
     } catch (error) {
@@ -201,10 +195,10 @@ export const Account = () => {
               title="Reset Password"
               open={resetPasswordModalVisible}
               onCancel={() => setResetPasswordModalVisible(false)}
+              onOk={handleResetPassword}
             >
               <Spin tip="Loading..." size="large" spinning={loading}>
                 <Form
-                  onFinish={handleResetPassword}
                   form={resetPasswordForm}
                   layout="vertical"
                 >
@@ -218,9 +212,9 @@ export const Account = () => {
                       },
                       {
                         pattern:
-                          /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#%^&+=])(?!.*\s).{14,128}$/,
+                          /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#%^&+=])(?!.*\s).{12,64}$/,
                         message:
-                          "New Password must be at least 14 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#%^&+=).",
+                          "New Password must be 12-64 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#%^&+=).",
                       },
                     ]}
                   >
@@ -233,24 +227,25 @@ export const Account = () => {
                   <Form.Item
                     label="Confirm New Password"
                     name="cfm_new_password"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please confirm your new password",
-                      },
-                    ]}
+                    dependencies={["new_password"]}
+          hasFeedback
+          rules={[
+            { required: true, message: "Please re-enter the same password" },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue("new_password") === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error("Passwords do not match"));
+              },
+            }),
+          ]}
                   >
                     <Input.Password
                       type="password"
                       placeholder="Confirm Password"
                     />
-                  </Form.Item>
-
-                  <Form.Item>
-                    <Button type="primary" htmlType="submit">
-                      Reset Password
-                    </Button>
-                  </Form.Item>
+                  </Form.Item>      
                 </Form>
               </Spin>
             </Modal>

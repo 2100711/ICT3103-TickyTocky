@@ -3,7 +3,7 @@ import { Account } from "../pages/Account";
 import { Home } from "../pages/Home";
 import { Login } from "../pages/Login";
 import { Register } from "../pages/Register";
-import { OTPVerification } from "../pages/OTPVerification";
+// import { OTPVerification } from "../pages/OTPVerification";
 import { ForgotPassword } from "../pages/ForgotPassword";
 import { PasswordReset } from "../pages/PasswordReset";
 import { NotFound } from "../errors/NotFound";
@@ -75,13 +75,6 @@ export const nav = [
         path: "/resetpassword",
         name: "Reset Password",
         element: <PasswordReset />,
-        isMenu: false,
-        isPrivate: false,
-    },
-    {
-        path: "/otp",
-        name: "OTP Verification",
-        element: <OTPVerification />,
         isMenu: false,
         isPrivate: false,
     },

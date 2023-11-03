@@ -10,9 +10,10 @@ import {
   LOGIN_API,
   LOGOUT_API,
   GENERATE_OTP_API,
-  VERIFY_OTP_API,
-  OTP_TIME_LEFT,
+  // VERIFY_OTP_API,
+  // OTP_TIME_LEFT,
   RESET_PASSWORD_API,
+  UPDATE_PASSWORD_API,
   GENERATE_CSRF_TOKEN,
 } from "../constants";
 
@@ -40,12 +41,16 @@ export async function verifyOTP(req) {
   return requestPost(VERIFY_OTP_API, { req });
 }
 
-export async function timeLeft(req) {
-  return requestPost(OTP_TIME_LEFT, { req });
-}
+// export async function timeLeft(req) {
+//   return requestPost(OTP_TIME_LEFT, { req });
+// }
 
 export async function resetPassword(req) {
   return requestPost(RESET_PASSWORD_API, { req });
+}
+
+export async function updatePassword(req) {
+  return requestPost(UPDATE_PASSWORD_API, { req });
 }
 
 export async function generateCSRFToken(req) {

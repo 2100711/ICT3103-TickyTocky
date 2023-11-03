@@ -70,14 +70,12 @@ const userExists = async (email) => {
   return false;
 };
 
-// Get random 6 digit number
-const generateRandomOTP = () => {
-  const otp = crypto.randomInt(100000, 999999).toString();
-  return otp;
+const generateSecureToken = (length) => {
+  return crypto.randomBytes(length).toString('hex');
 };
 
-const checkAuth = async (req, res) => {
-  const user = await UserModel.findOne({ email: req.session.user.email });
+const checkAuth = async (req, res, next) => {
+  const user = await UserModel.findOne({ email: req.session.user.email }).lean();
 
   if (!user) {
     return res.status(201).json({
@@ -88,6 +86,11 @@ const checkAuth = async (req, res) => {
     });
   }
 
+  console.log(user._id);
+
+  req.user_id = user._id;
+  next();
+
   return res.status(201).json({
     email: req.session.user.email,
     success: true,
@@ -96,7 +99,7 @@ const checkAuth = async (req, res) => {
   });
 };
 
-const register = async (req, res) => {
+const register = async (req, res, next) => {
   const { f_name, l_name, email, password } = req.body;
   const sanitizedEmail = sanitize(email);
   const sanitizedFName = sanitize(f_name);
@@ -131,6 +134,9 @@ const register = async (req, res) => {
     }
 
     await newUser.save();
+
+    req.user_id = newUser._id;
+    next();
 
     return res
       .status(201)
@@ -226,14 +232,14 @@ const login = async (req, res, next) => {
   }
 };
 
-const logout = async (req, res) => {
+const logout = async (req, res, next) => {
   req.session.destroy(); // Destroy the session on the server side
   res.clearCookie("CSRFToken"); // Clear the CSRFToken cookie
   res.cookie("CSRFToken", "", { expires: new Date(0) }); // Set the cookie to expire immediately
   return res.status(200).json({ success: true, message: "Logged out." });
 };
 
-const generateOTP = async (req, res) => {
+const generateOTP = async (req, res, next) => {
   const { email } = req.body;
   const sanitizedEmail = sanitize(email);
   try {
@@ -244,26 +250,25 @@ const generateOTP = async (req, res) => {
     }
 
     // TODO: check if email exist in database
-    const user = await UserModel.findOne({ email: sanitizedEmail });
+    const user = await UserModel.findOne({ email: sanitizedEmail }).lean();
     if (!user) {
       return res
         .status(200)
         .json({ success: false, message: "Email does not exist." });
     }
-
     const isOtpExist = await OtpModel.findOne({ user_email: email });
     if (isOtpExist) {
       const currentTime = new Date();
       const storedTime = isOtpExist.timestamps;
       const timeDiff = currentTime.getTime() - storedTime.getTime();
-      const minutesLeft = Math.floor((15000 - timeDiff) / 60000); // 180000ms is 3 minutes // zaf: change back to 180000
+      const minutesLeft = Math.floor((600000 - timeDiff) / 60000); // 180000ms is 3 minutes // zaf: change back to 180000
       return res.status(200).json({
         success: false,
         message: `Please wait ${minutesLeft} minutes to generate a new OTP.`,
       });
     }
 
-    const token = generateRandomOTP();
+    const token = generateSecureToken(32);
 
     const doc = await OtpModel.create({
       user_email: email,
@@ -275,7 +280,8 @@ const generateOTP = async (req, res) => {
     if (!send.success) {
       return res.status(500).json({ success: false, message: send.message });
     }
-
+    req.user_id = user._id;
+    next();
     return res.status(200).json({
       success: true,
       message: `otp created`,
@@ -298,11 +304,79 @@ const emailToUser = async (email, token) => {
   });
 
   const emailBody = `
-  <h2>Authentication</h2>
-
-  <p>One-Time-Password : ${token}</p>
-  </br>
-  <p>If you did not make this request, please ignore this email.</p>
+  <!DOCTYPE html>
+<html>
+<head>
+    <title>Password Reset</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #3498db;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            display: inline-block;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .button:hover {
+            background-color: #277dbb;
+        }
+        .footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="../img/log.png" alt="TickyTocky" width="150">
+        </div>
+        <div class="card">
+            <h2>TickyTocky Password Reset</h2>
+            <p>We heard that you lost your TickyTocky password. Sorry about that!</p>
+            <p>But don’t worry! You can use the following button to reset your password:</p>
+            <p class="reset-link">
+                <a class="button" href="http://localhost:3000/resetpassword?t=${token}" style="color: #fff;">Reset your password</a>
+            </p>
+            <p>If you don’t use this link within 10 minutes, it will expire. To get a new password reset link, visit:</p>
+            <a href="http://localhost:3000/forgotpassword">http://localhost:3000/forgotpassword</a>
+            <p>Thanks,</p>
+            <p>The TickyTocky Team </p>
+        </div>
+        <p>You're receiving this email because a password reset was requested for your account.</p>
+        <div class="footer">
+            &copy; 2023 TickyTocky. All rights reserved.
+        </div>
+    </div>
+</body>
+</html>
   `;
 
   const mailOptions = {
@@ -326,67 +400,145 @@ const emailToUser = async (email, token) => {
   });
 };
 
-const verifyOTP = async (req, res) => {
-  const { email, otp } = req.body;
+// const verifyOTP = async (req, res, next) => {
+//   const { email, otp } = req.body;
+//   try {
+//     const token = await OtpModel.findOne({ user_email: email, token: otp });
+//     if (!token) {
+//       return res.status(401).json({
+//         success: false,
+//         message: "Incorrect OTP entered or OTP has expired.",
+//       });
+//     }
+
+//     // TODO: create session so user can reset password?
+//     const user = await UserModel.findOne({ email: email }).lean();
+//     console.log(user);
+//     req.user_id = user._id;
+//     next();
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Your OTP has been successfully verified.",
+//     });
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: "An error occurred." });
+//   }
+// };
+
+// const timeLeftOTP = async (req, res, next) => {
+//   const { email } = req.body;
+//   try {
+//     if (!email) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Email is required to retrieve time left.",
+//       });
+//     }
+//     const isOtpExist = await OtpModel.findOne({ user_email: email });
+//     if (isOtpExist) {
+//       const currentTime = new Date();
+//       const storedTime = isOtpExist.timestamps;
+//       const timeDiff = currentTime.getTime() - storedTime.getTime();
+//       const timeLeftInMs = 600000 - timeDiff; // 180000ms is 3 minutes // zaf: change back to 180000
+//       const minutesLeft = Math.floor(timeLeftInMs / 60000);
+//       const secondsLeft = Math.floor((timeLeftInMs % 60000) / 1000);
+
+//       return res.status(200).json({
+//         success: true,
+//         message: "Successfully retrieved time left.",
+//         time: { minutes: minutesLeft, seconds: secondsLeft },
+//       });
+//     } else {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Incorrect OTP entered or OTP has expired.",
+//       });
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "An error occurred while retrieving time left.",
+//     });
+//   }
+// };
+
+const resetPassword = async (req, res, next) => {
+  const { token, password } = req.body;
+  const otpRecord = await OtpModel.findOne({ token: token });
+  const email = otpRecord.user_email;
+  const sanitizedEmail = sanitize(email);
   try {
-    const token = await OtpModel.findOne({ user_email: email, token: otp });
-    if (!token) {
-      return res.status(401).json({
+    if (!email) {
+      return res
+        .status(200)
+        .json({ success: false, message: "Email is required." });
+    }
+
+    const user = await UserModel.findOne({ email: sanitizedEmail });
+    if (!user) {
+      return res
+        .status(200)
+        .json({ success: false, message: "Email does not exist." });
+    }
+
+    const isOtpExist = await OtpModel.findOne({ user_email: sanitizedEmail });
+    if (isOtpExist.is_used) {
+      if (isOtpExist) {
+      const currentTime = new Date();
+      const storedTime = isOtpExist.timestamps;
+      const timeDiff = currentTime.getTime() - storedTime.getTime();
+      const minutesLeft = Math.floor((600000 - timeDiff) / 60000); // 180000ms is 3 minutes // zaf: change back to 180000
+      return res.status(200).json({
         success: false,
-        message: "Incorrect OTP entered or OTP has expired.",
+        message: `Please wait ${minutesLeft} minutes to generate a new OTP.`,
+      });
+    }
+    }
+
+    // Salt and Hash password
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    if (await bcrypt.compare(password, user.encrypted_password)) {
+      return res.status(200).json({
+        success: false,
+        message: "Old and new password cannot be the same.",
       });
     }
 
-    // TODO: create session so user can reset password?
+    const updatedUser = await UserModel.findOneAndUpdate(
+      { email },
+      { $set: { encrypted_password: hashedPassword, account_lock: false } },
+      { new: true }
+    );
 
-    return res.status(200).json({
-      success: true,
-      message: "Your OTP has been successfully verified.",
-    });
+    await unlockAccount(updatedUser._id, req.ip);
+
+    if (updatedUser) {
+      req.user_id = user._id;
+    next();
+    await OtpModel.findOneAndUpdate(
+      { user_email: sanitizedEmail },
+      { $set: { is_used: true } },
+      { new: true }
+    );
+      res.status(200).json({
+        success: true,
+        message: "Password updated successfully",
+      });
+    } else {
+      res.status(404).json({ success: false, message: "An error occurred." });
+    }
   } catch (error) {
+    console.error(error);
     res.status(500).json({ success: false, message: "An error occurred." });
   }
 };
 
-const timeLeftOTP = async (req, res) => {
-  const { email } = req.body;
-  try {
-    if (!email) {
-      return res.status(400).json({
-        success: false,
-        message: "Email is required to retrieve time left.",
-      });
-    }
-    const isOtpExist = await OtpModel.findOne({ user_email: email });
-    if (isOtpExist) {
-      const currentTime = new Date();
-      const storedTime = isOtpExist.timestamps;
-      const timeDiff = currentTime.getTime() - storedTime.getTime();
-      const timeLeftInMs = 15000 - timeDiff; // 180000ms is 3 minutes // zaf: change back to 180000
-      const minutesLeft = Math.floor(timeLeftInMs / 60000);
-      const secondsLeft = Math.floor((timeLeftInMs % 60000) / 1000);
-
-      return res.status(200).json({
-        success: true,
-        message: "Successfully retrieved time left.",
-        time: { minutes: minutesLeft, seconds: secondsLeft },
-      });
-    } else {
-      return res.status(404).json({
-        success: false,
-        message: "Incorrect OTP entered or OTP has expired.",
-      });
-    }
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      message: "An error occurred while retrieving time left.",
-    });
-  }
-};
-
-const resetPassword = async (req, res) => {
+const updatePassword = async (req, res, next) => {
   const { email, password } = req.body;
   const sanitizedEmail = sanitize(email);
   try {
@@ -397,6 +549,8 @@ const resetPassword = async (req, res) => {
     }
 
     const user = await UserModel.findOne({ email: sanitizedEmail });
+    req.user_id = user._id;
+    next();
     if (!user) {
       return res
         .status(200)
@@ -557,9 +711,10 @@ export {
   login,
   logout,
   generateOTP,
-  verifyOTP,
-  timeLeftOTP,
+  // verifyOTP,
+  // timeLeftOTP,
   resetPassword,
+  updatePassword,
   generateCSRFToken,
   checkCSRFTokenSTP,
 };

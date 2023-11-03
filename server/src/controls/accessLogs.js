@@ -3,6 +3,7 @@ import { AccessLogModel } from "../models/AccessLogs.js";
 // Define a more generic function for creating a log
 const createLog = async (logData) => {
   try {
+    console.log("CREATEACCESSLOG", logData)
     const result = await AccessLogModel.create(logData);
     return result;
   } catch (error) {
@@ -15,8 +16,8 @@ const logRequest = async (req, res, next) => {
   const user_agent = req.get("User-Agent");
   const http_status_codes = res.statusCode;
   const requested_url = req.url;
-  const user_id = req.user ? req.user._id : null; // Assuming you have user info in the request
-
+  const user_id = req.user_id; // Assuming you have user info in the request
+  
   const accessLogData = {
     ip_address,
     user_id,
@@ -25,17 +26,14 @@ const logRequest = async (req, res, next) => {
     requested_url,
   };
 
-  // console.log("accessLogData ", req.session.user);
+  console.log("accessLogData ", accessLogData);
 
   try {
     // Create the access log
     const log = await createLog(accessLogData);
-
-    next();
   } catch (error) {
     // Handle the error (log it or respond to the client)
     console.error(error);
-    next(error);
   }
 };
 

@@ -6,8 +6,8 @@ export const REGISTER_URL = "/register";
 export const ADMIN_URL = "/admin";
 
 // SERVER URL
-// "https://www.gracious-kare.cloud/be"; //http://localhost:3001
-export const SERVER_URL = "https://www.gracious-kare.cloud/be";
+export const SERVER_URL = "http://localhost:3001";
+// export const SERVER_URL = "https://www.gracious-kare.cloud/be";
 export const CERTS_URL = `${SERVER_URL}/certs`;
 export const USERS_URL = `${SERVER_URL}/users`;
 export const AUTH_URL = `${SERVER_URL}/auth`;
@@ -40,6 +40,7 @@ export const GENERATE_OTP_API = `${AUTH_URL}/generate-otp`;
 export const VERIFY_OTP_API = `${AUTH_URL}/verify-otp`;
 export const OTP_TIME_LEFT = `${AUTH_URL}/timeleft-otp`;
 export const RESET_PASSWORD_API = `${AUTH_URL}/reset-password`;
+export const UPDATE_PASSWORD_API = `${AUTH_URL}/update-password`;
 export const GENERATE_CSRF_TOKEN = `${AUTH_URL}/generate-csrf-token`;
 
 // WATCH BRANDS

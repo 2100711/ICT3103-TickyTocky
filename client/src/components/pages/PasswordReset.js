@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Input, Button, notification, Spin } from "antd";
-import { Link, useLocation } from "react-router-dom"; // If using React Router for navigation
+import { Link, useLocation, useNavigate } from "react-router-dom"; // If using React Router for navigation
 import "../styles/ForgotPassword.css"; // You can reuse the CSS for the password reset page
 import { resetPassword } from "../../api/auth";
 
@@ -9,15 +9,25 @@ export const PasswordReset = () => {
   const [password, setPassword] = useState("");
   const [cfmPassword, setCfmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
   const location = useLocation();
-
+  const navigate = useNavigate();
+  const queryParams = new URLSearchParams(location.search);
+  const token = queryParams.get('t');
+  console.log(token);
+  useEffect(()=>{
+    if (!token) {
+      navigate("/");
+    }
+  },[token, navigate])
+  if (!token) {
+    return null; // Return null to prevent rendering the login page.
+  }
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
       if (validatePassword() && validateCfmPassword()) {
         const response = await resetPassword({
-          email: location.state.email,
+          token,
           password,
         });
         if (response.success) {
@@ -90,9 +100,9 @@ export const PasswordReset = () => {
                   { required: true, message: "Please enter your new password" },
                   {
                     pattern:
-                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@!%*?&])[A-Za-z\d@!%*?&]{12,64}$/,
+                      /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#%^&+=])(?!.*\s).{12,64}$/,
                     message:
-                      "Password must be at least 12 characters long and no more than 64 characters. It must contain at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#$%).",
+                      "Password must be 12-64 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#%^&+=).",
                   },
                 ]}
               >
@@ -106,12 +116,19 @@ export const PasswordReset = () => {
 
               <Form.Item
                 name="confirmPassword"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please confirm your new password",
-                  },
-                ]}
+                dependencies={["password"]}
+          hasFeedback
+          rules={[
+            { required: true, message: "Please re-enter the same password" },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue("password") === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error("Passwords do not match"));
+              },
+            }),
+          ]}
               >
                 <Input.Password
                   type="password"
