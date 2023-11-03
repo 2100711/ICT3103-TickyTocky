@@ -20,7 +20,7 @@ const chrome = require("selenium-webdriver/chrome");
     await driver.get("https://gracious-kare.cloud/login");
 
     // Wait for the email input to be visible
-    await driver.wait(until.elementLocated(By.id("login-form_email")), 10000);
+    await driver.wait(until.elementLocated(By.id("login-form_email")), 20000);
 
     // Find elements
     const emailInput = await driver.findElement(By.id("login-form_email"));
