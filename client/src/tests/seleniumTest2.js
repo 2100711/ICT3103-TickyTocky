@@ -3,13 +3,13 @@ const chrome = require("selenium-webdriver/chrome");
 
 (async function example() {
   // Set up Chrome options
-  const options = new chrome.Options();
-  options.addArguments("--headless");
+  let chromeOptions = new chrome.Options();
+  chromeOptions.addArguments("--headless"); // Set Chrome to run in headless mode
 
   // Initialize the WebDriver
   let driver = await new Builder()
     .forBrowser("chrome")
-    .setChromeOptions(options)
+    .setChromeOptions(chromeOptions) // Set the ChromeOptions
     .build();
 
   try {
