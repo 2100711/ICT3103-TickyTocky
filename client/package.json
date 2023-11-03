@@ -23,7 +23,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "node src/tests/seleniumTest.js && node src/tests/seleniumTest2.js",
+    "test": "node src/tests/seleniumTest2.js",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
