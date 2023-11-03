@@ -68,7 +68,7 @@ app.use(
   session({
     secret: SECRET,
     cookie: {
-      secure: false, // Set to true for HTTPS
+      secure: true, // Set to true for HTTPS
       httpOnly: true,
       signed: true,
       sameSite: "strict", // Helps mitigate CSRF attacks
