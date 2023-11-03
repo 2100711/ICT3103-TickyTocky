@@ -7,7 +7,7 @@ const chrome = require("selenium-webdriver/chrome");
   options.addArguments("--headless");
 
   // Initialize the WebDriver
-  const driver = await new Builder()
+  let driver = await new Builder()
     .forBrowser("chrome")
     .setChromeOptions(options)
     .build();
