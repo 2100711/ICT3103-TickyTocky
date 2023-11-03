@@ -2,13 +2,13 @@ const { Builder, By, Key, until } = require("selenium-webdriver");
 
 (async () => {
   // Initialize the WebDriver
-  //let driver = await new Builder().forBrowser("chrome").build();
   // let driver = await new Builder()
   //   .forBrowser("chrome")
   //   .setChromeOptions(options)
   //   .build();
 
-  let driver = new Builder().usingServer("http://localhost:4444").build();
+  //let driver = new Builder().usingServer("http://localhost:4444").build();
+  let driver = await new Builder().forBrowser("chrome").build();
 
   try {
     // Navigate to your React application's login page
