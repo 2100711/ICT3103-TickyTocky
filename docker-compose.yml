@@ -48,6 +48,9 @@ services:
     volumes:
       - ./nginx-conf:/etc/nginx/conf.d #Nginx configuration file
       - ./gracious-kare.cloud-ssl-bundle:/ssl/ #SSL certs directory
+    depends_on:
+      - frontend
+      - backend
     networks:
       - app-network
       
