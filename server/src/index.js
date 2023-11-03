@@ -73,6 +73,7 @@ app.use(
       signed: true,
       sameSite: "strict", // Helps mitigate CSRF attacks
     },
+    proxy: true,
     resave: false,
     saveUninitialized: false,
     store: new MongoStore({
