@@ -36,71 +36,91 @@ pipeline {
         //         }
         //     }
         // }
-        stage('Install dependencies for selenium') {
+        // stage('Install dependencies for selenium') {
+        //     steps {
+        //         dir('server') {
+        //             script {
+        //                 sh 'chmod +x tests/dependencyScript.sh'
+        //                 sh 'tests/dependencyScript.sh'
+        //             }
+        //         }
+        //     }
+        //     post {
+        //         success {
+        //             echo 'Installed!'
+        //         }
+        //         failure {
+        //             echo 'Failure sia you'
+        //         }
+        //     }
+        // }
+        // stage('OWASP DependencyCheck') { // save time not running
+        //    steps {
+        //        dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
+        //    }
+        // }
+        // stage('Frontend Test') {
+        //     parallel {
+        //         stage('Test 1 idk bro do what') {
+        //             steps {
+        //                 dir('server') {
+        //                     script {
+        //                         sh 'chmod +x tests/seleniumTest.sh'
+        //                         sh 'python3 tests/seleniumTest.py'
+        //                     }
+        //                 }
+        //             }
+        //             post {
+        //                 success {
+        //                     echo 'Passed with flying colors'
+        //                 }
+        //                 failure {
+        //                     echo 'Failure sia you'
+        //                 }
+        //             }
+        //         }
+        //         stage('Test 2 idk bro do what') {
+        //             steps {
+        //                 dir('server') {
+        //                     script {
+        //                         sh 'chmod +x tests/seleniumTest2.sh'
+        //                         sh 'python3 tests/seleniumTes2.py'
+        //                     }
+        //                 }
+        //             }
+        //             post {
+        //                 success {
+        //                     echo 'Passed with flying colors'
+        //                 }
+        //                 failure {
+        //                     echo 'Failure sia you'
+        //                 }
+        //             }
+        //         }
+                
+        //     }
+        // }
+
+        stage('Frontend Test') {
             steps {
-                dir('server') {
+                dir('client') {
                     script {
-                        sh 'ls'
-                        sh 'chmod +x tests/dependencyScript.sh'
-                        sh 'tests/dependencyScript.sh'
+                        sh 'apt install -y nodejs npm'
+                        sh 'npm install -D selenium-webdriver'
+                        sh 'npm test'
                     }
                 }
             }
             post {
                 success {
-                    echo 'Installed!'
+                    echo 'Passed with flying colors'
                 }
                 failure {
                     echo 'Failure sia you'
                 }
             }
         }
-        // stage('OWASP DependencyCheck') { // save time not running
-        //    steps {
-        //        dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
-        //    }
-        // }
-        stage('Frontend Test') {
-            parallel {
-                stage('Test 1 idk bro do what') {
-                    steps {
-                        dir('server') {
-                            script {
-                                sh 'chmod +x tests/seleniumTest.sh'
-                                sh 'python3 tests/seleniumTest.py'
-                            }
-                        }
-                    }
-                    post {
-                        success {
-                            echo 'Passed with flying colors'
-                        }
-                        failure {
-                            echo 'Failure sia you'
-                        }
-                    }
-                }
-                stage('Test 2 idk bro do what') {
-                    steps {
-                        dir('server') {
-                            script {
-                                sh 'chmod +x tests/seleniumTest2.sh'
-                                sh 'python3 tests/seleniumTes2.py'
-                            }
-                        }
-                    }
-                    post {
-                        success {
-                            echo 'Passed with flying colors'
-                        }
-                        failure {
-                            echo 'Failure sia you'
-                        }
-                    }
-                }
-                
-            }
-        }
+        
         stage('Backend Test') {
             steps {
                 dir('server') {
