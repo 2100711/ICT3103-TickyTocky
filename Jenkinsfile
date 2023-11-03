@@ -2,39 +2,40 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
-            steps {
-                echo 'Building the application'
-                script {
-                    sh 'docker compose build frontend backend'
-                }
-            }
-            post {
-                success {
-                    echo 'Build Success!'
-                }
-                failure {
-                    echo 'Failure sia you'
-                }
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying application'
-                script {
-                    sh 'docker compose up -d --force-recreate frontend backend'
-                    sh 'docker ps'
-                }
-            }
-            post {
-                success {
-                    echo 'Deployed!'
-                }
-                failure {
-                    echo 'Failure sia you'
-                }
-            }
-        }
+        // stage('Build') {
+        //     steps {
+        //         echo 'Building the application'
+        //         script {
+        //             sh 'docker compose down frontend backend'
+        //             sh 'docker compose build frontend backend'
+        //         }
+        //     }
+        //     post {
+        //         success {
+        //             echo 'Build Success!'
+        //         }
+        //         failure {
+        //             echo 'Failure sia you'
+        //         }
+        //     }
+        // }
+        // stage('Deploy') {
+        //     steps {
+        //         echo 'Deploying application'
+        //         script {
+        //             sh 'docker compose up -d --force-recreate frontend backend'
+        //             sh 'docker ps'
+        //         }
+        //     }
+        //     post {
+        //         success {
+        //             echo 'Deployed!'
+        //         }
+        //         failure {
+        //             echo 'Failure sia you'
+        //         }
+        //     }
+        // }
         stage('Install dependencies for selenium') {
             
             steps {
@@ -151,12 +152,12 @@ pipeline {
             //dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             echo "Pipeline successfully completed."
             //sh 'docker-compose down frontend backend'
-            sh 'docker system prune -f'
+            //sh 'docker system prune -f'
             echo "Removed Dangling Containers and Images"
         }
         failure {
             echo "Pipeline failed. Please investigate."
-            sh 'docker system prune -f' // Temp cleaning of images
+            //sh 'docker image prune -f' // Temp cleaning of images
         }
     }
 }
