@@ -95,7 +95,7 @@ async function createPdfContent(data) {
 async function fetchWatermarkImage() {
   try {
     // Read the image file from a local path
-    const imageBytes = await fs.readFile("../img/logo.png");
+    const imageBytes = await fs.readFile("../app/src/img/logo.png"); // Change path to ../img/logo.png when running locally
     return new Uint8Array(imageBytes);
   } catch (error) {
     console.error("Error reading watermark image:", error);
