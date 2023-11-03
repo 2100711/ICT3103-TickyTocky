@@ -38,9 +38,9 @@ pipeline {
         // }
         stage('Install dependencies for selenium') {
             steps {
-                dir('tests') {
-                    sh '$(pwd)'
+                dir('server/tests') {
                     script {
+                        sh 'chmod +x dependencyScript.sh'
                         sh 'dependencyScript.sh'
                     }
                 }
@@ -63,8 +63,9 @@ pipeline {
             parallel {
                 stage('Test 1 idk bro do what') {
                     steps {
-                        dir('tests') {
+                        dir('server/tests') {
                             script {
+                                sh 'chmod +x seleniumTest.sh'
                                 sh 'python3 seleniumTest.py'
                             }
                         }
@@ -80,8 +81,9 @@ pipeline {
                 }
                 stage('Test 2 idk bro do what') {
                     steps {
-                        dir('tests') {
+                        dir('server/tests') {
                             script {
+                                sh 'chmod +x seleniumTest2.sh'
                                 sh 'python3 seleniumTes2.py'
                             }
                         }
