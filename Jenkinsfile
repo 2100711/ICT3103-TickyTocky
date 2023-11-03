@@ -54,11 +54,6 @@ pipeline {
         //         }
         //     }
         // }
-        // stage('OWASP DependencyCheck') { // save time not running
-        //    steps {
-        //        dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
-        //    }
-        // }
         // stage('Frontend Test') {
         //     parallel {
         //         stage('Test 1 idk bro do what') {
@@ -100,7 +95,12 @@ pipeline {
                 
         //     }
         // }
-        stage('Snyk Scanning for Vulnerabilities') {
+        // stage('OWASP DependencyCheck') { // save time not running
+        //    steps {
+        //        dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
+        //    }
+        // }
+        stage('Snyk Scanning for Vulnerabilities') { 
              parallel {
                 stage('Client Snyk Scanning') {
                     steps {
@@ -115,7 +115,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Server Snyk Scanning') {
+                stage('Server Snyk Scanning') {// Tested Working can comment out to save time and api calls
                     steps {
                         dir('server') {
                             snykSecurity(
