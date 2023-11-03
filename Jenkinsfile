@@ -100,16 +100,33 @@ pipeline {
                 
         //     }
         // }
-        stage('Client Snyk Scanning') {
-            steps {
-                dir('client') {
-                    snykSecurity(
-                        snykInstallation: 'SnykLatest',
-                        snykTokenId: 'Snyk',
-                        targetFile: 'package.json',
-                        projectName: 'TickyTocky-Client', 
-                        severity: 'medium'
-                    )
+        stage('Snyk Scanning for Vulnerabilities') {
+             parallel {
+                stage('Client Snyk Scanning') {
+                    steps {
+                        dir('client') {
+                            snykSecurity(
+                                snykInstallation: 'SnykLatest',
+                                snykTokenId: 'Snyk',
+                                targetFile: 'package.json',
+                                projectName: 'TickyTocky-Client', 
+                                severity: 'high'
+                            )
+                        }
+                    }
+                }
+                stage('Server Snyk Scanning') {
+                    steps {
+                        dir('server') {
+                            snykSecurity(
+                                snykInstallation: 'SnykLatest',
+                                snykTokenId: 'Snyk',
+                                targetFile: 'package.json',
+                                projectName: 'TickyTocky-Server', 
+                                severity: 'high'
+                            )
+                        }
+                    }
                 }
             }
         }
