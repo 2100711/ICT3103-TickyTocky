@@ -17,6 +17,9 @@ import { SECRET, CRYPTOSECRET } from "./constants.js";
 
 const app = express();
 
+// Trust proxy
+app.set('trust proxy', true); // Add this line to trust the proxy
+
 // Helmet middleware for securing HTTP headers
 app.use(
   // sets X-Content-type-options: nosniff (by default)
@@ -52,7 +55,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
-app.use(cors({ credentials: true, origin: "http://localhost:3000" })); // Comment this out if you are using nginx
+// app.use(cors({ credentials: true, origin: "http://localhost:3000" })); // Comment this out if you are using nginx
 mongoose.connect(MONGODB_CONNECTION, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
