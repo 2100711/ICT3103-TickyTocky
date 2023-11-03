@@ -100,16 +100,17 @@ pipeline {
                 
         //     }
         // }
-        stage('Image Scanning') {
+        stage('Client Snyk Scanning') {
             steps {
-                snykSecurity(
-                    snykInstallation: 'SnykLatest',
-                    snykTokenId: 'Snyk',
-                    targetFile: 'package.json',
-                    projectName: 'TickyTocky', 
-                    severity: 'medium'
-                    // place other parameters here
-                )
+                dir('client') {
+                    snykSecurity(
+                        snykInstallation: 'SnykLatest',
+                        snykTokenId: 'Snyk',
+                        targetFile: 'package.json',
+                        projectName: 'TickyTocky-Client', 
+                        severity: 'medium'
+                    )
+                }
             }
         }
         stage('Frontend Test') {
