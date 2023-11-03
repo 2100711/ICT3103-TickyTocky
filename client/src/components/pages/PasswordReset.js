@@ -90,9 +90,9 @@ export const PasswordReset = () => {
                   { required: true, message: "Please enter your new password" },
                   {
                     pattern:
-                      /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#%^&+=])(?!.*\s).{14,128}$/,
+                      /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%])(?!.*\s).{12,64}$/,
                     message:
-                      "Password must be at least 14 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#%^&+=).",
+                      "Password must be at least 12 characters long and no more than 64 characters. It must contain at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#$%).",
                   },
                 ]}
               >
