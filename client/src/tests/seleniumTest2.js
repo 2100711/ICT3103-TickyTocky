@@ -5,9 +5,6 @@ const chrome = require("selenium-webdriver/chrome");
   // ChromeOptions to run in headless mode
   let chromeOptions = new chrome.Options();
   chromeOptions.addArguments("--headless"); // Set Chrome to run in headless mode
-  chromeOptions.addArguments("--disable-gpu"); // Disable GPU hardware acceleration
-  chromeOptions.addArguments("--no-sandbox"); // Disable the sandbox for running as root
-  chromeOptions.addArguments("--disable-dev-shm-usage"); // Overcome limited resource problems
 
   // Initialize the WebDriver
   let driver = await new Builder()
