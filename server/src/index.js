@@ -52,7 +52,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
-app.use(cors({ credentials: true, origin: "http://localhost:3000" })); // Comment this out if you are using nginx
+// app.use(cors({ credentials: true, origin: "http://localhost:3000" })); // Comment this out if you are using nginx
 mongoose.connect(MONGODB_CONNECTION, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -68,7 +68,7 @@ app.use(
   session({
     secret: SECRET,
     cookie: {
-      secure: false, // Set to true for HTTPS
+      secure: true, // Set to true for HTTPS
       httpOnly: true,
       signed: true,
       sameSite: "strict", // Helps mitigate CSRF attacks
