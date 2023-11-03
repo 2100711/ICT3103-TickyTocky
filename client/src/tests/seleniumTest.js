@@ -1,16 +1,8 @@
 const { Builder, By, Key, until } = require("selenium-webdriver");
-const chrome = require("selenium-webdriver/chrome");
 
 (async () => {
-  // Set up Chrome options
-  // let chromeOptions = new chrome.Options();
-  // chromeOptions.addArguments("--headless"); // Set Chrome to run in headless mode
-
   // Initialize the WebDriver
-  let driver = await new Builder()
-    .forBrowser("chrome")
-    // .setChromeOptions(chromeOptions) // Set the ChromeOptions
-    .build();
+  let driver = await new Builder().forBrowser("chrome").build();
 
   try {
     // Navigate to your React application's login page
