@@ -107,6 +107,7 @@ pipeline {
                     script {
                         sh 'apt install -y nodejs npm'
                         sh 'npm install -D selenium-webdriver chromedriver'
+                        sh 'export PATH=$PATH:/usr/bin'
                         sh 'npm test'
                     }
                 }
