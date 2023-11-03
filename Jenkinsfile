@@ -106,7 +106,7 @@ pipeline {
                 dir('client') {
                     script {
                         sh 'apt install -y nodejs npm'
-                        sh 'npm install -D selenium-webdriver'
+                        sh 'npm install -D selenium-webdriver chromedriver'
                         sh 'npm test'
                     }
                 }
