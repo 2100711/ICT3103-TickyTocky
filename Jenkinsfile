@@ -40,7 +40,7 @@ pipeline {
             steps {
                 dir('server') {
                     script {
-                        sh 'pwd'
+                        sh 'ls'
                         sh 'chmod +x tests/dependencyScript.sh'
                         sh 'tests/dependencyScript.sh'
                     }
