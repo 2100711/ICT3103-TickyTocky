@@ -462,7 +462,8 @@ const checkCSRFTokenSTP = (req, res) => {
     const requestCsrfToken = req.cookies.CSRFToken; // The token sent within the request header.
 
     console.log("REQUESTCSRFTOKEN", requestCsrfToken);
-
+    console.log("sessionCsrfToken", sessionCsrfToken);
+    console.log("sessionUser", sessionUser);
     if (req.isRegister) {
       // session.user is not needed for register
       delete req.isRegister;
