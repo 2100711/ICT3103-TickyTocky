@@ -1,7 +1,13 @@
-const { Builder, By, Key, until } = require("selenium-webdriver");
+const { Builder, By, Key, until, Options } = require("selenium-webdriver");
 
 (async function example() {
-  let driver = await new Builder().forBrowser("chrome").build();
+  let chromeOptions = new Options();
+  chromeOptions.addArguments("--headless");
+  let driver = await new Builder()
+    .forBrowser("chrome")
+    .setChromeOptions(chromeOptions)
+    .build();
+
   try {
     // Navigate to your application's registration page
     await driver.get("https://gracious-kare.cloud/register");
