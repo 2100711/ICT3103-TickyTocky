@@ -37,10 +37,11 @@ pipeline {
         //     }
         // }
         stage('Install dependencies for selenium') {
-            
             steps {
-                script {
-                    sh '${WORKSPACE}/tests/dependencyScript.sh'
+                dir('tests') {
+                    script {
+                        sh 'dependencyScript.sh'
+                    }
                 }
             }
             post {
@@ -61,9 +62,10 @@ pipeline {
             parallel {
                 stage('Test 1 idk bro do what') {
                     steps {
-                      script {
-                        echo 'Testing for idk test1 name bro'
-                            sh 'python3 ${WORKSPACE}/tests/seleniumTest.py'
+                        dir('tests') {
+                            script {
+                                sh 'python3 seleniumTest.py'
+                            }
                         }
                     }
                     post {
@@ -79,8 +81,7 @@ pipeline {
                     steps {
                         dir('tests') {
                             script {
-                                echo 'Testing for idk test1 name bro'
-                                sh 'python3 ${WORKSPACE}/tests/seleniumTes2.py'
+                                sh 'python3 seleniumTes2.py'
                             }
                         }
                     }
