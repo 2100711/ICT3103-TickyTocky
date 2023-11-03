@@ -39,6 +39,7 @@ pipeline {
         stage('Install dependencies for selenium') {
             steps {
                 dir('tests') {
+                    echo '$(pwd)'
                     script {
                         sh 'dependencyScript.sh'
                     }
