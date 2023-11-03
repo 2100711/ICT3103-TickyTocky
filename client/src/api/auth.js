@@ -37,9 +37,9 @@ export async function generateOTP(req) {
   return requestPost(GENERATE_OTP_API, { req });
 }
 
-export async function verifyOTP(req) {
-  return requestPost(VERIFY_OTP_API, { req });
-}
+// export async function verifyOTP(req) {
+//   return requestPost(VERIFY_OTP_API, { req });
+// }
 
 // export async function timeLeft(req) {
 //   return requestPost(OTP_TIME_LEFT, { req });
