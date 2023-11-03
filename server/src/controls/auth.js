@@ -201,6 +201,8 @@ const login = async (req, res, next) => {
 
     await req.session.save();
 
+    // console.log("req.session.user", req.session.user);
+
     req.isLogin = true;
     const CSRFverified = checkCSRFTokenSTP(req, res); // check if csrf token exist
     if (!CSRFverified.result) {
@@ -445,6 +447,7 @@ const generateCSRFToken = async (req, res, next) => {
     res.cookie("CSRFToken", data, { httpOnly: true });
     req.session.csrfToken = data; // Assigns a token parameter to the session.
     console.log("GENERATECSRFTOKEN", data);
+    console.log("ISCSRFSETINSESSION", req.session.csrfToken);
     res.status(200).json({
       success: true,
       message: "token created",
@@ -464,16 +467,23 @@ const checkCSRFTokenSTP = (req, res) => {
     console.log("REQUESTCSRFTOKEN", requestCsrfToken);
     console.log("sessionCsrfToken", sessionCsrfToken);
     console.log("sessionUser", sessionUser);
+
     if (req.isRegister) {
       // session.user is not needed for register
       delete req.isRegister;
       if (!requestCsrfToken || !sessionCsrfToken) {
+        if (sessionUser) {
+          req.session.destroy();
+        }
         return {
           result: false,
           message: "Token has not been provided.",
         };
       }
       if (requestCsrfToken !== sessionCsrfToken) {
+        if (sessionUser) {
+          req.session.destroy();
+        }
         return {
           result: false,
           message: "Invalid token.",
@@ -495,6 +505,9 @@ const checkCSRFTokenSTP = (req, res) => {
       }
 
       if (requestCsrfToken !== sessionCsrfToken) {
+        if (sessionUser) {
+          req.session.destroy();
+        }
         res.clearCookie("CSRFToken");
         res.cookie("CSRFToken", "", { expires: new Date(0) });
         return {
@@ -515,6 +528,9 @@ const checkCSRFTokenSTP = (req, res) => {
       }
 
       if (requestCsrfToken !== sessionCsrfToken) {
+        if (sessionUser) {
+          req.session.destroy();
+        }
         res.clearCookie("CSRFToken");
         res.cookie("CSRFToken", "", { expires: new Date(0) });
         return res.status(401).json({
