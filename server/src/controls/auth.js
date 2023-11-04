@@ -405,17 +405,6 @@ const emailToUser = async (email, token) => {
 };
 
 
-
-
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({
-//       success: false,
-//       message: "An error occurred while retrieving time left.",
-//     });
-//   }
-// };
-
 const resetPassword = async (req, res, next) => {
   try {
     const { token, password } = req.body;
