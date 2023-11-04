@@ -28,6 +28,7 @@ app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
+        // set alias for CSP same origin
         scriptSrc: ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`],
       },
     },
