@@ -201,7 +201,7 @@ const login = async (req, res, next) => {
       // remove previous session
       return res.status(401).json({
         success: false,
-        message: "Unauthorized: User is already logged in",
+        message: "User is already logged in",
       });
     }
 
