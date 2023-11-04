@@ -22,6 +22,8 @@ export const PasswordReset = () => {
   if (!token) {
     return null; // Return null to prevent rendering the login page.
   }
+
+  // Function to handle form submission
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
@@ -55,6 +57,7 @@ export const PasswordReset = () => {
     }
   };
 
+  // Function to validate the new password against the specified regex pattern
   const validatePassword = () => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#%^&*()\-_+]).{12,64}$/;
     if (passwordRegex.test(password)) {
@@ -69,6 +72,7 @@ export const PasswordReset = () => {
     }
   };
 
+  // Function to ensure the password and confirmation password match
   const validateCfmPassword = () => {
     if (cfmPassword === password) {
       return true; // Validation successful
