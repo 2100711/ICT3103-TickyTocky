@@ -71,11 +71,13 @@ const userExists = async (email) => {
 };
 
 const generateSecureToken = (length) => {
-  return crypto.randomBytes(length).toString('hex');
+  return crypto.randomBytes(length).toString("hex");
 };
 
 const checkAuth = async (req, res, next) => {
-  const user = await UserModel.findOne({ email: req.session.user.email }).lean();
+  const user = await UserModel.findOne({
+    email: req.session.user.email,
+  }).lean();
 
   if (!user) {
     return res.status(201).json({
@@ -365,7 +367,7 @@ const emailToUser = async (email, token) => {
             <p>We heard that you lost your TickyTocky password. Sorry about that!</p>
             <p>But don’t worry! You can use the following button to reset your password:</p>
             <p class="reset-link">
-                <a class="button" href="https://gracious-kare.cloud/:3000/resetpassword?t=${token}" style="color: #fff;">Reset your password</a>
+                <a class="button" href="https://gracious-kare.cloud/resetpassword?t=${token}" style="color: #fff;">Reset your password</a>
             </p>
             <p>If you don’t use this link within 10 minutes, it will expire. To get a new password reset link, visit:</p>
             <a href="https://gracious-kare.cloud/forgotpassword">https://gracious-kare.cloud//forgotpassword</a>
@@ -488,15 +490,15 @@ const resetPassword = async (req, res, next) => {
     const isOtpExist = await OtpModel.findOne({ user_email: sanitizedEmail });
     if (isOtpExist.is_used) {
       if (isOtpExist) {
-      const currentTime = new Date();
-      const storedTime = isOtpExist.timestamps;
-      const timeDiff = currentTime.getTime() - storedTime.getTime();
-      const minutesLeft = Math.floor((180000 - timeDiff) / 60000); // 180000ms is 3 minutes // zaf: change back to 180000
-      return res.status(200).json({
-        success: false,
-        message: `Please wait ${minutesLeft} minutes to generate a new OTP.`,
-      });
-    }
+        const currentTime = new Date();
+        const storedTime = isOtpExist.timestamps;
+        const timeDiff = currentTime.getTime() - storedTime.getTime();
+        const minutesLeft = Math.floor((180000 - timeDiff) / 60000); // 180000ms is 3 minutes // zaf: change back to 180000
+        return res.status(200).json({
+          success: false,
+          message: `Please wait ${minutesLeft} minutes to generate a new OTP.`,
+        });
+      }
     }
 
     // Salt and Hash password
@@ -521,12 +523,12 @@ const resetPassword = async (req, res, next) => {
 
     if (updatedUser) {
       req.user_id = user._id;
-    next();
-    await OtpModel.findOneAndUpdate(
-      { user_email: sanitizedEmail },
-      { $set: { is_used: true } },
-      { new: true }
-    );
+      next();
+      await OtpModel.findOneAndUpdate(
+        { user_email: sanitizedEmail },
+        { $set: { is_used: true } },
+        { new: true }
+      );
       res.status(200).json({
         success: true,
         message: "Password updated successfully",
