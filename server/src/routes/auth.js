@@ -7,8 +7,6 @@ import {
   login,
   logout,
   generateOTP,
-  // verifyOTP,
-  // timeLeftOTP,
   resetPassword,
   updatePassword,
   generateCSRFToken,
