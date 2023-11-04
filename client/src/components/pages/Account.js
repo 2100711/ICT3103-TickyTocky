@@ -213,9 +213,9 @@ export const Account = () => {
                       },
                       {
                         pattern:
-                          /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#%^&+=])(?!.*\s).{12,64}$/,
+                          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#%^&*()\-_+]).{12,64}$/,
                         message:
-                          "New Password must be 12-64 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#%^&+=).",
+                          "New Password must be 12-64 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#%^&*()-_+).",
                       },
                     ]}
                   >

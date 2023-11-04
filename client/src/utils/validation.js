@@ -5,6 +5,11 @@ import {
   WATCH_CASE_MATERIALS,
   BRACELET_STRAP_MATERIALS,
   GENDER,
+  WATCH_BRANDS,
+  WATCH_MOVEMENTS,
+  WATCH_CASE_MATERIALS,
+  BRACELET_STRAP_MATERIALS,
+  GENDER,
 } from "../constants.js";
 
 // SERIAL_NUMBERS
@@ -18,6 +23,8 @@ const validateCaseSerial = (caseSerial) => {
 
 // Validate movement serial number
 const validateMovementSerial = (movementSerial) => {
+  const movementSerialRegex = /^[A-Za-z0-9]{10,12}$/;
+  return movementSerialRegex.test(movementSerial);
   const movementSerialRegex = /^[A-Za-z0-9]{10,12}$/;
   return movementSerialRegex.test(movementSerial);
 };

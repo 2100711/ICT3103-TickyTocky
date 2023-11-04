@@ -6,6 +6,7 @@ import { UserModel } from "../models/Users.js";
 import { OtpModel } from "../models/Otp.js";
 import sanitize from "mongo-sanitize";
 
+// Obtain environment variables
 import { EMAIL_NAME, EMAIL_PASS, EMAIL_USER } from "../constants.js";
 
 // Function to lock a user's account
@@ -109,6 +110,7 @@ const register = async (req, res, next) => {
   const sanitizedEmail = sanitize(email);
   const sanitizedFName = sanitize(f_name);
   const sanitizedLName = sanitize(l_name);
+  const sanitizedPassword = sanitize(password);
 
   try {
     if (await userExists(email))
@@ -196,7 +198,7 @@ const login = async (req, res, next) => {
     ) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized: User is already logged in",
+        message: "User is already logged in",
       });
     }
 
@@ -360,6 +362,7 @@ const emailToUser = async (email, token) => {
             <p>But don’t worry! You can use the following button to reset your password:</p>
             <p class="reset-link">
                 <a class="button" href="https://gracious-kare.cloud/resetpassword?t=${token}" style="color: #fff;">Reset your password</a>
+                <a class="button" href="https://gracious-kare.cloud/resetpassword?t=${token}" style="color: #fff;">Reset your password</a>
             </p>
             <p>If you don’t use this link within 10 minutes, it will expire. To get a new password reset link, visit:</p>
             <a href="https://gracious-kare.cloud/forgotpassword">https://gracious-kare.cloud/forgotpassword</a>
@@ -398,11 +401,12 @@ const emailToUser = async (email, token) => {
 
 // Function to reset a user's password with a valid OTP
 const resetPassword = async (req, res, next) => {
-  const { token, password } = req.body;
-  const otpRecord = await OtpModel.findOne({ token: token });
-  const email = otpRecord.user_email;
-  const sanitizedEmail = sanitize(email);
   try {
+    const { token, password } = req.body;
+    const otpRecord = await OtpModel.findOne({ token: token });
+    const email = otpRecord.user_email;
+    const sanitizedEmail = sanitize(email);
+
     if (!email) {
       return res
         .status(200)

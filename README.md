@@ -9,10 +9,11 @@
 
 <!-- PROJECT LOGO -->
 <div align="center">
-<img src="" width="300" height="300">
-<h1> ICT3103/3203 TickyTocky </>
+<img src="https://github.com/2100711/ICT3103-TickyTocky/assets/94297073/9574393d-1730-4617-94f8-778555470713" width="500" height="500">
 </div>
-<br />
+</br>
+
+<h1 align="center"><strong>ICT3103/3203 Group 8</strong></h1>
 
 <!-- GETTING STARTED -->
 # Getting Started
@@ -78,8 +79,6 @@ Using Ubuntu CLI or WSL2 to run the following commands:
 Intial setup of docker and compose:
 
 ```bash
-sudo apt-get install docker-compose-plugin
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 sudo apt-get update
 sudo apt-get install ca-certificates curl gnupg
 sudo install -m 0755 -d /etc/apt/keyrings
@@ -108,14 +107,13 @@ The involvement of these individuals was crucial for the creation of this projec
 
 -   [@Terence2389](https://github.com/Terence2389) - [2102389](2102389@sit.singaporetech.edu.sg) 
 -   [@Elsonnnn](https://github.com/Elsonnnn) - [2101234](2101234@sit.singaporetech.edu.sg)
-- ADD MORESSDAOSDASD
+-   [@joash2808](https://github.com/joash2808) - [2101177](2101177@sit.singaporetech.edu.sg)
+-   [@tay-en](https://github.com/tay-en) - [2100928](2100928@sit.singaporetech.edu.sg)
+-   [@irfaan96](https://github.com/irfaan96) - [2100701](2100701@sit.singaporetech.edu.sg)
+-   [@ZafrullaKamil](https://github.com/ZafrullaKamil) - [2100764](2100764@sit.singaporetech.edu.sg)
+-   [@2100711](https://github.com/2100711) - [2100711](2100711@sit.singaporetech.edu.sg)
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- LICENSE -->
-## License
-
-Distributed under the MIT License. See `LICENSE.md` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
