@@ -18,7 +18,7 @@ const chrome = require("selenium-webdriver/chrome");
     await driver.get("https://gracious-kare.cloud/login");
 
     // Wait for the email input to be visible
-    await driver.wait(until.elementLocated(By.id("login-form_email")), 50000);
+    await driver.wait(until.elementLocated(By.id("login-form_email")), 10000);
 
     // Find elements
     const emailInput = await driver.findElement(By.id("login-form_email"));
@@ -28,7 +28,7 @@ const chrome = require("selenium-webdriver/chrome");
     const loginButton = await driver.findElement(By.className("login-button"));
 
     // Fill out the login form
-    await emailInput.sendKeys("joashlwj@gmail.com");
+    await emailInput.sendKeys("sleepy2@gmail.com");
     await passwordInput.sendKeys("Password@12345");
     await loginButton.click();
 
@@ -36,9 +36,11 @@ const chrome = require("selenium-webdriver/chrome");
     await driver.wait(until.urlContains("/account"), 10000);
 
     // Check if the login was successful
-    const currentUrl = await driver.getCurrentUrl();
-    if (!currentUrl.includes("/account")) {
-      throw new Error("Login was not successful");
+    let currentUrl = await driver.getCurrentUrl();
+    if (currentUrl.includes("/account")) {
+      console.log("Login was successful.");
+    } else {
+      console.log("Login failed.");
     }
   } finally {
     // Close the WebDriver

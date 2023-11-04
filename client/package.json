@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^4.6.2",
+    "@babel/traverse": "^7.23.2",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -23,7 +24,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "node src/tests/seleniumTest.js && node src/tests/seleniumTest2.js",
+    "test": "node src/tests/seleniumRegisterTest.js && node src/tests/seleniumLoginTest.js",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
