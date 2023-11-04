@@ -108,7 +108,13 @@ The involvement of these individuals was crucial for the creation of this projec
 
 -   [@Terence2389](https://github.com/Terence2389) - [2102389](2102389@sit.singaporetech.edu.sg) 
 -   [@Elsonnnn](https://github.com/Elsonnnn) - [2101234](2101234@sit.singaporetech.edu.sg)
-- ADD MORESSDAOSDASD
+-   [@joash2808](https://github.com/joash2808) - [2101177](2101177@sit.singaporetech.edu.sg)
+-   [@tay-en](https://github.com/tay-en) - [2100928](2100928@sit.singaporetech.edu.sg)
+-   [@irfaan96](https://github.com/irfaan96) [2100701](2100701@sit.singaporetech.edu.sg)
+-   [@ZafrullaKamil](https://github.com/ZafrullaKamil) [2100764](2100764@sit.singaporetech.edu.sg)
+-   [@2100711](https://github.com/2100711) [2100711](2100711@sit.singaporetech.edu.sg)
+
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
