@@ -469,11 +469,12 @@ const emailToUser = async (email, token) => {
 // };
 
 const resetPassword = async (req, res, next) => {
-  const { token, password } = req.body;
-  const otpRecord = await OtpModel.findOne({ token: token });
-  const email = otpRecord.user_email;
-  const sanitizedEmail = sanitize(email);
   try {
+    const { token, password } = req.body;
+    const otpRecord = await OtpModel.findOne({ token: token });
+    const email = otpRecord.user_email;
+    const sanitizedEmail = sanitize(email);
+
     if (!email) {
       return res
         .status(200)
