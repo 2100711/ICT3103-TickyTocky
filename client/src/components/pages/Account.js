@@ -47,6 +47,7 @@ export const Account = () => {
     });
   }, [resetPasswordForm]);
 
+  // Function to fetch user data from the server
   const fetchUser = async () => {
     const response = await getUser(user.email);
     if (response.success) {
@@ -55,6 +56,7 @@ export const Account = () => {
     setLoading(false);
   };
 
+   // Function to handle the editing of user profile
   const handleEditProfile = () => {
     setEditProfileModalVisible(true);
     form.setFieldsValue({
@@ -63,6 +65,7 @@ export const Account = () => {
     });
   };
 
+  // Function to save the updated profile information to the server
   const handleSaveProfile = async () => {
     try {
       const values = await form.validateFields();
