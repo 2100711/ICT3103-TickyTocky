@@ -16,7 +16,6 @@ import {
   validateTransferOwnership,
 } from "../controls/validation.js";
 import { isAuthenticated, isAdmin } from "../controls/auth.js";
-// import { logRequest } from "../controls/accessLogs.js";
 import { logRequest } from "../controls/databaseLogs.js";
 
 certRouter.post(
