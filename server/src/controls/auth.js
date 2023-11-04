@@ -405,11 +405,7 @@ const emailToUser = async (email, token) => {
 };
 
 
-//       return res.status(200).json({
-//         success: true,
-//         message: "Successfully retrieved time left.",
-//         time: { minutes: minutesLeft, seconds: secondsLeft },
-//       });
+
 //     } else {
 //       return res.status(404).json({
 //         success: false,
