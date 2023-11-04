@@ -22,7 +22,7 @@ services:
     image: ict3103-tickytocky-backend:latest
     build:
       context: ./server # Specify the directory containing your Node.js backend application
-      dockerfile: Dockerfile-server # Specify the Dockerfile name
+      dockerfile: Dockerfile-server 
     ports:
       - "3001:3001" # Map host port 3001 to container port 3001
     labels: #Send Logs to promtail grafana
