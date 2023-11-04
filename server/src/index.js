@@ -28,10 +28,11 @@ app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
+        // set alias for CSP same origin
         scriptSrc: ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`],
       },
     },
-    // Deny X-Frame-Options
+    // Deny X-Frame-Options to prevent clickjacking
     xFrameOptions: { action: "deny" },
 
     // HSTS max age; included subdomains
