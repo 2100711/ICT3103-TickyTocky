@@ -19,6 +19,7 @@ pipeline {
         //         }
         //     }
         // }
+
         // stage('Deploy') {
         //     steps {
         //         echo 'Deploying application'
@@ -36,6 +37,7 @@ pipeline {
         //         }
         //     }
         // }
+
         // stage('Install dependencies for selenium') {
         //     steps {
         //         dir('server') {
@@ -54,52 +56,13 @@ pipeline {
         //         }
         //     }
         // }
-        // stage('Frontend Test') {
-        //     parallel {
-        //         stage('Test 1 idk bro do what') {
-        //             steps {
-        //                 dir('server') {
-        //                     script {
-        //                         sh 'chmod +x tests/seleniumTest.sh'
-        //                         sh 'python3 tests/seleniumTest.py'
-        //                     }
-        //                 }
-        //             }
-        //             post {
-        //                 success {
-        //                     echo 'Passed with flying colors'
-        //                 }
-        //                 failure {
-        //                     echo 'Failure sia you'
-        //                 }
-        //             }
-        //         }
-        //         stage('Test 2 idk bro do what') {
-        //             steps {
-        //                 dir('server') {
-        //                     script {
-        //                         sh 'chmod +x tests/seleniumTest2.sh'
-        //                         sh 'python3 tests/seleniumTes2.py'
-        //                     }
-        //                 }
-        //             }
-        //             post {
-        //                 success {
-        //                     echo 'Passed with flying colors'
-        //                 }
-        //                 failure {
-        //                     echo 'Failure sia you'
-        //                 }
-        //             }
-        //         }
-                
-        //     }
-        // }
+        
         // stage('OWASP DependencyCheck') { // save time not running
         //    steps {
         //        dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
         //    }
         // }
+        
         stage('Snyk Scanning for Vulnerabilities') { 
              parallel {
                 stage('Client Snyk Scanning') {
@@ -130,13 +93,13 @@ pipeline {
                 }
             }
         }
+
         stage('Frontend Test') {
             steps {
                 dir('client') {
                     script {
                         sh 'apt install -y nodejs npm'
-                        sh 'npm install -D selenium-webdriver chromedriver'
-                        sh 'export PATH=$PATH:/usr/bin'
+                        sh 'npm install selenium-webdriver chromedriver'
                         sh 'npm test'
                     }
                 }
