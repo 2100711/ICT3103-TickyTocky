@@ -56,7 +56,7 @@ export const PasswordReset = () => {
   };
 
   const validatePassword = () => {
-    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#%^&*()\-_+]).{12,64}$/;
     if (passwordRegex.test(password)) {
       return true; // Validation successful
     } else {
@@ -100,9 +100,9 @@ export const PasswordReset = () => {
                   { required: true, message: "Please enter your new password" },
                   {
                     pattern:
-                      /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#%^&+=])(?!.*\s).{12,64}$/,
+                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#%^&*()\-_+]).{12,64}$/,
                     message:
-                      "Password must be 12-64 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#%^&+=).",
+                      "Password must be 12-64 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#%^&*()\-_+).",
                   },
                 ]}
               >
