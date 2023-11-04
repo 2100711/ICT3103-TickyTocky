@@ -6,7 +6,7 @@ services:
     image: ict3103-tickytocky-frontend:latest
     build:  
       context: ./client # Specify the directory containing your React frontend application
-      dockerfile: Dockerfile-client # Specify the Dockerfile name
+      dockerfile: Dockerfile-client 
     ports:
       - "3000:3000"  # Map host port 3000 to container port 3000
     labels: #Send Logs to promtail grafana
