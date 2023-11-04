@@ -146,7 +146,7 @@ const CreateUserForm = ({ visible, onCancel, setReFetchUsers }) => {
             rules={[
               { required: true, message: "Email is required" },
               {
-                pattern: /^[a-zA-Z0-9._%+-]+@gmail\.com$/,
+                pattern: /^[a-z0-9.]{6,30}@gmail\.com$/,
                 message: "Only Gmail addresses are allowed",
               },
             ]}

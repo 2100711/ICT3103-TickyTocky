@@ -11,13 +11,13 @@ import {
 
 // AUTH
 const validateEmail = (email) => {
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+  const emailRegex = /^[a-z0-9.]{6,30}@gmail\.com$/;
   return emailRegex.test(email);
 };
 
 const validatePassword = (password) => {
   const passwordRegex =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#%^&*()\-_+]).{12,64}$/;
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#%^&*()\-_+]).{12,64}$/;
 
   return passwordRegex.test(password);
 };

@@ -59,7 +59,7 @@ export const Register = () => {
           rules={[
             { required: true, message: "Email is required" },
             {
-              pattern: /^[a-zA-Z0-9._%+-]{1,64}@gmail\.com$/,
+              pattern: /^[a-z0-9.]{6,30}@gmail\.com$/,
               message: "Only Gmail addresses are allowed",
             },
           ]}
@@ -77,9 +77,9 @@ export const Register = () => {
             { required: true, message: "Password is required" },
             {
               pattern:
-              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#%^&*()\-_+]).{12,64}$/,
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#%^&*()\-_+]).{12,64}$/,
               message:
-                "Password must be 12-64 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#%^&*()\-_+).",
+                "Password must be 12-64 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#%^&*()-_+).",
             },
           ]}
           className="form-item"
