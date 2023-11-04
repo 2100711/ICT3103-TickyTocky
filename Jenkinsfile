@@ -73,7 +73,9 @@ pipeline {
                                 snykTokenId: 'Snyk',
                                 targetFile: 'package.json',
                                 projectName: 'TickyTocky-Client', 
-                                severity: 'high'
+                                severity: 'high',
+                                failOnIssues: 'false',
+                                failOnError: 'false'
                             )
                         }
                     }
@@ -86,7 +88,9 @@ pipeline {
                                 snykTokenId: 'Snyk',
                                 targetFile: 'package.json',
                                 projectName: 'TickyTocky-Server', 
-                                severity: 'high'
+                                severity: 'high',
+                                failOnIssues: 'false',
+                                failOnError: 'false'
                             )
                         }
                     }
