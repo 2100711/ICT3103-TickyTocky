@@ -49,7 +49,6 @@ export const CertForm = ({ visible, onCancel, setRefetchCertForAdmin }) => {
     onCancel();
   };
 
-  // TODO: handleNext and handlePrevious works but if in the next form there are empty fields, the next button would not work
   const handleNext = () => {
     // Handle the next button logic, e.g., validate and move to the next tab
     setActiveTab((current) => {
