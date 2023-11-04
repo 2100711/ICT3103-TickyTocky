@@ -5,7 +5,7 @@ const AccessLogSchema = new mongoose.Schema({
   ip_address: {
     type: String,
     maxlength: 255,
-    required: false, // TODO: get from nginx?
+    required: false,
   },
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
