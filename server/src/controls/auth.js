@@ -491,7 +491,7 @@ const resetPassword = async (req, res, next) => {
       const currentTime = new Date();
       const storedTime = isOtpExist.timestamps;
       const timeDiff = currentTime.getTime() - storedTime.getTime();
-      const minutesLeft = Math.floor((600000 - timeDiff) / 60000); // 180000ms is 3 minutes // zaf: change back to 180000
+      const minutesLeft = Math.floor((180000 - timeDiff) / 60000); // 180000ms is 3 minutes // zaf: change back to 180000
       return res.status(200).json({
         success: false,
         message: `Please wait ${minutesLeft} minutes to generate a new OTP.`,
