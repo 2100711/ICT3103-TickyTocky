@@ -12,6 +12,7 @@ import { authRouter } from "./routes/auth.js";
 import { userRouter } from "./routes/users.js";
 import { certRouter } from "./routes/certs.js";
 
+// Obtain environment variables
 import { PORT, MONGODB_CONNECTION } from "./constants.js";
 import { SECRET, CRYPTOSECRET } from "./constants.js";
 
