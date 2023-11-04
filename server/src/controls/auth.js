@@ -405,24 +405,6 @@ const emailToUser = async (email, token) => {
 };
 
 
-// const timeLeftOTP = async (req, res, next) => {
-//   const { email } = req.body;
-//   try {
-//     if (!email) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Email is required to retrieve time left.",
-//       });
-//     }
-//     const isOtpExist = await OtpModel.findOne({ user_email: email });
-//     if (isOtpExist) {
-//       const currentTime = new Date();
-//       const storedTime = isOtpExist.timestamps;
-//       const timeDiff = currentTime.getTime() - storedTime.getTime();
-//       const timeLeftInMs = 600000 - timeDiff; // 180000ms is 3 minutes // zaf: change back to 180000
-//       const minutesLeft = Math.floor(timeLeftInMs / 60000);
-//       const secondsLeft = Math.floor((timeLeftInMs % 60000) / 1000);
-
 //       return res.status(200).json({
 //         success: true,
 //         message: "Successfully retrieved time left.",
