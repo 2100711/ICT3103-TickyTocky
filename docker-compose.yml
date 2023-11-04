@@ -59,7 +59,7 @@ services:
     container_name: jenkins
     build:
       context: ./jenkins_conf
-      dockerfile: Dockerfile-jenkins # Specify the Dockerfile name
+      dockerfile: Dockerfile-jenkins 
     privileged: true
     user: root
     ports:
