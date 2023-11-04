@@ -6,10 +6,13 @@ server:
 
 common:
   instance_addr: 127.0.0.1
+  # Path prefix for data files and directories
   path_prefix: /tmp/loki
   storage:
     filesystem:
+      # Directory to store data chunks
       chunks_directory: /tmp/loki/chunks
+      # Directory to store rule files
       rules_directory: /tmp/loki/rules
   replication_factor: 1
   ring:
