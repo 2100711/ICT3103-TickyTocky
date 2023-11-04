@@ -405,21 +405,6 @@ const emailToUser = async (email, token) => {
 };
 
 
-//     // TODO: create session so user can reset password?
-//     const user = await UserModel.findOne({ email: email }).lean();
-//     console.log(user);
-//     req.user_id = user._id;
-//     next();
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "Your OTP has been successfully verified.",
-//     });
-//   } catch (error) {
-//     res.status(500).json({ success: false, message: "An error occurred." });
-//   }
-// };
-
 // const timeLeftOTP = async (req, res, next) => {
 //   const { email } = req.body;
 //   try {
