@@ -9,7 +9,7 @@
 
 <!-- PROJECT LOGO -->
 <div align="center">
-<img src="" width="300" height="300">
+<img src="https://github.com/2100711/ICT3103-TickyTocky/assets/94297073/9574393d-1730-4617-94f8-778555470713" width="300" height="300">
 <h1> ICT3103/3203 TickyTocky </>
 </div>
 <br />
