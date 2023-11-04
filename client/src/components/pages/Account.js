@@ -253,22 +253,6 @@ export const Account = () => {
           {user.role !== "admin" && (
             <TabPane tab="Certificates" key="certificates">
               <CertMember email={user.email} />
-              {/* Certificates content (only visible to normal users) */}
-              {/* {certificates.length > 0 ? (
-                <ul className="certificate-list">
-                  {certificates.map((certificate) => (
-                    <li key={certificate.id}>
-                      <Card>
-                        <h3>{certificate.name}</h3>
-                        <p>Issuer: {certificate.issuer}</p>
-                        <p>Issue Date: {certificate.issueDate}</p>
-                      </Card>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No certificates found.</p>
-              )} */}
             </TabPane>
           )}
           {user.role === "admin" && (
