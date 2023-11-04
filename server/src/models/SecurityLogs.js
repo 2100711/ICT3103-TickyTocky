@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// Define the schema for security log entries
 const SecurityLogSchema = new mongoose.Schema({
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
@@ -21,6 +22,7 @@ const SecurityLogSchema = new mongoose.Schema({
   },
 });
 
+// Create the SecurityLogModel using the schema
 export const SecurityLogModel = mongoose.model(
   "security_logs",
   SecurityLogSchema

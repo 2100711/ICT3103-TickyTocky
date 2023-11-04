@@ -1,28 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { Table, Button, Input, Popconfirm, message } from "antd";
-import {
-  createUser,
-  getAllUsers,
-  getUser,
-  updateUser,
-  deleteUser,
-} from "../../api/users";
+import { getAllUsers, getUser, deleteUser } from "../../api/users";
 import { UserForm } from "./UserForm";
 
+// UsersTable component for displaying and managing users
 export const UsersTable = ({
   showModal,
   visible,
   onCancel,
-  reFetchUsers,
   setReFetchUsers,
 }) => {
-  const [users, setUsers] = useState([]);
-  const [user, setUser] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(5);
-  const [searchText, setSearchText] = useState("");
-  const [originalUsers, setOriginalUsers] = useState([]);
+  const [users, setUsers] = useState([]); // State to store the list of users
+  const [user, setUser] = useState({}); // State to store the selected user
+  const [loading, setLoading] = useState(false); // State to track loading state
+  const [currentPage, setCurrentPage] = useState(1); // State to track the current page
+  const [pageSize] = useState(5); // Number of users to display per page
+  const [searchText, setSearchText] = useState(""); // State for search input
+  const [originalUsers, setOriginalUsers] = useState([]); // State to store the original list of users
 
   const columns = [
     {
@@ -42,8 +36,7 @@ export const UsersTable = ({
             Update User
           </Button>
           <Popconfirm
-            title="Associated certificates will be deleted permanently as well.
-            Are you sure you want to delete this user?"
+            title="Associated certificates will be deleted permanently as well. Are you sure you want to delete this user?"
             onConfirm={() => handleDeleteUser(user.email)}
           >
             <Button type="primary" danger>
@@ -55,25 +48,27 @@ export const UsersTable = ({
     },
   ];
 
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      const response = await getAllUsers();
-      const data = response.emails.map((email) => ({ email }));
-      setUsers(data);
-      setOriginalUsers(data);
-      setReFetchUsers(false);
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-      setLoading(false);
-    }
-  };
-
+  // Function to fetch the list of users from the server
   useEffect(() => {
-    fetchUsers();
-  }, [reFetchUsers]);
+    const fetchUser = async () => {
+      try {
+        setLoading(true);
+        const response = await getAllUsers();
+        const data = response.emails.map((email) => ({ email }));
+        setUsers(data);
+        setOriginalUsers(data);
+        setReFetchUsers(false);
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+        setLoading(false);
+      }
+    };
 
+    fetchUser();
+  }, [setReFetchUsers]);
+
+  // Function to handle the "Update User" button click
   const handleUpdateUserButton = async (user) => {
     try {
       setLoading(true);
@@ -86,12 +81,14 @@ export const UsersTable = ({
       console.error(error);
     }
   };
+
+  // Function to handle user deletion
   const handleDeleteUser = async (email) => {
     try {
       setLoading(true);
       const response = await deleteUser({ email });
       if (response.success) {
-        message.success("User deleted successfully.");
+        message.success("User deleted successfully");
         const response = await getAllUsers();
         const data = response.emails.map((email) => ({ email }));
         setUsers(data);
@@ -99,24 +96,26 @@ export const UsersTable = ({
         setLoading(false);
       } else {
         setLoading(false);
-        message.error(response.message);
+        message.error("User failed to delete");
       }
     } catch (error) {
       setLoading(false);
-      message.error("Failed to delete user.");
-      console.error(error);
+      message.error("Something went wrong");
     }
   };
 
+  // Function to handle page change
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
+  // Function to handle search input
   const handleSearch = (value) => {
     setSearchText(value);
     filterUsers(value);
   };
 
+  // Function to filter users based on search text
   const filterUsers = (searchText) => {
     if (searchText) {
       const lowerCaseSearchText = searchText.toLowerCase();

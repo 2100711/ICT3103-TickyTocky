@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button, Form, Select, notification, Spin } from "antd";
+import { Modal, Button, Form, Select, message, Spin } from "antd";
 import { transferOwnership } from "../../api/certs";
 
+// TransferOwnershipModal component for transferring certificate ownership
 export const TransferOwnershipModal = ({
   visible,
   onCancel,
@@ -12,43 +13,37 @@ export const TransferOwnershipModal = ({
 }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+
+  // Clear the form fields when the component mounts and the modal becomes visible
   useEffect(() => {
     form.setFieldsValue({
       email: "",
     });
   }, [form, onCancel]);
 
+  // Handle form submission when the "Submit" button is clicked
   const handleFinish = async (values) => {
     try {
       setLoading(true);
+      // Request to transfer certificate ownership
       const response = await transferOwnership({
         cert_id,
         current_email: user_email,
         next_email: values.email,
       });
+
       if (response.success) {
-        notification.success({
-          message: "Transfer of certificate ownership successful",
-          duration: 5,
-        });
+        message.success("Certificate ownership transferred successfully");
+        // Refresh the certificate list
         setRefetchCert(true);
-        onCancel();
+        onCancel(); // Close the modal
       } else {
-        notification.error({
-          message: "Transfer of certificate ownership failed",
-          description: "Please try again.",
-          duration: 5,
-        });
+        message.error("Certificate ownership failed to transfer");
       }
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      notification.error({
-        message: "Transfer of certificate ownership failed",
-        description: error.message,
-        duration: 5,
-      });
-      console.error(error);
+      message.error("Something went wrong");
     }
   };
 
@@ -61,7 +56,7 @@ export const TransferOwnershipModal = ({
       footer={null}
       width={600}
     >
-      <Spin tip="Loading..." spinning={loading}>
+      <Spin size="large" spinning={loading}>
         <Form layout="vertical" onFinish={handleFinish} form={form}>
           <Form.Item
             label="User Email"

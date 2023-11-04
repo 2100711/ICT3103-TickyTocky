@@ -1,4 +1,6 @@
 /* account.css */
+
+/* Styling for the main account section */
 .account {
   display: flex;
   justify-content: center;
@@ -10,6 +12,7 @@
   text-align: center;
 }
 
+/* Styling for the account card containing user information */
 .account-card {
   width: 1000px;
   padding: 0 15px;
@@ -19,7 +22,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Styles for Profile Tab */
+/* Styles for the Profile Tab */
 .profile-container {
   display: flex;
   justify-content: left;
@@ -31,22 +34,22 @@
   margin-left: 20px;
 }
 
-.user-name {
+user-name {
   font-size: 24px;
   margin: 0;
 }
 
-.user-email {
+user-email {
   font-size: 16px;
   margin: 0;
 }
 
-.profile-actions {
+profile-actions {
   justify-content: left;
   margin-top: 20px;
 }
 
-/* Styles for Edit Profile Modal */
+/* Styles for the Edit Profile Modal */
 .ant-modal-title {
   font-size: 20px;
   font-weight: 500;

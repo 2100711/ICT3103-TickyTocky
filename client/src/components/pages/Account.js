@@ -1,3 +1,4 @@
+// Import necessary modules and components
 import React, { useEffect, useState } from "react";
 import { AuthData } from "../../auth/AuthWrapper";
 import {
@@ -12,20 +13,23 @@ import {
   Input,
   message,
   Checkbox,
-  notification,
 } from "antd";
 import { getUser, updateUser } from "../../api/users";
-import { UserOutlined } from "@ant-design/icons";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import "../styles/Account.css";
 import { CertsManagement } from "./CertsManagement";
 import { UsersManagement } from "./UsersManagement";
+import { AccessLogsManagement } from "./AccessLogsManagement";
+import { DatabaseLogsManagement } from "./DatabaseLogsManagement";
+import { SecurityLogsManagement } from "./SecurityLogsManagement";
 import { CertMember } from "./CertMember";
-import { resetPassword, updatePassword } from "../../api/auth";
+import { updatePassword } from "../../api/auth";
 
 const { Text } = Typography;
 const { Item } = Form;
 const { TabPane } = Tabs;
 
+// Functional component representing an "Account" page
 export const Account = () => {
   const { user } = AuthData();
   const [userData, setUserData] = useState(null);
@@ -36,10 +40,7 @@ export const Account = () => {
   const [form] = Form.useForm();
   const [resetPasswordForm] = Form.useForm();
 
-  useEffect(() => {
-    fetchUser();
-  }, []);
-
+  // Reset the password form fields when the form is visible
   useEffect(() => {
     resetPasswordForm.setFieldValue({
       new_password: "",
@@ -47,14 +48,19 @@ export const Account = () => {
     });
   }, [resetPasswordForm]);
 
-  const fetchUser = async () => {
-    const response = await getUser(user.email);
-    if (response.success) {
-      setUserData(response.user);
-    }
-    setLoading(false);
-  };
+  // Fetch user data when the component mounts
+  useEffect(() => {
+    const fetchUser = async () => {
+      const response = await getUser(user.email);
+      if (response.success) {
+        setUserData(response.user);
+      }
+      setLoading(false);
+    };
+    fetchUser();
+  }, [user.email, setUserData, setLoading]);
 
+  // Handle opening the "Edit Profile" modal
   const handleEditProfile = () => {
     setEditProfileModalVisible(true);
     form.setFieldsValue({
@@ -63,6 +69,7 @@ export const Account = () => {
     });
   };
 
+  // Handle saving the user profile
   const handleSaveProfile = async () => {
     try {
       const values = await form.validateFields();
@@ -78,66 +85,61 @@ export const Account = () => {
           f_name: values.f_name,
           l_name: values.l_name,
         });
-        message.success("Profile updated successfully.");
+        message.success("Profile updated successfully");
       } else {
-        message.error("Failed to update profile. Please try again.");
+        message.error("Profile failed to update");
       }
 
       setEditProfileModalVisible(false);
     } catch (error) {
-      message.error(
-        "An error occurred. Please check your input and try again."
-      );
+      message.error("Something went wrong");
     }
   };
 
+  // Handle showing the "Reset Password" modal
   const handleShowResetPasswordModal = () => {
     setResetPasswordModalVisible(true);
   };
 
+  // Handle resetting the password
   const handleResetPassword = async () => {
     const values = await resetPasswordForm.validateFields();
     try {
       setLoading(true);
-        const response = await updatePassword({
-          email: userData.email,
-          password: values.new_password,
-        });
-        if (response.success) {
-          notification.success({
-            message: "Success",
-            description: "Password successfully reset.",
-            duration: 5,
-          });
-          setResetPasswordModalVisible(false);
-        } else {
-          notification.error({
-            message: "Error",
-            description: response.message,
-            duration: 5,
-          });
-        }
-
+      const response = await updatePassword({
+        email: userData.email,
+        password: values.new_password,
+      });
+      if (response.success) {
+        message.success("Password reset successfully");
+        setResetPasswordModalVisible(false);
+      } else {
+        message.error("Password failed to reset");
+      }
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      console.error(error);
+      message.error("Something went wrong");
     }
   };
 
+  // If data is still loading, display a loading spinner
   if (loading) {
     return <Spin size="large" />;
   }
 
+  // If user data is not available, display an error message
   if (!userData) {
-    return <Text strong>Error loading user data.</Text>;
+    return <Text type="danger">Something went wrong</Text>;
   }
 
+  // Render the account content, including tabs for different sections
   return (
     <div className="account">
       <Card className="account-card">
         <Tabs>
           <TabPane tab="Profile" key="profile">
+            {/* User profile content */}
             <div className="profile-container">
               <div className="profile-avatar">
                 <Avatar size={100} icon={<UserOutlined />} />
@@ -152,6 +154,7 @@ export const Account = () => {
                 </Button>
               </div>
             </div>
+            {/* Modal for editing user profile */}
             <Modal
               forceRender
               title="Edit Profile"
@@ -190,6 +193,7 @@ export const Account = () => {
                 </Item>
               </Form>
             </Modal>
+            {/* Modal for resetting the password */}
             <Modal
               forceRender
               title="Reset Password"
@@ -197,11 +201,8 @@ export const Account = () => {
               onCancel={() => setResetPasswordModalVisible(false)}
               onOk={handleResetPassword}
             >
-              <Spin tip="Loading..." size="large" spinning={loading}>
-                <Form
-                  form={resetPasswordForm}
-                  layout="vertical"
-                >
+              <Spin size="large" spinning={loading}>
+                <Form form={resetPasswordForm} layout="vertical">
                   <Form.Item
                     label="New Password"
                     name="new_password"
@@ -219,56 +220,51 @@ export const Account = () => {
                     ]}
                   >
                     <Input.Password
-                      type="password"
-                      placeholder="New Password"
+                      className="input-box"
+                      placeholder="Enter your password"
+                      prefix={<LockOutlined />} // Icon for confirm password
                     />
                   </Form.Item>
-
                   <Form.Item
                     label="Confirm New Password"
                     name="cfm_new_password"
                     dependencies={["new_password"]}
-          hasFeedback
-          rules={[
-            { required: true, message: "Please re-enter the same password" },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue("new_password") === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(new Error("Passwords do not match"));
-              },
-            }),
-          ]}
+                    hasFeedback
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please re-enter the same password",
+                      },
+                      ({ getFieldValue }) => ({
+                        validator(_, value) {
+                          if (
+                            !value ||
+                            getFieldValue("new_password") === value
+                          ) {
+                            return Promise.resolve();
+                          }
+                          return Promise.reject(
+                            new Error("Passwords do not match")
+                          );
+                        },
+                      }),
+                    ]}
                   >
                     <Input.Password
-                      type="password"
-                      placeholder="Confirm Password"
+                      className="input-box"
+                      placeholder="Re-enter your password"
+                      prefix={<LockOutlined />} // Icon for confirm password
                     />
-                  </Form.Item>      
+                  </Form.Item>
                 </Form>
               </Spin>
             </Modal>
           </TabPane>
+          {/* Display tabs for Certificates, Certificate Management, User Management, and Settings */}
           {user.role !== "admin" && (
             <TabPane tab="Certificates" key="certificates">
               <CertMember email={user.email} />
               {/* Certificates content (only visible to normal users) */}
-              {/* {certificates.length > 0 ? (
-                <ul className="certificate-list">
-                  {certificates.map((certificate) => (
-                    <li key={certificate.id}>
-                      <Card>
-                        <h3>{certificate.name}</h3>
-                        <p>Issuer: {certificate.issuer}</p>
-                        <p>Issue Date: {certificate.issueDate}</p>
-                      </Card>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No certificates found.</p>
-              )} */}
             </TabPane>
           )}
           {user.role === "admin" && (
@@ -280,28 +276,29 @@ export const Account = () => {
             <TabPane tab="User Management" key="userManagement">
               <UsersManagement />
               {/* User Management content (only visible to admins) */}
-              {/* <ul className="user-list">
-                {users.map((user) => (
-                  <li key={user.id}>
-                    <Card>
-                      <h3>{user.username}</h3>
-                      <p>Email: {user.email}</p>
-                      <Button onClick={() => handleEditUser(user.id)}>
-                        Edit
-                      </Button>
-                      <Button onClick={() => handleDeleteUser(user.id)}>
-                        Delete
-                      </Button>
-                    </Card>
-                  </li>
-                ))}
-              </ul> */}
+            </TabPane>
+          )}
+          {user.role === "admin" && (
+            <TabPane tab="Access Logs Management" key="accessLogManagement">
+              <AccessLogsManagement />
+              {/* Access Logs Management content (only visible to admins) */}
+            </TabPane>
+          )}
+          {user.role === "admin" && (
+            <TabPane tab="Database Logs Management" key="databaseLogManagement">
+              <DatabaseLogsManagement />
+              {/* Database Logs Management content (only visible to admins) */}
+            </TabPane>
+          )}
+          {user.role === "admin" && (
+            <TabPane tab="Security Logs Management" key="securityLogManagement">
+              <SecurityLogsManagement />
+              {/* Security Logs Management content (only visible to admins) */}
             </TabPane>
           )}
           <TabPane tab="Settings" key="settings">
-            {/* Settings content here */}
+            {/* Settings content */}
             <div className="settings-form">
-              {/* Settings content here */}
               <div className="settings-form">
                 <Form layout="vertical">
                   <Form.Item label="Security Settings">

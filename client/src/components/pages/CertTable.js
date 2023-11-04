@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Input, Popconfirm, message, notification } from "antd";
+import { Table, Button, Input, Popconfirm, message } from "antd";
 import {
   getAllCerts,
   getCert,
@@ -9,12 +9,14 @@ import {
 import { TransferOwnershipModal } from "./TransferOwnershipModal";
 import { getAllUsers } from "../../api/users";
 
+// CertTable component displays a table of certificates and provides various actions based on the user's role.
 export const CertTable = ({
   role,
   email,
   setRefetchCertForAdmin,
   refetchCertForAdmin,
 }) => {
+  // State variables
   const [certs, setCerts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,6 +29,7 @@ export const CertTable = ({
   const [selectedCert, setSelectedCert] = useState([]);
   const [refetchCert, setRefetchCert] = useState(false);
 
+  // Define columns for the table
   const columns = [
     {
       title: "Certificate ID",
@@ -48,12 +51,17 @@ export const CertTable = ({
       key: "actions",
       render: (text, cert) => (
         <div>
+          {/* Button to view the PDF content of the certificate */}
           <Button type="primary" onClick={() => handleViewPDF(cert)}>
             View PDF
           </Button>
+
+          {/* Button to download the PDF of the certificate */}
           <Button type="primary" onClick={() => handleDownloadPDF(cert)}>
             Download PDF
           </Button>
+
+          {/* Delete button, only shown to admin users */}
           {role === "admin" && (
             <Popconfirm
               title="Are you sure you want to delete this certificate?"
@@ -64,6 +72,8 @@ export const CertTable = ({
               </Button>
             </Popconfirm>
           )}
+
+          {/* Transfer Ownership button, not shown to admin users */}
           {role !== "admin" && (
             <Button
               type="primary"
@@ -77,6 +87,7 @@ export const CertTable = ({
     },
   ];
 
+  // Function to fetch certificates based on the user's role
   const fetchCertificates = async () => {
     try {
       const response =
@@ -87,14 +98,15 @@ export const CertTable = ({
       setCerts(data);
       setOriginalCerts(data);
       setRefetchCert(false);
-      {
-        role === "admin" && setRefetchCertForAdmin(false);
+      if (role === "admin") {
+        setRefetchCertForAdmin(false);
       }
     } catch (error) {
-      console.error(error);
+      message.error("Something went wrong");
     }
   };
 
+  // Function to fetch user emails (for non-admin users)
   const fetchUserEmails = async () => {
     try {
       const response = await getAllUsers();
@@ -103,29 +115,32 @@ export const CertTable = ({
         setUserEmails(filteredEmails);
       }
     } catch (error) {
-      console.error(error);
+      message.error("Something went wrong");
     }
   };
 
+  // Use useEffect to fetch certificates and user emails when the component mounts or when refetch is triggered
   useEffect(() => {
     setLoading(true);
     fetchCertificates();
-    {
-      role !== "admin" && fetchUserEmails();
+    if (role !== "admin") {
+      fetchUserEmails();
     }
     setLoading(false);
   }, [refetchCert, refetchCertForAdmin]);
 
+  // Function to show the Transfer Ownership modal
   const showTransferOwnsershipModal = (cert) => {
-    // get emails filter current user email
     setTransferOwnershipModalVisible(true);
     setSelectedCert(cert.cert_id);
   };
 
+  // Function to handle the cancel action of the Transfer Ownership modal
   const handleCancel = () => {
     setTransferOwnershipModalVisible(false);
   };
 
+  // Function to view the PDF content of a certificate
   const handleViewPDF = async (cert) => {
     try {
       setLoading(true);
@@ -139,24 +154,33 @@ export const CertTable = ({
       );
       setLoading(false);
     } catch (error) {
-      console.error(error);
+      message.error("Something went wrong");
       setLoading(false);
     }
   };
 
+  // Function to download the PDF of a certificate
   const handleDownloadPDF = async (cert) => {
-    const response = await getCert(cert.cert_id);
-    const pdf = response.pdf_content;
-    const pdfDataURL = `data:application/pdf;base64,${pdf}`;
-    const a = document.createElement("a");
-    a.href = pdfDataURL;
-    a.download = `${cert.cert_id}.pdf`;
-    a.style.display = "none";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    try {
+      setLoading(true);
+      const response = await getCert(cert.cert_id);
+      const pdf = response.pdf_content;
+      const pdfDataURL = `data:application/pdf;base64,${pdf}`;
+      const a = document.createElement("a");
+      a.href = pdfDataURL;
+      a.download = `${cert.cert_id}.pdf`;
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setLoading(false);
+    } catch (error) {
+      message.error("Something went wrong");
+      setLoading(false);
+    }
   };
 
+  // Function to handle the deletion of a certificate
   const handleDeleteCert = async (certId) => {
     try {
       setLoading(true);
@@ -170,21 +194,23 @@ export const CertTable = ({
       setOriginalCerts(data);
       setLoading(false);
     } catch (error) {
-      console.error(error);
-      message.error("Failed to delete certificate");
+      message.error("Certificate failed to delete");
       setLoading(false);
     }
   };
 
+  // Function to handle page change in the table
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
+  // Function to handle search input and filter certificates
   const handleSearch = (value) => {
     setSearchText(value);
     filterCertificates(value);
   };
 
+  // Function to filter certificates based on the search text
   const filterCertificates = (searchText) => {
     if (searchText) {
       const lowerCaseSearchText = searchText.toLowerCase();
@@ -205,11 +231,14 @@ export const CertTable = ({
 
   return (
     <div>
+      {/* Input for searching certificates by Certificate ID or User Email */}
       <Input
         placeholder="Search by Certificate ID or User Email"
         value={searchText}
         onChange={(e) => handleSearch(e.target.value)}
       />
+
+      {/* Table displaying the certificates */}
       <Table
         columns={columns}
         dataSource={certs}
@@ -223,6 +252,8 @@ export const CertTable = ({
           style: { textAlign: "center" },
         }}
       />
+
+      {/* Transfer Ownership modal (only for non-admin users) */}
       {role !== "admin" && (
         <TransferOwnershipModal
           visible={transferOwnershipModalVisible}

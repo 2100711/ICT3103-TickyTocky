@@ -1,81 +1,67 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Form, Button, notification, message } from "antd";
+import { Modal, Form, Button, message } from "antd";
 import { createCerts } from "../../api/certs";
 import * as XLSX from "xlsx";
 import { validateExcelData } from "../../utils/validation";
 
+// ExcelUploadModal component for uploading certificates from an Excel file
 export const ExcelUploadModal = ({
   visible,
   onCancel,
   setRefetchCertForAdmin,
 }) => {
+  // State variables
   const [selectedFile, setSelectedFile] = useState(null);
   const [isSubmitting, setSubmitting] = useState(false);
 
+  // Reset form fields and feedback when the modal visibility changes
   useEffect(() => {
     if (!visible) {
-      // Reset form fields and feedback when the modal visibility changes
       setSelectedFile(null);
       setSubmitting(false);
     }
   }, [visible]);
 
+  // Handle file input change
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setSelectedFile(file);
   };
 
+  // Handle form submission
   const handleFormSubmit = async () => {
     if (!selectedFile) {
-      notification.error({
-        message: "Excel file is required",
-        description: "Please select an Excel file before submitting.",
-        duration: 5,
-      });
+      // Show an error message if no Excel file is selected
+      message.error("Excel file is required");
       return;
     }
-
     setSubmitting(true);
-
     try {
       const fileData = await parseExcelFile(selectedFile);
-
       if (fileData.length > 0) {
         const response = await createCerts(fileData);
-
         if (response.success) {
-          notification.success({
-            message: "Certificate Creation Successful",
-            description:
-              "The certificates have been successfully created and are now available for viewing and download.",
-            duration: 5,
-          });
+          // Show a success message after successful certificate creation
+          message.success("Certificates created successfully");
+          // Trigger a refetch of certificates for admin
           setRefetchCertForAdmin(true);
         } else {
-          notification.error({
-            message: "Certificate Creation Failed",
-            description:
-              "An issue occurred while trying to create the certificates.",
-            duration: 5,
-          });
+          // Show an error message if certificate creation fails
+          message.error("Certificates failed to create");
         }
       }
     } catch (error) {
-      notification.error({
-        message: "Certificate Creation Failed",
-        description:
-          "An issue occurred while trying to create the certificates.",
-        duration: 5,
-      });
+      // Show an error message if an error occurs during certificate creation
+      message.error("Something went wrong");
     } finally {
       setSubmitting(false);
     }
   };
 
+  // Parse Excel file data and return it as an array of objects
   const parseExcelFile = async (file) => {
     return new Promise(async (resolve, reject) => {
       const reader = new FileReader();
-
       reader.onload = async (e) => {
         try {
           const data = new Uint8Array(e.target.result);
@@ -105,9 +91,10 @@ export const ExcelUploadModal = ({
             const uniqueValidationErrors = new Set(validationErrors);
             const uniqueErrorsArray = Array.from(uniqueValidationErrors);
             for (const uniqueError of uniqueErrorsArray) {
+              // Show error messages for validation errors
               message.error({
                 content: uniqueError,
-                duration: 5,
+                duration: 10,
               });
             }
             reject(uniqueErrorsArray);
@@ -128,15 +115,17 @@ export const ExcelUploadModal = ({
   return (
     <Modal
       title="Upload Excel File"
-      visible={visible}
+      open={visible}
       onCancel={onCancel}
       footer={null}
     >
       <Form>
         <Form.Item label="Select Excel File">
+          {/* Input element for selecting an Excel file */}
           <input type="file" accept=".xlsx" onChange={handleFileChange} />
         </Form.Item>
         <Form.Item>
+          {/* Submit button for uploading the Excel file */}
           <Button
             type="primary"
             onClick={handleFormSubmit}

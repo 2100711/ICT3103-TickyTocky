@@ -1,20 +1,20 @@
-import { PDFDocument, rgb, radians } from "pdf-lib";
-import fs from "fs/promises"; // Use the promise-based fs module
+// Import required libraries
+import { PDFDocument, rgb } from "pdf-lib";
+import fs from "fs/promises";
 
+// Function to create a PDF document based on provided data
 async function createPdfContent(data) {
   const pdfDoc = await PDFDocument.create();
-  const page = pdfDoc.addPage([841.89, 595.28]);
+  const page = pdfDoc.addPage([841.89, 595.28]); // Create a new PDF page with dimensions
 
+  // Fetch and embed a watermark image onto the page
   const watermarkImageBytes = await fetchWatermarkImage();
-
   const { width, height } = page.getSize();
-
   const watermarkImage = await pdfDoc.embedPng(watermarkImageBytes);
   const imageWidth = 600;
   const imageHeight = 300;
   const imageX = width / 2 - imageWidth / 2;
   const imageY = height / 2 - imageHeight / 2;
-
   page.drawImage(watermarkImage, {
     x: imageX,
     y: imageY,
@@ -23,6 +23,7 @@ async function createPdfContent(data) {
     opacity: 0.1,
   });
 
+  // Add title and content to the PDF page
   const fontSize = 26;
   const text = "WATCH CERTIFICATE";
 
@@ -34,11 +35,7 @@ async function createPdfContent(data) {
     font: await pdfDoc.embedFont("Times-BoldItalic"),
   });
 
-  // Format date and other data as needed
-  const dovDate = new Date(data.date_of_validation);
-  const dovFormattedDate = dovDate.toISOString().slice(0, 10);
-
-  // Create an array of lines for the certificate content
+  // Define the content and formatting for the certificate details, watch details, and serial number details
   const lines = [
     { text: "Certificate Details", isBold: true },
     `Certificate ID: ${data.cert_id}`,
@@ -65,10 +62,11 @@ async function createPdfContent(data) {
     `Case Material: ${data.watch_id.serial_id.crown_pusher}`,
   ];
 
-  // Loop through lines and add to the page
+  // Start drawing the text on the page
   let startY = height - 100;
   for (const line of lines) {
     if (typeof line === "string") {
+      // Draw regular text lines
       page.drawText(line, {
         x: 60,
         y: startY,
@@ -77,6 +75,7 @@ async function createPdfContent(data) {
         font: await pdfDoc.embedFont("Courier"),
       });
     } else if (line.isBold) {
+      // Draw bold text lines
       page.drawText(line.text, {
         x: 60,
         y: startY,
@@ -87,34 +86,39 @@ async function createPdfContent(data) {
     }
     startY -= 20;
   }
+  // Set the PDF title and save the PDF document
   pdfDoc.setTitle(data.cert_id);
   const pdfBytes = await pdfDoc.save();
+  // Convert the PDF bytes to base64 and return
   return Buffer.from(pdfBytes).toString("base64");
 }
 
+// Function to fetch a watermark image
 async function fetchWatermarkImage() {
   try {
-    // Read the image file from a local path
-    const imageBytes = await fs.readFile("../app/src/img/logo.png"); // Change path to ../img/logo.png when running locally
+    // Read the watermark image file and return its bytes
+    const imageBytes = await fs.readFile("../app/src/img/logo.png");
     return new Uint8Array(imageBytes);
   } catch (error) {
-    console.error("Error reading watermark image:", error);
-    throw error; // Re-throw the error for higher-level error handling
+    throw new Error("Something went wrong");
   }
 }
 
+// Function to format a date as DD-MM-YYYY
 function formatDateDDMMYYYY(date) {
   date = new Date(date);
-  const day = date.getDate().toString().padStart(2, "0"); // Get day and pad with 0 if necessary
-  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Get month (note: months are 0-based) and pad with 0 if necessary
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
   const year = date.getFullYear();
   return `${day}-${month}-${year}`;
 }
 
+// Function to format a year
 function formatYear(date) {
   date = new Date(date);
   const year = date.getFullYear();
   return year;
 }
 
+// Export the createPdfContent function for use in other parts of the application
 export { createPdfContent };

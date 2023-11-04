@@ -1,53 +1,59 @@
 import React, { useEffect } from "react";
-import { useReducer, useState } from "react";
+import { useReducer } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthData } from "../../auth/AuthWrapper";
-import { Form, Input, Button, Checkbox, notification } from "antd";
+import { Form, Input, Button, message } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import "../styles/Login.css";
 import { getCsrfTokenFromAPI } from "../../api/auth";
 
+// Login component for user authentication
 export const Login = () => {
+  // React Router's navigate function for redirection
   const navigate = useNavigate();
+
+  // Retrieve authentication data and functions from AuthData context
   const { login, user } = AuthData();
+
+  // Use reducer to manage form data (email and password)
   const [formData, setFormData] = useReducer(
     (formData, newItem) => {
       return { ...formData, ...newItem };
     },
     { email: "", password: "" }
   );
-  const [errorMessage, setErrorMessage] = useState(null);
 
-  // useEffect(() => {
-  //   if (user.isAuthenticated) navigate("/");
-  // });
-
+  // Perform actions when the component mounts
   useEffect(() => {
-    // Check if the user is already authenticated, and if so, redirect to another page.
+    // Redirect to the homepage if the user is already authenticated
     if (user.isAuthenticated) {
-      navigate("/"); // Change the destination URL as needed.
+      navigate("/");
     } else {
+      // Fetch the CSRF token from the API if the user is not authenticated
       getCsrfTokenFromAPI();
     }
   }, [user.isAuthenticated, navigate]);
 
+  // If the user is already authenticated, return null to prevent rendering
   if (user.isAuthenticated) {
-    return null; // Return null to prevent rendering the login page.
+    return null;
   }
 
+  // Handle the login process when the form is submitted
   const handleLogin = async () => {
-    const { success, message } = await login(formData.email, formData.password);
+    try {
+      // Attempt to log in with the provided email and password
+      const response = await login(formData.email, formData.password);
 
-    if (success) {
-      navigate("/account");
-    } else {
-      setErrorMessage(message);
-      // Display error message as a notification
-      notification.error({
-        message: "Login Error",
-        description: message,
-        duration: 5,
-      });
+      if (response.success) {
+        message.success("Login successfully");
+        // Redirect to the account page upon successful login
+        navigate("/account");
+      } else {
+        message.error("Login failed");
+      }
+    } catch (error) {
+      message.error("Something went wrong");
     }
   };
 
@@ -63,12 +69,13 @@ export const Login = () => {
             rules={[
               {
                 required: true,
-                message: "Please input your email!",
+                message: "Email is required",
               },
             ]}
           >
             <Input
-              prefix={<UserOutlined className="input-icon" />}
+              prefix={<UserOutlined />}
+              className="input-box"
               placeholder="Email"
               value={formData.email}
               onChange={(e) => setFormData({ email: e.target.value })}
@@ -79,12 +86,13 @@ export const Login = () => {
             rules={[
               {
                 required: true,
-                message: "Please input your password!",
+                message: "Password is required",
               },
             ]}
           >
             <Input
-              prefix={<LockOutlined className="input-icon" />}
+              prefix={<LockOutlined />}
+              className="input-box"
               type="password"
               placeholder="Password"
               value={formData.password}
@@ -96,14 +104,12 @@ export const Login = () => {
               Log In
             </Button>
           </Form.Item>
-          <Form.Item name="remember" valuePropName="checked">
-            <Checkbox>Remember me</Checkbox>
-          </Form.Item>
-          <p>
-            Don't have an account? <Link to="/register">Register</Link>
-          </p>
+
           <p>
             <Link to="/forgotpassword">Forgot Password?</Link>
+          </p>
+          <p>
+            Don't have an account? <Link to="/register">Register here</Link>
           </p>
         </Form>
       </div>

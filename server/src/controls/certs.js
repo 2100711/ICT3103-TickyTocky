@@ -1,3 +1,4 @@
+// Import necessary modules and functions
 import { CertModel } from "../models/Certs.js";
 import { UserModel } from "../models/Users.js";
 import { createWatch, updateWatch, deleteWatch } from "../controls/watches.js";
@@ -8,6 +9,7 @@ import { logRequest } from "./databaseLogs.js";
 
 // Generate a random certificate ID
 const generateRandomCertId = () => {
+  // Generates a random 16-character certificate ID
   const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   const charLength = characters.length;
   let result = "";
@@ -20,7 +22,9 @@ const generateRandomCertId = () => {
   return result;
 };
 
+// Create a new certificate
 const createCert = async (req, res, next) => {
+  // This function handles the creation of a single certificate
   const session = await CertModel.startSession();
   session.startTransaction();
 
@@ -90,18 +94,19 @@ const createCert = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      message: "Certificate created",
+      message: "Certificate created successfully",
       cert,
     });
   } catch (error) {
-    console.log(error);
     await session.abortTransaction();
     session.endSession();
-    res.status(500).json({ success: false, message: "An error occurred" });
+    res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };
 
-const createCerts = async (req, res, next) => {
+// Create multiple certificates
+const createCerts = async (req, res) => {
+  // This function handles the creation of multiple certificates
   const session = await CertModel.startSession();
   session.startTransaction();
 
@@ -164,12 +169,14 @@ const createCerts = async (req, res, next) => {
     session.endSession();
     res.status(500).json({
       success: false,
-      message: "An error occurred while creating certificates",
+      message: "Something went wrong",
     });
   }
 };
 
+// Get all certificates
 const getAllCerts = async (req, res) => {
+  // Retrieve all certificates from the database
   try {
     const certs = await CertModel.find(
       {},
@@ -190,11 +197,13 @@ const getAllCerts = async (req, res) => {
       certs: modifiedCerts,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: "An error occurred" });
+    res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };
 
+// Get a specific certificate by ID
 const getCert = async (req, res, next) => {
+  // Retrieve a specific certificate by its ID
   try {
     const cert_id = req.params.certID;
 
@@ -230,12 +239,13 @@ const getCert = async (req, res, next) => {
       cert: modifiedCert,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "An error occurred" });
+    res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };
 
+// Get certificates by user email
 const getCertsByEmail = async (req, res) => {
+  // Retrieve certificates associated with a user's email
   try {
     const { email } = req.body;
     if (email !== req.session.user?.email) {
@@ -268,7 +278,7 @@ const getCertsByEmail = async (req, res) => {
       certs: modifiedCerts,
     });
   } catch (error) {
-    res.status(500).json({ message: "An error occurred" });
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
 
@@ -321,7 +331,9 @@ function isUserAuthorisedForTransferOwnership(
     : false;
 }
 
+// Transfer ownership of a certificate
 const transferOwnershipCert = async (req, res, next) => {
+  // Transfer ownership of a certificate from one user to another
   try {
     const { cert_id, current_email, next_email } = req.body;
 
@@ -334,7 +346,7 @@ const transferOwnershipCert = async (req, res, next) => {
         req.session.user.email
       )
     )
-      return res.status(403).json({ success: false, message: "Unauthorized." });
+      return res.status(403).json({ success: false, message: "Unauthorized" });
 
     const query = { cert_id: cert_id };
 
@@ -366,15 +378,17 @@ const transferOwnershipCert = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: "Certificate updated",
+      message: "Certificate updated successfully",
       cert: modifiedCert,
     });
   } catch (error) {
-    res.status(500).json({ message: "An error occurred" });
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
 
+// Update a certificate
 const updateCert = async (req, res, next) => {
+  // Update the details of a certificate
   const session = await CertModel.startSession();
   try {
     const {
@@ -405,13 +419,13 @@ const updateCert = async (req, res, next) => {
     if (!cert)
       return res
         .status(404)
-        .json({ success: false, message: "Certificate not found." });
+        .json({ success: false, message: "Certificate not found" });
 
     const user_exist = await userExists(user_email);
     if (!user_exist)
       return res
         .status(404)
-        .json({ success: false, message: "User not found." });
+        .json({ success: false, message: "User not found" });
 
     const watch = {
       watch_id: cert.watch_id,
@@ -432,7 +446,7 @@ const updateCert = async (req, res, next) => {
 
     session.startTransaction();
 
-    const watch_id = await updateWatch(watch, session);
+    await updateWatch(watch, session);
 
     const query = { cert_id: cert_id };
 
@@ -466,17 +480,19 @@ const updateCert = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: "Certificate updated",
+      message: "Certificate updated successfully",
       updatedCert: modifiedCert,
     });
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-    res.status(500).json({ success: false, message: "An error occurred" });
+    res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };
 
+// Delete a certificate
 const deleteCert = async (req, res, next) => {
+  // Delete a certificate and related information
   const session = await CertModel.startSession();
   try {
     const { cert_id } = req.body;
@@ -490,7 +506,7 @@ const deleteCert = async (req, res, next) => {
 
     session.startTransaction();
 
-    const deletedWatch = await deleteWatch(cert.watch_id, session);
+    await deleteWatch(cert.watch_id, session);
 
     const deletedCert = await CertModel.findOneAndDelete(
       { cert_id: cert_id },
@@ -511,15 +527,16 @@ const deleteCert = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: "Certificate deleted",
+      message: "Certificate deleted successfully",
     });
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-    res.status(500).json({ success: false, message: "An error occurred" });
+    res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };
 
+// Export the functions for use in other parts of the application
 export {
   createCert,
   createCerts,

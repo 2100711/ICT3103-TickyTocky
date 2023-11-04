@@ -171,10 +171,6 @@ const validateYOP = (yop) => {
   return true;
 };
 
-const validateGender = (gender) => {
-  return GENDER.includes(gender);
-};
-
 // CERT
 const validateValidatedBy = (validatedBy) => {
   const validatedByRegex = /^[A-Za-z\s-']{2,50}$/;
@@ -221,11 +217,9 @@ export const validateCert = async (req, res, next) => {
     case_material,
     bracelet_strap_material,
     yop,
-    gender,
     user_email,
     validated_by,
     date_of_validation,
-    watch_id,
     issue_date,
     expiry_date,
     remarks,

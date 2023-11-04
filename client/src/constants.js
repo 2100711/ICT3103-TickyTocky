@@ -6,12 +6,14 @@ export const REGISTER_URL = "/register";
 export const ADMIN_URL = "/admin";
 
 // SERVER URL
-export const SERVER_URL = "http://localhost:3001";
-// export const SERVER_URL = "https://www.gracious-kare.cloud/be";
+export const SERVER_URL = "https://www.gracious-kare.cloud/be";
 export const CERTS_URL = `${SERVER_URL}/certs`;
 export const USERS_URL = `${SERVER_URL}/users`;
 export const AUTH_URL = `${SERVER_URL}/auth`;
 export const SERIAL_URL = `${SERVER_URL}/serial`;
+export const ACCESS_LOGS_URL = `${SERVER_URL}/accessLogs`;
+export const DATABASE_LOGS_URL = `${SERVER_URL}/databaseLogs`;
+export const SECURITY_LOGS_URL = `${SERVER_URL}/securityLogs`;
 
 // CERT API
 export const CREATE_CERT_API = `${CERTS_URL}/create-cert`;
@@ -31,7 +33,7 @@ export const UPDATE_USER_API = `${USERS_URL}/`;
 export const DELETE_USER_API = `${USERS_URL}/`;
 export const UPDATE_USER_ADMIN_API = `${USERS_URL}/admin`;
 
-//AUTH API
+// AUTH API
 export const CHECK_AUTH_API = `${AUTH_URL}/check-auth`;
 export const REGISTER_API = `${AUTH_URL}/register`;
 export const LOGIN_API = `${AUTH_URL}/login`;
@@ -42,6 +44,15 @@ export const OTP_TIME_LEFT = `${AUTH_URL}/timeleft-otp`;
 export const RESET_PASSWORD_API = `${AUTH_URL}/reset-password`;
 export const UPDATE_PASSWORD_API = `${AUTH_URL}/update-password`;
 export const GENERATE_CSRF_TOKEN = `${AUTH_URL}/generate-csrf-token`;
+
+// ACCESS LOGS API
+export const GET_ALL_ACCESS_LOGS = `${ACCESS_LOGS_URL}/all-access-logs`;
+
+// DATABASE LOGS API
+export const GET_ALL_DATABASE_LOGS = `${DATABASE_LOGS_URL}/all-database-logs`;
+
+// SECURITY LOGS API
+export const GET_ALL_SECURITY_LOGS = `${SECURITY_LOGS_URL}/all-security-logs`;
 
 // WATCH BRANDS
 export const WATCH_BRANDS = [

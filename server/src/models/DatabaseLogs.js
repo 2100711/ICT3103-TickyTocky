@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// Define the schema for database logs
 const DatabaseLogSchema = new mongoose.Schema({
   certificate_id: {
     type: mongoose.Schema.Types.ObjectId,
@@ -17,6 +18,7 @@ const DatabaseLogSchema = new mongoose.Schema({
   },
 });
 
+// Create the DatabaseLogModel using the schema
 export const DatabaseLogModel = mongoose.model(
   "database_logs",
   DatabaseLogSchema

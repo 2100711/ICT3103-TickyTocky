@@ -6,6 +6,7 @@ import { AuthData } from "../../auth/AuthWrapper";
 import { nav } from "./navigation";
 import { useNavigate } from "react-router-dom";
 
+// Component for rendering routes based on navigation data
 export const RenderRoutes = () => {
   const { user } = AuthData();
 
@@ -33,12 +34,14 @@ export const RenderRoutes = () => {
   );
 };
 
+// Component for rendering the navigation menu
 export const RenderMenu = () => {
   const navigate = useNavigate();
   const { user, logout } = AuthData();
 
+  // Function to handle user logout
   const handleLogout = async () => {
-    const { success, message } = await logout();
+    const { success } = await logout();
     if (success) {
       navigate("/");
       window.location.reload();
@@ -47,7 +50,7 @@ export const RenderMenu = () => {
 
   const location = useLocation();
 
-  // Check if the current route is "login" and conditionally render the navbar
+  // Check if the current route is one of the specified login-related routes
   if (
     location.pathname === "/login" ||
     location.pathname === "/otp" ||
@@ -55,22 +58,22 @@ export const RenderMenu = () => {
     location.pathname === "/forgotpassword" ||
     location.pathname === "/resetpassword"
   ) {
-    return null; // Render nothing for the "login" route
+    return null; // Render nothing for the login-related routes
   }
 
   return (
     <Menu mode="horizontal" theme="dark" selectedKeys={[]}>
       {nav.map((r, i) => {
         const shouldRenderItem =
-          (!r.isPrivate && r.isMenu) ||
+          (!r.isPrivate && r.isMenu) || // Render public menu items
           (r.isPrivate &&
             r.isPrivate2 &&
             user.isAuthenticated &&
             user?.role === "admin" &&
-            r.isMenu) ||
+            r.isMenu) || // Render admin menu items when user is admin
           ((typeof r.isPrivate2 === "undefined" || r.isPrivate2 === false) &&
             user.isAuthenticated &&
-            r.isMenu);
+            r.isMenu); // Render other private menu items
 
         return shouldRenderItem ? (
           <Menu.Item

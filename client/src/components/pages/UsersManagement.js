@@ -2,35 +2,34 @@ import React, { useState, useEffect } from "react";
 import {
   Modal,
   Button,
-  Tabs,
   Form,
   Input,
-  Upload,
-  DatePicker,
   Spin,
   Switch,
   Select,
   message,
 } from "antd";
-import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import { LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
 import { UsersTable } from "./UsersTable";
 import { createUser } from "../../api/users";
 
-// NOTE: create user here
-
+// UsersManagement component for managing users
 export const UsersManagement = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [reFetchUsers, setReFetchUsers] = useState(false);
 
-  const showCreateModal = () => {
-    setCreateModalVisible(true);
-  };
-
+  // Show the user editing modal
   const showModal = () => {
     setModalVisible(true);
   };
 
+  // Show the user creation modal
+  const showCreateModal = () => {
+    setCreateModalVisible(true);
+  };
+
+  // Handle closing of modals
   const handleCancel = () => {
     setModalVisible(false);
     setCreateModalVisible(false);
@@ -57,12 +56,14 @@ export const UsersManagement = () => {
   );
 };
 
+// CreateUserForm component for creating a new user
 const CreateUserForm = ({ visible, onCancel, setReFetchUsers }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
+  // Initialize form fields
   useEffect(() => {
-    form.setFieldValue({
+    form.setFieldsValue({
       create_f_name: "",
       create_l_name: "",
       create_email: "",
@@ -73,9 +74,11 @@ const CreateUserForm = ({ visible, onCancel, setReFetchUsers }) => {
     });
   }, [form]);
 
+  // Handle form submission for creating a new user
   const handleFinish = async (values) => {
     try {
       setLoading(true);
+      // Send a request to create a new user
       const response = await createUser({
         f_name: values.create_f_name,
         l_name: values.create_l_name,
@@ -90,15 +93,13 @@ const CreateUserForm = ({ visible, onCancel, setReFetchUsers }) => {
         form.resetFields();
         setReFetchUsers(true);
       } else {
-        message.error("Failed to create user. Please try again.");
+        message.error("User failed to create");
       }
       setLoading(false);
       onCancel();
     } catch (error) {
       setLoading(false);
-      message.error(
-        "An error occurred. Please check your input and try again."
-      );
+      message.error("Something went wrong");
     }
   };
 
@@ -111,7 +112,7 @@ const CreateUserForm = ({ visible, onCancel, setReFetchUsers }) => {
       footer={null}
       width={600}
     >
-      <Spin tip="Loading..." spinning={loading}>
+      <Spin size="large" spinning={loading}>
         <Form form={form} layout="vertical" onFinish={handleFinish}>
           <Form.Item
             label="First Name"
@@ -125,7 +126,12 @@ const CreateUserForm = ({ visible, onCancel, setReFetchUsers }) => {
               },
             ]}
           >
-            <Input maxLength={50} />
+            <Input
+              className="input-box"
+              placeholder="Enter your first name"
+              prefix={<UserOutlined />}
+              maxLength={50}
+            />
           </Form.Item>
           <Form.Item
             label="Last Name"
@@ -139,9 +145,15 @@ const CreateUserForm = ({ visible, onCancel, setReFetchUsers }) => {
               },
             ]}
           >
-            <Input maxLength={50} />
+            <Input
+              className="input-box"
+              placeholder="Enter your last name"
+              prefix={<UserOutlined />}
+              maxLength={50}
+            />
           </Form.Item>
           <Form.Item
+            label="Email"
             name="create_email"
             rules={[
               { required: true, message: "Email is required" },
@@ -154,30 +166,32 @@ const CreateUserForm = ({ visible, onCancel, setReFetchUsers }) => {
             <Input
               className="input-box"
               placeholder="Enter your email"
-              prefix={<MailOutlined />} // Icon for email
+              prefix={<MailOutlined />}
             />
           </Form.Item>
           <Form.Item
+            label="Password"
             name="create_password"
             rules={[
               { required: true, message: "Password is required" },
               {
                 pattern:
-                  /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#%^&+=])(?!.*\s).{14,128}$/,
+                  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@!%*?&])[A-Za-z\d@!%*?&]{12,64}$/,
                 message:
-                  "Password must be at least 14 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#%^&+=).",
+                  "Password must be at least 12 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#%^&+=).",
               },
             ]}
           >
             <Input.Password
               className="input-box"
               placeholder="Enter your password"
-              prefix={<LockOutlined />} // Icon for password
+              prefix={<LockOutlined />}
             />
           </Form.Item>
           <Form.Item
+            label="Confirm Password"
             name="create_cfmPassword"
-            dependencies={["password"]}
+            dependencies={["create_password"]}
             hasFeedback
             rules={[
               { required: true, message: "Please re-enter the same password" },
@@ -194,7 +208,7 @@ const CreateUserForm = ({ visible, onCancel, setReFetchUsers }) => {
             <Input.Password
               className="input-box"
               placeholder="Reenter your password"
-              prefix={<LockOutlined />} // Icon for confirm password
+              prefix={<LockOutlined />}
             />
           </Form.Item>
           <Form.Item
@@ -202,7 +216,7 @@ const CreateUserForm = ({ visible, onCancel, setReFetchUsers }) => {
             name="create_role"
             rules={[{ required: true, message: "Please select a role." }]}
           >
-            <Select placeholder="Select a role">
+            <Select placeholder="Select a role" size="large">
               <Select.Option value="member">member</Select.Option>
               <Select.Option value="admin">admin</Select.Option>
             </Select>
@@ -211,9 +225,6 @@ const CreateUserForm = ({ visible, onCancel, setReFetchUsers }) => {
             label="Account Lock"
             name="create_account_lock"
             valuePropName="checked"
-            rules={[
-              { required: true, message: "Please select an account status." },
-            ]}
           >
             <Switch />
           </Form.Item>

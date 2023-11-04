@@ -8,7 +8,8 @@ import {
   DatePicker,
   Tabs,
   Radio,
-  notification,
+  message,
+  Spin,
 } from "antd";
 import { getAllUsers } from "../../api/users";
 import { createCert } from "../../api/certs";
@@ -22,13 +23,17 @@ import {
 
 const { TabPane } = Tabs;
 
+// Certificate Form component
 export const CertForm = ({ visible, onCancel, setRefetchCertForAdmin }) => {
+  // State variables and their initial values
   const [activeTab, setActiveTab] = useState("serial");
   const [userEmails, setUserEmails] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Initialize the form using Form.useForm()
   const [form] = Form.useForm();
 
+  // Effect hook to fetch user emails when the component mounts
   useEffect(() => {
     getAllUsers()
       .then((response) => {
@@ -41,15 +46,17 @@ export const CertForm = ({ visible, onCancel, setRefetchCertForAdmin }) => {
       });
   }, []);
 
+  // Function to handle tab change
   const handleTabChange = (key) => {
     setActiveTab(key);
   };
 
+  // Function to handle canceling the form
   const handleCancel = () => {
     onCancel();
   };
 
-  // TODO: handleNext and handlePrevious works but if in the next form there are empty fields, the next button would not work
+  // Function to handle going to the next tab
   const handleNext = () => {
     // Handle the next button logic, e.g., validate and move to the next tab
     setActiveTab((current) => {
@@ -57,6 +64,7 @@ export const CertForm = ({ visible, onCancel, setRefetchCertForAdmin }) => {
     });
   };
 
+  // Function to handle going to the previous tab
   const handlePrevious = () => {
     // Handle the previous button logic, e.g., move back to the previous tab
     setActiveTab((current) => {
@@ -64,8 +72,12 @@ export const CertForm = ({ visible, onCancel, setRefetchCertForAdmin }) => {
     });
   };
 
+  // Function to handle form submission and certificate creation
   const handleFinish = async (values) => {
+    // Extracting the year of production (yop) from the DatePicker component
     const yop = values.yop.$y;
+
+    // Create a new jsPDF instance for generating a PDF certificate
     const doc = new jsPDF();
     doc.text("Certificate of Validation", 10, 10);
     doc.text("User Email: " + values.user_email, 10, 30);
@@ -75,30 +87,27 @@ export const CertForm = ({ visible, onCancel, setRefetchCertForAdmin }) => {
     doc.text("Expiry Date: " + values.expiry_date, 10, 70);
     doc.text("Remarks: " + values.remarks, 10, 80);
 
+    // Generate the PDF content as a data URI
     const pdfContent = doc.output("datauristring");
 
+    // Construct the data object for certificate creation
     const data = { ...values, yop: yop, pdf_content: pdfContent };
-    try {
-      const response = await createCert(data);
 
-      // Show a success notification
-      notification.success({
-        message: "Certificate Creation Successful",
-        description:
-          "The certificate has been successfully created and is now available for viewing and download. Thank you for using our services.",
-        duration: 5,
-      });
-      setRefetchCertForAdmin(true);
-      // Close the modal
-      onCancel();
+    try {
+      // Attempt to create the certificate using the API
+      const response = await createCert(data);
+      if (response.success) {
+        // Show a success message if the certificate creation is successful
+        message.success("Certificate created successfully");
+        // Set the flag to trigger a refetch of certificates for admin
+        setRefetchCertForAdmin(true);
+
+        // Close the modal
+        onCancel();
+      }
     } catch (error) {
-      // Show an error notification
-      notification.error({
-        message: "Certificate Creation Failed",
-        description:
-          "We apologize, but we encountered an issue while trying to create the certificate. Please try again later or contact our support team for assistance.",
-        duration: 5,
-      });
+      // Show an error message if certificate creation fails
+      message.error("Certificate failed to create");
     }
   };
 
@@ -334,7 +343,7 @@ export const CertForm = ({ visible, onCancel, setRefetchCertForAdmin }) => {
               ]}
             >
               {loading ? (
-                <p>Loading user emails...</p>
+                <Spin size="large" />
               ) : (
                 <Select showSearch>
                   {userEmails.map((email) => (

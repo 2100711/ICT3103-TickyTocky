@@ -1,3 +1,4 @@
+// Import required modules and constants
 import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
@@ -7,8 +8,8 @@ import sanitize from "mongo-sanitize";
 
 import { EMAIL_NAME, EMAIL_PASS, EMAIL_USER } from "../constants.js";
 
+// Function to lock a user's account
 const lockAccount = async (user_id) => {
-  // lock account if attempt more than 5
   try {
     const result = await UserModel.updateOne(
       { _id: user_id },
@@ -17,12 +18,12 @@ const lockAccount = async (user_id) => {
     if (result.acknowledged) return true;
     return false;
   } catch (error) {
-    console.error(error);
+    throw new Error("Something went wrong");
   }
 };
 
+// Function to unlock a user's account and create a log entry
 const unlockAccount = async (user_id, ip_address) => {
-  // when unlocking account, create security_log record to set login_attempts back to 0
   try {
     const resetLoginAttempt = {
       user_id,
@@ -33,22 +34,21 @@ const unlockAccount = async (user_id, ip_address) => {
     if (result.acknowledged) return true;
     return false;
   } catch (error) {
-    console.error(error);
+    throw new Error("Something went wrong");
   }
 };
 
+// Middleware to check if a user is authenticated
 const isAuthenticated = (req, res, next) => {
   if (req.session.user) {
     checkCSRFTokenSTP(req, res, next);
     next();
   } else {
-    return res
-      .status(200)
-      .json({ success: false, message: "Invalid session." });
+    return res.status(200).json({ success: false, message: "Invalid session" });
   }
 };
 
-// isAdmin function should be used only after isAuthenticated
+// Middleware to check if a user is an admin
 const isAdmin = async (req, res, next) => {
   const user = await UserModel.findOne({
     email: req.session.user.email,
@@ -56,11 +56,13 @@ const isAdmin = async (req, res, next) => {
   if (user.role === "admin") {
     next();
   } else {
-    return res.status(403).json({ success: false, message: "Unauthorized." });
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized Access" });
   }
 };
 
-// Check if user exists
+// Function to check if a user with a given email exists
 const userExists = async (email) => {
   const sanitizedEmail = sanitize(email);
   const user = await UserModel.findOne({ email: sanitizedEmail });
@@ -70,23 +72,25 @@ const userExists = async (email) => {
   return false;
 };
 
+// Function to generate a secure random token
 const generateSecureToken = (length) => {
-  return crypto.randomBytes(length).toString('hex');
+  return crypto.randomBytes(length).toString("hex");
 };
 
+// Middleware to check if a user is authenticated, extract user_id and add it to the request
 const checkAuth = async (req, res, next) => {
-  const user = await UserModel.findOne({ email: req.session.user.email }).lean();
+  const user = await UserModel.findOne({
+    email: req.session.user.email,
+  }).lean();
 
   if (!user) {
     return res.status(201).json({
       email: req.session.user.email,
       success: false,
-      message: "An error occurred.",
+      message: "Something went wrong",
       role: "",
     });
   }
-
-  console.log(user._id);
 
   req.user_id = user._id;
   next();
@@ -94,11 +98,12 @@ const checkAuth = async (req, res, next) => {
   return res.status(201).json({
     email: req.session.user.email,
     success: true,
-    message: "User is authenticated.",
+    message: "User is authenticated",
     role: user.role,
   });
 };
 
+// Function to register a new user
 const register = async (req, res, next) => {
   const { f_name, l_name, email, password } = req.body;
   const sanitizedEmail = sanitize(email);
@@ -109,24 +114,21 @@ const register = async (req, res, next) => {
     if (await userExists(email))
       return res.status(409).json({
         success: false,
-        error: "User already exist, please login instead.",
+        error: "User already exist",
       });
 
-    // Salt and Hash password
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
     const hashedPassword = await bcrypt.hash(password, salt);
-    // Create new user
     const newUser = new UserModel({
       f_name: sanitizedFName,
       l_name: sanitizedLName,
       email: sanitizedEmail,
       encrypted_password: hashedPassword,
-      // salt: saltedText,
     });
 
     req.isRegister = true;
-    const CSRFverified = checkCSRFTokenSTP(req, res); // check if csrf token exist
+    const CSRFverified = checkCSRFTokenSTP(req, res);
     if (!CSRFverified.result) {
       return res
         .status(401)
@@ -140,31 +142,31 @@ const register = async (req, res, next) => {
 
     return res
       .status(201)
-      .json({ success: true, message: "User registered successfully." });
+      .json({ success: true, message: "Register successfully." });
   } catch (err) {
-    console.log("ERRORRR", err);
-    return res.status(500).json({ success: false, error: err });
+    return res
+      .status(500)
+      .json({ success: false, message: "Something went wrong" });
   }
 };
 
+// Function to handle user login
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const sanitizedEmail = sanitize(email);
     if (!email || !password) {
-      // throw new error;
       return res.status(400).json({
         success: false,
-        message: "Please enter your email and password",
+        message: "Invalid email or password",
       });
     }
     const user = await UserModel.findOne({ email: sanitizedEmail });
 
     if (!user) {
-      // if no user found with email, client should not know that the email does not exist in the db.
       return res
         .status(401)
-        .json({ success: false, message: "Invalid credentials." });
+        .json({ success: false, message: "Invalid credential" });
     }
 
     if (user.account_lock) {
@@ -184,17 +186,14 @@ const login = async (req, res, next) => {
       next();
       return res
         .status(401)
-        .json({ success: false, message: "Invalid credentials." });
+        .json({ success: false, message: "Invalid credential" });
     }
 
-    // If want to only allow one active session
-    // TODO: make this work by deleting current session first
     if (
       req.session.user &&
       req.session.user.email &&
       req.session.user.email === email
     ) {
-      // remove previous session
       return res.status(401).json({
         success: false,
         message: "Unauthorized: User is already logged in",
@@ -207,10 +206,8 @@ const login = async (req, res, next) => {
 
     await req.session.save();
 
-    // console.log("req.session.user", req.session.user);
-
     req.isLogin = true;
-    const CSRFverified = checkCSRFTokenSTP(req, res); // check if csrf token exist
+    const CSRFverified = checkCSRFTokenSTP(req, res);
     if (!CSRFverified.result) {
       return res
         .status(401)
@@ -223,22 +220,27 @@ const login = async (req, res, next) => {
 
     return res
       .status(200)
-      .json({ success: true, message: "Login successful.", role: user.role });
+      .json({ success: true, message: "Login successfully.", role: user.role });
   } catch (error) {
     res.status(500);
-    console.error(error);
     next();
-    return res.status(500).json({ success: false, message: "Server error." });
+    return res
+      .status(500)
+      .json({ success: false, message: "Something went wrong" });
   }
 };
 
-const logout = async (req, res, next) => {
-  req.session.destroy(); // Destroy the session on the server side
-  res.clearCookie("CSRFToken"); // Clear the CSRFToken cookie
-  res.cookie("CSRFToken", "", { expires: new Date(0) }); // Set the cookie to expire immediately
-  return res.status(200).json({ success: true, message: "Logged out." });
+// Function to handle user logout
+const logout = async (req, res) => {
+  req.session.destroy();
+  res.clearCookie("CSRFToken");
+  res.cookie("CSRFToken", "", { expires: new Date(0) });
+  return res
+    .status(200)
+    .json({ success: true, message: "Log out successfully" });
 };
 
+// Function to generate a one-time password (OTP) and send it via email
 const generateOTP = async (req, res, next) => {
   const { email } = req.body;
   const sanitizedEmail = sanitize(email);
@@ -249,32 +251,25 @@ const generateOTP = async (req, res, next) => {
         .json({ success: false, message: "Email is required." });
     }
 
-    // TODO: check if email exist in database
     const user = await UserModel.findOne({ email: sanitizedEmail }).lean();
     if (!user) {
       return res
         .status(200)
-        .json({ success: false, message: "Email does not exist." });
+        .json({ success: false, message: "Email does not exist" });
     }
     const isOtpExist = await OtpModel.findOne({ user_email: email });
     if (isOtpExist) {
       const currentTime = new Date();
       const storedTime = isOtpExist.timestamps;
       const timeDiff = currentTime.getTime() - storedTime.getTime();
-      const minutesLeft = Math.floor((600000 - timeDiff) / 60000); // 180000ms is 3 minutes // zaf: change back to 180000
+      const minutesLeft = Math.floor((180000 - timeDiff) / 60000);
       return res.status(200).json({
         success: false,
-        message: `Please wait ${minutesLeft} minutes to generate a new OTP.`,
+        message: `Please wait for ${minutesLeft} minutes to generate a new OTP.`,
       });
     }
 
     const token = generateSecureToken(32);
-
-    const doc = await OtpModel.create({
-      user_email: email,
-      token: token,
-    });
-
     const send = await emailToUser(email, token);
 
     if (!send.success) {
@@ -284,19 +279,20 @@ const generateOTP = async (req, res, next) => {
     next();
     return res.status(200).json({
       success: true,
-      message: `otp created`,
+      message: `OTP created`,
     });
   } catch (error) {
     return res
       .status(500)
-      .json({ success: false, message: "An error occurred." });
+      .json({ success: false, message: "Something went wrong" });
   }
 };
 
+// Function to send an email with an OTP to the user
 const emailToUser = async (email, token) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
-    // secure: false, // TODO: Set to true
+    secure: true,
     auth: {
       user: EMAIL_USER,
       pass: EMAIL_PASS,
@@ -363,10 +359,10 @@ const emailToUser = async (email, token) => {
             <p>We heard that you lost your TickyTocky password. Sorry about that!</p>
             <p>But don’t worry! You can use the following button to reset your password:</p>
             <p class="reset-link">
-                <a class="button" href="http://localhost:3000/resetpassword?t=${token}" style="color: #fff;">Reset your password</a>
+                <a class="button" href="https://gracious-kare.cloud/resetpassword?t=${token}" style="color: #fff;">Reset your password</a>
             </p>
             <p>If you don’t use this link within 10 minutes, it will expire. To get a new password reset link, visit:</p>
-            <a href="http://localhost:3000/forgotpassword">http://localhost:3000/forgotpassword</a>
+            <a href="https://gracious-kare.cloud/forgotpassword">https://gracious-kare.cloud/forgotpassword</a>
             <p>Thanks,</p>
             <p>The TickyTocky Team </p>
         </div>
@@ -389,81 +385,18 @@ const emailToUser = async (email, token) => {
     html: emailBody,
   };
 
-  return new Promise((resolve, reject) => {
-    transporter.sendMail(mailOptions, function (error, info) {
+  return new Promise((resolve) => {
+    transporter.sendMail(mailOptions, function (error) {
       if (error) {
-        resolve({ success: false, message: "Failed to send email." });
+        resolve({ success: false, message: "Failed to send email" });
       } else {
-        resolve({ success: true, message: "Email sent." });
+        resolve({ success: true, message: "Email sent" });
       }
     });
   });
 };
 
-// const verifyOTP = async (req, res, next) => {
-//   const { email, otp } = req.body;
-//   try {
-//     const token = await OtpModel.findOne({ user_email: email, token: otp });
-//     if (!token) {
-//       return res.status(401).json({
-//         success: false,
-//         message: "Incorrect OTP entered or OTP has expired.",
-//       });
-//     }
-
-//     // TODO: create session so user can reset password?
-//     const user = await UserModel.findOne({ email: email }).lean();
-//     console.log(user);
-//     req.user_id = user._id;
-//     next();
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "Your OTP has been successfully verified.",
-//     });
-//   } catch (error) {
-//     res.status(500).json({ success: false, message: "An error occurred." });
-//   }
-// };
-
-// const timeLeftOTP = async (req, res, next) => {
-//   const { email } = req.body;
-//   try {
-//     if (!email) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Email is required to retrieve time left.",
-//       });
-//     }
-//     const isOtpExist = await OtpModel.findOne({ user_email: email });
-//     if (isOtpExist) {
-//       const currentTime = new Date();
-//       const storedTime = isOtpExist.timestamps;
-//       const timeDiff = currentTime.getTime() - storedTime.getTime();
-//       const timeLeftInMs = 600000 - timeDiff; // 180000ms is 3 minutes // zaf: change back to 180000
-//       const minutesLeft = Math.floor(timeLeftInMs / 60000);
-//       const secondsLeft = Math.floor((timeLeftInMs % 60000) / 1000);
-
-//       return res.status(200).json({
-//         success: true,
-//         message: "Successfully retrieved time left.",
-//         time: { minutes: minutesLeft, seconds: secondsLeft },
-//       });
-//     } else {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Incorrect OTP entered or OTP has expired.",
-//       });
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({
-//       success: false,
-//       message: "An error occurred while retrieving time left.",
-//     });
-//   }
-// };
-
+// Function to reset a user's password with a valid OTP
 const resetPassword = async (req, res, next) => {
   const { token, password } = req.body;
   const otpRecord = await OtpModel.findOne({ token: token });
@@ -486,18 +419,17 @@ const resetPassword = async (req, res, next) => {
     const isOtpExist = await OtpModel.findOne({ user_email: sanitizedEmail });
     if (isOtpExist.is_used) {
       if (isOtpExist) {
-      const currentTime = new Date();
-      const storedTime = isOtpExist.timestamps;
-      const timeDiff = currentTime.getTime() - storedTime.getTime();
-      const minutesLeft = Math.floor((600000 - timeDiff) / 60000); // 180000ms is 3 minutes // zaf: change back to 180000
-      return res.status(200).json({
-        success: false,
-        message: `Please wait ${minutesLeft} minutes to generate a new OTP.`,
-      });
-    }
+        const currentTime = new Date();
+        const storedTime = isOtpExist.timestamps;
+        const timeDiff = currentTime.getTime() - storedTime.getTime();
+        const minutesLeft = Math.floor((180000 - timeDiff) / 60000);
+        return res.status(200).json({
+          success: false,
+          message: `Please wait ${minutesLeft} minutes to generate a new OTP.`,
+        });
+      }
     }
 
-    // Salt and Hash password
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -505,7 +437,7 @@ const resetPassword = async (req, res, next) => {
     if (await bcrypt.compare(password, user.encrypted_password)) {
       return res.status(200).json({
         success: false,
-        message: "Old and new password cannot be the same.",
+        message: "Old password and new password cannot be the same.",
       });
     }
 
@@ -519,25 +451,28 @@ const resetPassword = async (req, res, next) => {
 
     if (updatedUser) {
       req.user_id = user._id;
-    next();
-    await OtpModel.findOneAndUpdate(
-      { user_email: sanitizedEmail },
-      { $set: { is_used: true } },
-      { new: true }
-    );
+      next();
+      await OtpModel.findOneAndUpdate(
+        { user_email: sanitizedEmail },
+        { $set: { is_used: true } },
+        { new: true }
+      );
       res.status(200).json({
         success: true,
         message: "Password updated successfully",
       });
     } else {
-      res.status(404).json({ success: false, message: "An error occurred." });
+      res
+        .status(404)
+        .json({ success: false, message: "Password failed to update" });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "An error occurred." });
+    res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };
 
+// Function to update a user's password
 const updatePassword = async (req, res, next) => {
   const { email, password } = req.body;
   const sanitizedEmail = sanitize(email);
@@ -545,7 +480,7 @@ const updatePassword = async (req, res, next) => {
     if (!email) {
       return res
         .status(200)
-        .json({ success: false, message: "Email is required." });
+        .json({ success: false, message: "Email is required" });
     }
 
     const user = await UserModel.findOne({ email: sanitizedEmail });
@@ -554,7 +489,7 @@ const updatePassword = async (req, res, next) => {
     if (!user) {
       return res
         .status(200)
-        .json({ success: false, message: "Email does not exist." });
+        .json({ success: false, message: "Email does not exist" });
     }
 
     // Salt and Hash password
@@ -565,7 +500,7 @@ const updatePassword = async (req, res, next) => {
     if (await bcrypt.compare(password, user.encrypted_password)) {
       return res.status(200).json({
         success: false,
-        message: "Old and new password cannot be the same.",
+        message: "Old password and new password cannot be the same",
       });
     }
 
@@ -583,47 +518,44 @@ const updatePassword = async (req, res, next) => {
         message: "Password updated successfully",
       });
     } else {
-      res.status(404).json({ success: false, message: "An error occurred." });
+      res
+        .status(404)
+        .json({ success: false, message: "Password failed to update" });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "An error occurred." });
+    res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };
 
-const generateCSRFToken = async (req, res, next) => {
+// Function to generate a CSRF token and store it in the session
+const generateCSRFToken = async (req, res) => {
   try {
-    const data = crypto.randomBytes(36).toString("base64"); //Generates pseudorandom data. The size argument is a number indicating the number of bytes to generate.
+    const data = crypto.randomBytes(36).toString("base64");
     const existingCSRFToken = req.cookies.CSRFToken;
     if (existingCSRFToken) {
       res.clearCookie("CSRFToken");
     }
     res.cookie("CSRFToken", data, { httpOnly: true });
-    req.session.csrfToken = data; // Assigns a token parameter to the session.
-    console.log("GENERATECSRFTOKEN", data);
-    console.log("ISCSRFSETINSESSION", req.session.csrfToken);
+    req.session.csrfToken = data;
     res.status(200).json({
       success: true,
-      message: "token created",
+      message: "Token created successfully",
     });
   } catch (e) {
-    res.status(500).json({ result: false, message: e.message });
+    res.status(500).json({ result: false, message: "Something went wrong" });
     return;
   }
 };
 
+// Function to check the validity of the CSRF token
 const checkCSRFTokenSTP = (req, res) => {
   try {
     const sessionUser = req.session.user;
     const sessionCsrfToken = req.session.csrfToken;
-    const requestCsrfToken = req.cookies.CSRFToken; // The token sent within the request header.
-
-    console.log("REQUESTCSRFTOKEN", requestCsrfToken);
-    console.log("sessionCsrfToken", sessionCsrfToken);
-    console.log("sessionUser", sessionUser);
+    const requestCsrfToken = req.cookies.CSRFToken;
 
     if (req.isRegister) {
-      // session.user is not needed for register
       delete req.isRegister;
       if (!requestCsrfToken || !sessionCsrfToken) {
         if (sessionUser) {
@@ -631,7 +563,7 @@ const checkCSRFTokenSTP = (req, res) => {
         }
         return {
           result: false,
-          message: "Token has not been provided.",
+          message: "Token not found",
         };
       }
       if (requestCsrfToken !== sessionCsrfToken) {
@@ -640,13 +572,11 @@ const checkCSRFTokenSTP = (req, res) => {
         }
         return {
           result: false,
-          message: "Invalid token.",
+          message: "Invalid token",
         };
       }
       return { result: true };
     } else if (req.isLogin) {
-      // cant return json here because the login function will try to return a second time in the login function
-      // so we return an object instead and let the login function handle it
       delete req.isLogin;
       if (!requestCsrfToken || !sessionCsrfToken || !sessionUser) {
         if (sessionUser) {
@@ -654,7 +584,7 @@ const checkCSRFTokenSTP = (req, res) => {
         }
         return {
           result: false,
-          message: "Token has not been provided.",
+          message: "Token not found",
         };
       }
 
@@ -666,7 +596,7 @@ const checkCSRFTokenSTP = (req, res) => {
         res.cookie("CSRFToken", "", { expires: new Date(0) });
         return {
           result: false,
-          message: "Invalid token.",
+          message: "Invalid token",
         };
       }
       return { result: true };
@@ -677,7 +607,7 @@ const checkCSRFTokenSTP = (req, res) => {
         }
         return res.status(401).json({
           result: false,
-          message: "Token has not been provided.",
+          message: "Token not found",
         });
       }
 
@@ -689,17 +619,18 @@ const checkCSRFTokenSTP = (req, res) => {
         res.cookie("CSRFToken", "", { expires: new Date(0) });
         return res.status(401).json({
           result: false,
-          message: "Invalid token.",
+          message: "Invalid token",
         });
       }
     }
   } catch (e) {
     return res
       .status(500)
-      .json({ result: false, message: "An error occurred" });
+      .json({ result: false, message: "Something went wrong" });
   }
 };
 
+// Export the functions for use in other parts of the application
 export {
   unlockAccount,
   lockAccount,
@@ -711,8 +642,6 @@ export {
   login,
   logout,
   generateOTP,
-  // verifyOTP,
-  // timeLeftOTP,
   resetPassword,
   updatePassword,
   generateCSRFToken,

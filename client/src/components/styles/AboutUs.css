@@ -1,4 +1,6 @@
 /* AboutUs.css */
+
+/* Styling for the main section containing the about us content */
 .about-us {
   display: flex;
   justify-content: center;
@@ -10,6 +12,7 @@
   text-align: center;
 }
 
+/* Styling for the content within the main section */
 .content {
   background: rgba(255, 255, 255, 0.9);
   padding: 24px;
@@ -20,6 +23,7 @@
   text-align: left;
 }
 
+/* Styling for the heading in the content */
 .content h2 {
   font-size: 24px;
   text-transform: uppercase;
@@ -32,6 +36,7 @@
   color: transparent; /* Make the text color transparent */
 }
 
+/* Styling for paragraphs within the content */
 .content p {
   font-size: 16px;
   line-height: 1.6;
@@ -39,17 +44,20 @@
   color: #001529; /* Darker color for paragraph text */
 }
 
+/* Styling for contact information at the bottom */
 .contact-info {
   font-size: 14px;
   color: #666;
   margin-top: 20px;
 }
 
+/* Styling for links in the contact information */
 .contact-info a {
   color: #1890ff;
   text-decoration: none;
 }
 
+/* Hover effect for links in the contact information */
 .contact-info a:hover {
   text-decoration: underline;
 }

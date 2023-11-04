@@ -1,52 +1,70 @@
-// Import the DatabaseLogModel from the models directory
+// Import the DatabaseLogModel from the specified module
 import { DatabaseLogModel } from "../models/DatabaseLogs.js";
 
-// Define a function to create a log
+// Function to create a database log
 const createLog = async (logData) => {
   try {
+    // Create a new database log entry with the provided data
     const result = await DatabaseLogModel.create(logData);
     return result;
   } catch (error) {
-    throw new Error(`Error creating log: ${error.message}`);
+    // Handle errors and throw a generic error message
+    throw new Error("Something went wrong");
   }
 };
 
+// Function to log a request
 const logRequest = async (req, next) => {
-  const certificate_id = req.certificate_id; // Assuming the data is sent in the request body
-  const query_type = req.method; // Assuming the data is sent in the request body
+  // Extract necessary data from the request
+  const certificate_id = req.certificate_id;
+  const query_type = req.method;
+
+  // Prepare the database log data
   const databaseLogData = {
     certificate_id,
     query_type,
   };
 
   try {
-    // Create the database log
+    // Call the createLog function to log the request in the database
     await createLog(databaseLogData);
   } catch (error) {
-    // Handle the error (log it or respond to the client)
-    console.error(error);
+    // Handle errors and throw a generic error message
+    throw new Error("Something went wrong");
   }
 };
 
-// Define a function to get all database logs
-const getAllDatabaseLogs = async () => {
+// Function to get all database logs
+const getAllDatabaseLogs = async (req, res) => {
   try {
-    const logs = await DatabaseLogModel.find();
-    return logs;
+    // Retrieve all database logs from the DatabaseLogModel
+    const logs = await DatabaseLogModel.find().populate("certificate_id");
+    // Respond with the list of database logs
+    res.status(200).json({
+      success: true,
+      message: "Get all database logs",
+      logs,
+    });
   } catch (error) {
-    throw new Error(`Error fetching logs: ${error.message}`);
+    // Handle any errors that occur during log retrieval
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+    });
   }
 };
 
-// Define a function to delete a database log
+// Function to delete a specific database log entry by ID
 const deleteDatabaseLog = async (logId) => {
   try {
+    // Find and remove a specific database log entry by its ID
     const result = await DatabaseLogModel.findByIdAndRemove(logId);
     return result;
   } catch (error) {
-    throw new Error(`Error deleting log: ${error.message}`);
+    // Handle errors and throw a generic error message
+    throw new Error("Something went wrong");
   }
 };
 
-// Export the functions for use in other files
+// Export the functions for use in other parts of the application
 export { logRequest, getAllDatabaseLogs, deleteDatabaseLog };

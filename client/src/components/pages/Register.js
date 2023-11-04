@@ -1,51 +1,58 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Form, Input, Button, notification } from "antd";
-import { MailOutlined, LockOutlined, UserOutlined } from "@ant-design/icons"; // Import icons
+import { Form, Input, Button, message } from "antd";
+import { MailOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
 import "../styles/Register.css";
 import { register } from "../../api/auth";
 import { getCsrfTokenFromAPI } from "../../api/auth";
 import { AuthData } from "../../auth/AuthWrapper";
 
+// Register component for user registration
 export const Register = () => {
+  // React Router's navigate function for redirection
   const navigate = useNavigate();
-  const { login, user } = AuthData();
+
+  // Retrieve user data from AuthData context
+  const { user } = AuthData();
+
+  // Create a form instance for registration
   const [form] = Form.useForm();
 
+  // Perform actions when the component mounts
   useEffect(() => {
-    // Check if the user is already authenticated, and if so, redirect to another page.
+    // Redirect to the homepage if the user is already authenticated
     if (user.isAuthenticated) {
-      navigate("/"); // Change the destination URL as needed.
+      navigate("/");
     } else {
+      // Fetch the CSRF token from the API if the user is not authenticated
       getCsrfTokenFromAPI();
     }
   }, [user.isAuthenticated, navigate]);
 
+  // If the user is already authenticated, return null to prevent rendering
   if (user.isAuthenticated) {
-    return null; // Return null to prevent rendering the login page.
+    return null;
   }
 
+  // Handle form submission for user registration
   const handleSubmit = async () => {
     try {
+      // Validate form fields and get their values
       const values = await form.validateFields();
       const response = await register(values);
       if (response.success) {
-        notification.success({
-          message: "Registration successful",
-          description: "You may now login with your credentials",
-          duration: 5,
-        });
+        message.success("Register successfully");
+        // Redirect to the login page upon successful registration
         navigate("/login");
+      } else {
+        message.error("Register failed");
       }
     } catch (error) {
-      notification.error({
-        message: "Registration failed",
-        description: "An error occurred during registration",
-        duration: 5,
-      });
+      message.error("Something went wrong");
     }
   };
 
+  // Handle cancellation and navigate to the login page
   const handleCancel = () => {
     navigate("/login");
   };
@@ -68,7 +75,7 @@ export const Register = () => {
           <Input
             className="input-box"
             placeholder="Enter your email"
-            prefix={<MailOutlined />} // Icon for email
+            prefix={<MailOutlined />}
           />
         </Form.Item>
         <Form.Item
@@ -77,7 +84,7 @@ export const Register = () => {
             { required: true, message: "Password is required" },
             {
               pattern:
-              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@!%*?&])[A-Za-z\d@!%*?&]{12,64}$/,
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@!%*?&])[A-Za-z\d@!%*?&]{12,64}$/,
               message:
                 "Password must be 12-64 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (e.g., !, @, #, $, %).",
             },
@@ -87,7 +94,7 @@ export const Register = () => {
           <Input.Password
             className="input-box"
             placeholder="Enter your password"
-            prefix={<LockOutlined />} // Icon for password
+            prefix={<LockOutlined />}
           />
         </Form.Item>
         <Form.Item
@@ -110,7 +117,7 @@ export const Register = () => {
           <Input.Password
             className="input-box"
             placeholder="Reenter your password"
-            prefix={<LockOutlined />} // Icon for confirm password
+            prefix={<LockOutlined />}
           />
         </Form.Item>
         <Form.Item
@@ -129,7 +136,7 @@ export const Register = () => {
             className="input-box"
             placeholder="Enter your first name"
             prefix={<UserOutlined />}
-            maxLength={50} // Icon for first name
+            maxLength={50}
           />
         </Form.Item>
         <Form.Item
@@ -148,11 +155,11 @@ export const Register = () => {
             className="input-box"
             placeholder="Enter your last name"
             prefix={<UserOutlined />}
-            maxLength={50} // Icon for last name
+            maxLength={50}
           />
         </Form.Item>
         <Form.Item className="form-button-container">
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <div>
             <Button
               type="default"
               htmlType="button"
@@ -166,9 +173,9 @@ export const Register = () => {
             <Button type="primary" htmlType="submit">
               Register
             </Button>
-          </div>{" "}
-        </Form.Item>{" "}
-      </Form>{" "}
+          </div>
+        </Form.Item>
+      </Form>
     </div>
   );
 };

@@ -8,15 +8,16 @@ import {
   Switch,
   message,
   Spin,
-  notification,
 } from "antd";
 import { updateUserAsAdmin } from "../../api/users";
 import { generateOTP } from "../../api/auth";
+import { UserOutlined } from "@ant-design/icons";
 
+// UserForm component for editing user profiles
 export const UserForm = ({ user, visible, onCancel }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-
+  // Populate form fields with user data when the component mounts or user changes
   useEffect(() => {
     form.setFieldsValue({
       role: user.role,
@@ -30,17 +31,11 @@ export const UserForm = ({ user, visible, onCancel }) => {
   const handleCancel = () => {
     onCancel();
   };
-
-  const openNotification = (type, message, description) => {
-    notification[type]({
-      message,
-      description,
-    });
-  };
-
+  // Handle form submission for updating user profile
   const handleFinish = async (values) => {
     try {
       setLoading(true);
+      // Send a request to update the user profile
       const response = await updateUserAsAdmin({
         email: user.email,
         ...values,
@@ -48,34 +43,33 @@ export const UserForm = ({ user, visible, onCancel }) => {
       if (response.success) {
         message.success("Profile updated successfully.");
       } else {
-        message.error("Failed to update profile. Please try again.");
+        message.error("Profile failed to update");
       }
       setLoading(false);
       handleCancel();
     } catch (error) {
       setLoading(false);
-      message.error(
-        "An error occurred. Please check your input and try again."
-      );
+      message.error("Something went wrong");
     }
   };
-
+  // Handle sending a password reset email
   const handleResetPassword = async () => {
     try {
-        setLoading(true);
-        const response = await generateOTP({ email: user.email });
-        if (response.success) {
-          setLoading(false);
-          openNotification("info", "Password Reset Email Sent");
-        } else {
-          setLoading(false);
-          openNotification("error", "Error", response.message);
-        }
+      setLoading(true);
+      // Send a request to generate a password reset email for the user
+      const response = await generateOTP({ email: user.email });
+      if (response.success) {
+        setLoading(false);
+        message.success("Password reset email sent");
+      } else {
+        setLoading(false);
+        message.error("Password reset email failed to send");
       }
-    catch (error) {
+    } catch (error) {
       setLoading(false);
+      message.error("Something went wrong");
     }
-  }
+  };
 
   return (
     <Modal
@@ -86,7 +80,7 @@ export const UserForm = ({ user, visible, onCancel }) => {
       footer={null}
       width={600}
     >
-      <Spin tip="Loading..." spinning={loading}>
+      <Spin size="large" spinning={loading}>
         <Form form={form} layout="vertical" onFinish={handleFinish}>
           <Form.Item
             label="First Name"
@@ -100,7 +94,12 @@ export const UserForm = ({ user, visible, onCancel }) => {
               },
             ]}
           >
-            <Input maxLength={50} />
+            <Input
+              maxLength={50}
+              className="input-box"
+              placeholder="Enter your first name"
+              prefix={<UserOutlined />}
+            />
           </Form.Item>
           <Form.Item
             label="Last Name"
@@ -114,14 +113,19 @@ export const UserForm = ({ user, visible, onCancel }) => {
               },
             ]}
           >
-            <Input maxLength={50} />
+            <Input
+              maxLength={50}
+              className="input-box"
+              placeholder="Enter your last name"
+              prefix={<UserOutlined />}
+            />
           </Form.Item>
           <Form.Item
             label="Role"
             name="role"
             rules={[{ required: true, message: "Please select a role." }]}
           >
-            <Select placeholder="Select a role">
+            <Select placeholder="Select a role" size="large">
               <Select.Option value="member">member</Select.Option>
               <Select.Option value="admin">admin</Select.Option>
             </Select>
@@ -130,9 +134,6 @@ export const UserForm = ({ user, visible, onCancel }) => {
             label="Account Lock"
             name="account_lock"
             valuePropName="checked"
-            rules={[
-              { required: true, message: "Please select an account status." },
-            ]}
           >
             <Switch />
           </Form.Item>
@@ -140,12 +141,6 @@ export const UserForm = ({ user, visible, onCancel }) => {
             label="Email Verified"
             name="email_verified"
             valuePropName="checked"
-            rules={[
-              {
-                required: true,
-                message: "Please select an email verification status.",
-              },
-            ]}
           >
             <Switch />
           </Form.Item>

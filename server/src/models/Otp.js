@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// Define the schema for OTP (One-Time Password) entries
 const OtpSchema = new mongoose.Schema({
   user_email: {
     type: String,
@@ -15,12 +16,15 @@ const OtpSchema = new mongoose.Schema({
     default: Date.now,
     index: true,
   },
-  is_used : {
+  is_used: {
     type: Boolean,
-  default: false,
+    default: false,
     required: true,
-  }
+  },
 });
-OtpSchema.path("timestamps").index({ expires: 600 });
 
+// Create an index on the 'timestamps' field to automatically expire entries after 180 seconds
+OtpSchema.path("timestamps").index({ expires: 180 });
+
+// Create the OtpModel using the schema
 export const OtpModel = mongoose.model("otp", OtpSchema);

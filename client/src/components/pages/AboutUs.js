@@ -1,12 +1,12 @@
+// Import React and a CSS file for styling
 import React from "react";
-import { Typography, Card } from "antd";
 import "../styles/AboutUs.css";
 
-const { Title, Paragraph } = Typography;
-
+// Functional component representing an "About Us" page
 export const AboutUs = () => {
-    return (
-        <div className="about-us">
+  return (
+    // Render the content of the "About Us" page
+    <div className="about-us">
       <div className="content">
         <h2>About TickyTocky</h2>
         <p>
@@ -49,5 +49,5 @@ export const AboutUs = () => {
         </p>
       </div>
     </div>
-    );
+  );
 };

@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { UserModel } from "./Users.js";
 import { WatchModel } from "./Watches.js";
 
+// Define the schema for the Certificate
 const CertSchema = new mongoose.Schema({
   cert_id: {
     type: String,
@@ -40,10 +41,7 @@ const CertSchema = new mongoose.Schema({
     maxlength: 255,
     required: true,
   },
-  //   pdf_content: {
-  //     type: String,
-  //     required: false,
-  //   },
 });
 
+// Create the CertModel using the schema
 export const CertModel = mongoose.model("certs", CertSchema);

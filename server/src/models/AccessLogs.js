@@ -1,16 +1,16 @@
 import mongoose from "mongoose";
 import { UserModel } from "./Users.js";
 
+// Define the schema for the Access Log
 const AccessLogSchema = new mongoose.Schema({
   ip_address: {
     type: String,
     maxlength: 255,
-    required: false, // TODO: get from nginx?
+    required: false,
   },
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: UserModel,
-    // required: true,
   },
   user_agent: {
     type: String,
@@ -33,4 +33,5 @@ const AccessLogSchema = new mongoose.Schema({
   },
 });
 
+// Create the AccessLogModel using the schema
 export const AccessLogModel = mongoose.model("access_logs", AccessLogSchema);
