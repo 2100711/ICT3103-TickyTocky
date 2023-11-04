@@ -126,6 +126,7 @@ export const CertTable = ({
     setTransferOwnershipModalVisible(false);
   };
 
+  // Handles the viewing of a PDF in a new tab
   const handleViewPDF = async (cert) => {
     try {
       setLoading(true);
@@ -144,6 +145,7 @@ export const CertTable = ({
     }
   };
 
+  // Handles the downloading of the certificate PDF
   const handleDownloadPDF = async (cert) => {
     const response = await getCert(cert.cert_id);
     const pdf = response.pdf_content;
@@ -157,6 +159,7 @@ export const CertTable = ({
     document.body.removeChild(a);
   };
 
+  // Deletes a certificate
   const handleDeleteCert = async (certId) => {
     try {
       setLoading(true);
@@ -180,11 +183,13 @@ export const CertTable = ({
     setCurrentPage(page);
   };
 
+  // Filters certficate based on the search text
   const handleSearch = (value) => {
     setSearchText(value);
     filterCertificates(value);
   };
 
+  //Fiter certicate function
   const filterCertificates = (searchText) => {
     if (searchText) {
       const lowerCaseSearchText = searchText.toLowerCase();
