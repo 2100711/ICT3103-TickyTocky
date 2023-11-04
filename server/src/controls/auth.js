@@ -5,6 +5,7 @@ import { UserModel } from "../models/Users.js";
 import { OtpModel } from "../models/Otp.js";
 import sanitize from "mongo-sanitize";
 
+// Obtain environment variables
 import { EMAIL_NAME, EMAIL_PASS, EMAIL_USER } from "../constants.js";
 
 const lockAccount = async (user_id) => {
