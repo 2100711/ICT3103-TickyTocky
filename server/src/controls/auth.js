@@ -404,8 +404,7 @@ const emailToUser = async (email, token) => {
   });
 };
 
-// const verifyOTP = async (req, res, next) => {
-//   const { email, otp } = req.body;
+
 //   try {
 //     const token = await OtpModel.findOne({ user_email: email, token: otp });
 //     if (!token) {
