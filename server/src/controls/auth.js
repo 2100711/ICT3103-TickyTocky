@@ -104,6 +104,7 @@ const register = async (req, res, next) => {
   const sanitizedEmail = sanitize(email);
   const sanitizedFName = sanitize(f_name);
   const sanitizedLName = sanitize(l_name);
+  const sanitizedPassword = sanitize(password);
 
   try {
     if (await userExists(email))
@@ -115,7 +116,7 @@ const register = async (req, res, next) => {
     // Salt and Hash password
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(sanitizedPassword, salt);
     // Create new user
     const newUser = new UserModel({
       f_name: sanitizedFName,
@@ -151,7 +152,8 @@ const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const sanitizedEmail = sanitize(email);
-    if (!email || !password) {
+    const sanitizedPassword = sanitize(password);
+    if (!sanitizedEmail || !sanitizedPassword) {
       // throw new error;
       return res.status(400).json({
         success: false,
