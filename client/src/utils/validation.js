@@ -25,8 +25,6 @@ const validateCaseSerial = (caseSerial) => {
 const validateMovementSerial = (movementSerial) => {
   const movementSerialRegex = /^[A-Za-z0-9]{10,12}$/;
   return movementSerialRegex.test(movementSerial);
-  const movementSerialRegex = /^[A-Za-z0-9]{10,12}$/;
-  return movementSerialRegex.test(movementSerial);
 };
 
 // Validate dial serial number
