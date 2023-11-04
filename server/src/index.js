@@ -17,8 +17,6 @@ import { SECRET, CRYPTOSECRET } from "./constants.js";
 
 const app = express();
 
-// Trust proxy
-// app.set('trust proxy', true); // Add this line to trust the proxy
 
 // Helmet middleware for securing HTTP headers
 app.use(
@@ -55,7 +53,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
-// app.use(cors({ credentials: true, origin: "http://localhost:3000" })); // Comment this out if you are using nginx
+
 mongoose.connect(MONGODB_CONNECTION, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -82,7 +80,7 @@ app.use(
     store: new MongoStore({
       client: db.getClient(),
       crypto: {
-        secret: CRYPTOSECRET, // TO BE CHANGED: should also be stored in an environment variable rather than being hard-coded.
+        secret: CRYPTOSECRET, 
       },
       autoRemove: "interval",
       autoRemoveInterval: 1, // checks every 1 minute to delete sessions that have expired
