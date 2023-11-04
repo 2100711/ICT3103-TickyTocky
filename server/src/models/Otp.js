@@ -21,6 +21,6 @@ const OtpSchema = new mongoose.Schema({
     required: true,
   }
 });
-OtpSchema.path("timestamps").index({ expires: 600 });
+OtpSchema.path("timestamps").index({ expires: 180 });
 
 export const OtpModel = mongoose.model("otp", OtpSchema);

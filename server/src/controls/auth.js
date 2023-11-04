@@ -365,10 +365,10 @@ const emailToUser = async (email, token) => {
             <p>We heard that you lost your TickyTocky password. Sorry about that!</p>
             <p>But don’t worry! You can use the following button to reset your password:</p>
             <p class="reset-link">
-                <a class="button" href="http://localhost:3000/resetpassword?t=${token}" style="color: #fff;">Reset your password</a>
+                <a class="button" href="https://gracious-kare.cloud/:3000/resetpassword?t=${token}" style="color: #fff;">Reset your password</a>
             </p>
             <p>If you don’t use this link within 10 minutes, it will expire. To get a new password reset link, visit:</p>
-            <a href="http://localhost:3000/forgotpassword">http://localhost:3000/forgotpassword</a>
+            <a href="https://gracious-kare.cloud/forgotpassword">https://gracious-kare.cloud//forgotpassword</a>
             <p>Thanks,</p>
             <p>The TickyTocky Team </p>
         </div>
@@ -491,7 +491,7 @@ const resetPassword = async (req, res, next) => {
       const currentTime = new Date();
       const storedTime = isOtpExist.timestamps;
       const timeDiff = currentTime.getTime() - storedTime.getTime();
-      const minutesLeft = Math.floor((600000 - timeDiff) / 60000); // 180000ms is 3 minutes // zaf: change back to 180000
+      const minutesLeft = Math.floor((180000 - timeDiff) / 60000); // 180000ms is 3 minutes // zaf: change back to 180000
       return res.status(200).json({
         success: false,
         message: `Please wait ${minutesLeft} minutes to generate a new OTP.`,
