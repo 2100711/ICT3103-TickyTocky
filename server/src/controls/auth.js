@@ -406,12 +406,7 @@ const emailToUser = async (email, token) => {
 
 
 
-//     } else {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Incorrect OTP entered or OTP has expired.",
-//       });
-//     }
+
 //   } catch (error) {
 //     console.error(error);
 //     return res.status(500).json({
