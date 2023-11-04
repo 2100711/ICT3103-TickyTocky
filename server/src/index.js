@@ -18,7 +18,7 @@ import { SECRET, CRYPTOSECRET } from "./constants.js";
 const app = express();
 
 // Trust proxy
-app.set('trust proxy', true); // Add this line to trust the proxy
+// app.set('trust proxy', true); // Add this line to trust the proxy
 
 // Helmet middleware for securing HTTP headers
 app.use(
