@@ -263,23 +263,6 @@ export const Account = () => {
           {user.role === "admin" && (
             <TabPane tab="User Management" key="userManagement">
               <UsersManagement />
-              {/* User Management content (only visible to admins) */}
-              {/* <ul className="user-list">
-                {users.map((user) => (
-                  <li key={user.id}>
-                    <Card>
-                      <h3>{user.username}</h3>
-                      <p>Email: {user.email}</p>
-                      <Button onClick={() => handleEditUser(user.id)}>
-                        Edit
-                      </Button>
-                      <Button onClick={() => handleDeleteUser(user.id)}>
-                        Delete
-                      </Button>
-                    </Card>
-                  </li>
-                ))}
-              </ul> */}
             </TabPane>
           )}
           <TabPane tab="Settings" key="settings">
