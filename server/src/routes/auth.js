@@ -18,7 +18,7 @@ import { validateRegister } from "../controls/validation.js";
 
 const authRouter = express.Router();
 
-
+// Auth Routes
 authRouter.get("/check-auth", isAuthenticated, checkAuth, accessLogRequest);
 authRouter.post("/register", validateRegister, register, accessLogRequest);
 authRouter.post("/login", login, securityLogRequest);
