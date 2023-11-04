@@ -40,10 +40,7 @@ const CertSchema = new mongoose.Schema({
     maxlength: 255,
     required: true,
   },
-  //   pdf_content: {
-  //     type: String,
-  //     required: false,
-  //   },
+
 });
 
 export const CertModel = mongoose.model("certs", CertSchema);
