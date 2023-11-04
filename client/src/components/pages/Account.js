@@ -95,6 +95,8 @@ export const Account = () => {
     setResetPasswordModalVisible(true);
   };
 
+
+   // Function to handle password reset
   const handleResetPassword = async () => {
     const values = await resetPasswordForm.validateFields();
     try {
@@ -128,7 +130,8 @@ export const Account = () => {
   if (loading) {
     return <Spin size="large" />;
   }
-
+  
+  // Display an error message if no user data is found
   if (!userData) {
     return <Text strong>Error loading user data.</Text>;
   }
