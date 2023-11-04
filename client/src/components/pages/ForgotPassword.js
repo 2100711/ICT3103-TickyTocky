@@ -10,6 +10,7 @@ export const ForgotPassword = () => {
 
   const navigate = useNavigate();
 
+  // Function to handle the submission of the form
   const handleSubmit = async () => {
     try {
       if (validateEmail()) {
@@ -37,6 +38,7 @@ export const ForgotPassword = () => {
     });
   };
 
+  // Function to validate the email using regex
   const validateEmail = () => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     if (emailRegex.test(email)) {
