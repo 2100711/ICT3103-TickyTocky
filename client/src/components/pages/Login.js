@@ -18,9 +18,6 @@ export const Login = () => {
   );
   const [errorMessage, setErrorMessage] = useState(null);
 
-  // useEffect(() => {
-  //   if (user.isAuthenticated) navigate("/");
-  // });
 
   useEffect(() => {
     // Check if the user is already authenticated, and if so, redirect to another page.
