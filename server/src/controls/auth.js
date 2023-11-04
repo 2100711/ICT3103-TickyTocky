@@ -405,15 +405,6 @@ const emailToUser = async (email, token) => {
 };
 
 
-//   try {
-//     const token = await OtpModel.findOne({ user_email: email, token: otp });
-//     if (!token) {
-//       return res.status(401).json({
-//         success: false,
-//         message: "Incorrect OTP entered or OTP has expired.",
-//       });
-//     }
-
 //     // TODO: create session so user can reset password?
 //     const user = await UserModel.findOne({ email: email }).lean();
 //     console.log(user);
