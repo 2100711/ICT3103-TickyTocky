@@ -122,9 +122,9 @@ pipeline {
 
                             try {
                                 //echo 'Starting the server'
-                                sh 'docker container stop frontend backend nginx' // Stop the frontend and backend containers
-                                sh 'docker container rm -f frontend backend nginx' // Remove the frontend and backend containers
-                                sh 'docker compose up -d --force-recreate nginx' // Recreate frontend and backend containers
+                                sh 'docker container stop frontend backend' // Stop the frontend and backend containers
+                                sh 'docker container rm -f frontend backend' // Remove the frontend and backend containers
+                                sh 'docker compose up -d --force-recreate frontend backend' // Recreate frontend and backend containers
                             } catch (Exception e) {
                                 echo "An error occurred during the frontend tests: ${e.message}"
                                 currentBuild.result = 'SUCCESS' // Set the build result to FAILURE
@@ -149,14 +149,14 @@ pipeline {
         success {
             //dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             echo "Pipeline successfully completed."
-            //sh 'docker image prune -f' // Temp cleaning of images
+            sh 'docker system prune -f' // Temp cleaning of images
             //sh 'docker image rm -f ict3103-tickytocky-frontend:latest'
             //sh 'docker image rm -f ict3103-tickytocky-backend:latest'
             echo "Removed Old Containers and Images"
         }
         failure {
             echo "Pipeline failed. Please investigate."
-            //sh 'docker image prune -f' // Temp cleaning of images
+            sh 'docker system prune -f' // Temp cleaning of images
         }
     }
 }
