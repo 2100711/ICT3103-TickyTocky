@@ -2,66 +2,23 @@ pipeline {
     agent any
 
     stages {
-        // stage('Build') {
-        //     steps {
-        //         echo 'Building the application'
-        //         script {
-        //             sh 'docker compose down frontend backend'
-        //             sh 'docker compose build frontend backend'
-        //         }
-        //     }
-        //     post {
-        //         success {
-        //             echo 'Build Success!'
-        //         }
-        //         failure {
-        //             echo 'Failure sia you'
-        //         }
-        //     }
-        // }
-
-        // stage('Deploy') {
-        //     steps {
-        //         echo 'Deploying application'
-        //         script {
-        //             sh 'docker compose up -d --force-recreate frontend backend'
-        //             sh 'docker ps'
-        //         }
-        //     }
-        //     post {
-        //         success {
-        //             echo 'Deployed!'
-        //         }
-        //         failure {
-        //             echo 'Failure sia you'
-        //         }
-        //     }
-        // }
-
-        // stage('Install dependencies for selenium') {
-        //     steps {
-        //         dir('server') {
-        //             script {
-        //                 sh 'chmod +x tests/dependencyScript.sh'
-        //                 sh 'tests/dependencyScript.sh'
-        //             }
-        //         }
-        //     }
-        //     post {
-        //         success {
-        //             echo 'Installed!'
-        //         }
-        //         failure {
-        //             echo 'Failure sia you'
-        //         }
-        //     }
-        // }
-        
-        // stage('OWASP DependencyCheck') { // save time not running
-        //    steps {
-        //        dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
-        //    }
-        // }
+        stage('Build') {
+            steps {
+                echo 'Building the application'
+                script {
+                    sh 'docker compose down frontend backend'
+                    sh 'docker compose build frontend backend'
+                }
+            }
+            post {
+                success {
+                    echo 'Build Success!'
+                }
+                failure {
+                    echo 'Build Failed'
+                }
+            }
+        }
         
         stage('Snyk Scanning for Vulnerabilities') { 
              parallel {
@@ -133,39 +90,50 @@ pipeline {
                     echo 'Passed with flying colors'
                 }
                 failure {
-                    echo 'Failure sia you'
+                    echo 'Backend Test Failed'
                 }
             }
         }
-        
-        //stage('Deploy') {
+
+        // stage('OWASP DependencyCheck') { // save time not running
         //    steps {
-        //        dir('server') {
-        //            script {
-        //                withCredentials([string(credentialsId: 'DB_USER', variable: 'DB_USER'), string(credentialsId: 'DB_PASS', variable: 'DB_PASS')]) {
-        //                    echo 'Creating .env file with credentials'
-        //                    sh 'echo "DB_USER=$DB_USER" >> .env'
-        //                    sh 'echo "DB_PASS=$DB_PASS" >> .env'
-        //                    echo 'Starting the server'
-        //                    sh 'npm start & sleep 10'
-        //               }
-        //            }
-        //        }
-        //        script {
-        //            echo 'Deploying to staging environment'
-        //            // This stage can include steps to deploy your application to a staging environment for further testing
-        //        }
-        //        script {
-        //            echo 'Running tests in the staging environment'
-        //            // This stage can include tests specific to the staging environment
-        //        }
-        //        script {
-        //            echo 'Deploying to production environment'
-        //            // This stage can include steps to deploy your application to the production environment
-        //       }
+        //        dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
         //    }
-        //}        
-        // Add more stages as needed, such as database migrations, security scanning, and more.
+        // }
+        stage('Deploy') {
+            steps {
+                dir('server') {
+                    script {
+                       withCredentials([string(credentialsId: 'DB_USER', variable: 'DB_USER'), string(credentialsId: 'DB_PASS', variable: 'DB_PASS')
+                       , string(credentialsId: 'EMAIL_NAME', variable: 'EMAIL_NAME'), string(credentialsId: 'EMAIL_USER', variable: 'EMAIL_USER'), string(credentialsId: 'EMAIL_PASS', variable: 'EMAIL_PASS')
+                       , string(credentialsId: 'SECRET', variable: 'SECRET'), string(credentialsId: 'CRYPTOSECRET', variable: 'CRYPTOSECRET')]) {
+                            // Check if the .env file already exists
+                            def envContent = "DB_USER=$DB_USER\nDB_PASS=$DB_PASS\nEMAIL_NAME=$EMAIL_NAME\nEMAIL_USER=$EMAIL_USER\nEMAIL_PASS=$EMAIL_PASS\nSECRET=$SECRET\nCRYPTOSECRET=$CRYPTOSECRET"
+                
+                            if (!fileExists('.env') || !sh(script: "echo '$envContent' | cmp -s - .env", returnStatus: true)) {
+                                echo 'Creating .env file with credentials'
+                                sh "echo '$envContent' > .env"
+                            } else {
+                                echo '.env file already contains the required content'
+                            }
+                            
+                            //echo 'Starting the server'
+                            //sh 'docker compose stop frontend backend' // Stop the frontend and backend containers
+                            //sh 'docker compose rm -f frontend backend' // Remove the frontend and backend containers
+                            //sh 'docker compose up -d --force-recreate frontend backend' // Recreate frontend and backend containers
+                      }
+                   }
+                }
+            }
+            post {
+                success {
+                    echo 'Deployment successful'
+                }
+                failure {
+                    echo 'Deployment failed'
+                }
+            }
+        }
     }
 
     // Global success and failure conditions for the entire pipeline
@@ -175,7 +143,7 @@ pipeline {
             echo "Pipeline successfully completed."
             //sh 'docker-compose down frontend backend'
             //sh 'docker system prune -f'
-            echo "Removed Dangling Containers and Images"
+            //echo "Removed Dangling Containers and Images"
         }
         failure {
             echo "Pipeline failed. Please investigate."
