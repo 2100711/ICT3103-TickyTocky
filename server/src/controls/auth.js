@@ -4,7 +4,6 @@ import nodemailer from "nodemailer";
 import crypto from "crypto";
 import { UserModel } from "../models/Users.js";
 import { OtpModel } from "../models/Otp.js";
-import sanitize from "mongo-sanitize";
 import { createLog } from "../controls/securityLogs.js";
 
 // Obtain environment variables
@@ -66,8 +65,7 @@ const isAdmin = async (req, res, next) => {
 
 // Function to check if a user with a given email exists
 const userExists = async (email) => {
-  const sanitizedEmail = sanitize(email);
-  const user = await UserModel.findOne({ email: sanitizedEmail });
+  const user = await UserModel.findOne({ email });
   if (user) {
     return true;
   }
@@ -107,13 +105,9 @@ const checkAuth = async (req, res, next) => {
 
 // Function to register a new user
 const register = async (req, res, next) => {
-  const { f_name, l_name, email, password } = req.body;
-  const sanitizedEmail = sanitize(email);
-  const sanitizedFName = sanitize(f_name);
-  const sanitizedLName = sanitize(l_name);
-  const sanitizedPassword = sanitize(password);
-
   try {
+    const { f_name, l_name, email, password } = req.body;
+
     if (await userExists(email))
       return res.status(409).json({
         success: false,
@@ -124,9 +118,9 @@ const register = async (req, res, next) => {
     const salt = await bcrypt.genSalt(saltRounds);
     const hashedPassword = await bcrypt.hash(password, salt);
     const newUser = new UserModel({
-      f_name: sanitizedFName,
-      l_name: sanitizedLName,
-      email: sanitizedEmail,
+      f_name,
+      l_name,
+      email,
       encrypted_password: hashedPassword,
     });
 
@@ -157,14 +151,14 @@ const register = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const sanitizedEmail = sanitize(email);
+
     if (!email || !password) {
       return res.status(400).json({
         success: false,
         message: "Invalid email or password",
       });
     }
-    const user = await UserModel.findOne({ email: sanitizedEmail });
+    const user = await UserModel.findOne({ email });
 
     if (!user) {
       return res
@@ -246,7 +240,6 @@ const logout = async (req, res) => {
 // Function to generate a one-time password (OTP) and send it via email
 const generateOTP = async (req, res, next) => {
   const { email } = req.body;
-  const sanitizedEmail = sanitize(email);
   try {
     if (!email) {
       return res
@@ -254,7 +247,7 @@ const generateOTP = async (req, res, next) => {
         .json({ success: false, message: "Email is required." });
     }
 
-    const user = await UserModel.findOne({ email: sanitizedEmail }).lean();
+    const user = await UserModel.findOne({ email }).lean();
     if (!user) {
       return res
         .status(200)
@@ -408,15 +401,23 @@ const emailToUser = async (email, token) => {
 // Function to reset a user's password with a valid OTP
 const resetPassword = async (req, res, next) => {
   try {
+    req.isResetPassword = true;
+    const CSRFverified = checkCSRFTokenSTP(req, res);
+    if (!CSRFverified.result) {
+      return res
+        .status(401)
+        .json({ success: false, message: CSRFverified.message });
+    }
     const { token, password } = req.body;
-    const otpRecord = await OtpModel.findOne({ token: token });
+    const otpRecord = await OtpModel.findOne({ token: token }).lean();
+
     if (!otpRecord) {
       return res
         .status(200)
         .json({ success: false, message: "An error occurred." });
     }
+
     const email = otpRecord.user_email;
-    const sanitizedEmail = sanitize(email);
 
     if (!email) {
       return res
@@ -424,14 +425,14 @@ const resetPassword = async (req, res, next) => {
         .json({ success: false, message: "Email is required." });
     }
 
-    const user = await UserModel.findOne({ email: sanitizedEmail });
+    const user = await UserModel.findOne({ email });
     if (!user) {
       return res
         .status(200)
         .json({ success: false, message: "Email does not exist." });
     }
 
-    const isOtpExist = await OtpModel.findOne({ user_email: sanitizedEmail });
+    const isOtpExist = await OtpModel.findOne({ user_email: email });
     if (isOtpExist.is_used) {
       if (isOtpExist) {
         const currentTime = new Date();
@@ -468,7 +469,7 @@ const resetPassword = async (req, res, next) => {
       req.user_id = user._id;
       next();
       await OtpModel.findOneAndUpdate(
-        { user_email: sanitizedEmail },
+        { user_email: email },
         { $set: { is_used: true } },
         { new: true }
       );
@@ -490,7 +491,6 @@ const resetPassword = async (req, res, next) => {
 // Function to update a user's password
 const updatePassword = async (req, res, next) => {
   const { email, password } = req.body;
-  const sanitizedEmail = sanitize(email);
   try {
     if (!email) {
       return res
@@ -498,7 +498,7 @@ const updatePassword = async (req, res, next) => {
         .json({ success: false, message: "Email is required" });
     }
 
-    const user = await UserModel.findOne({ email: sanitizedEmail });
+    const user = await UserModel.findOne({ email });
     req.user_id = user._id;
     next();
     if (!user) {
@@ -570,8 +570,9 @@ const checkCSRFTokenSTP = (req, res) => {
     const sessionCsrfToken = req.session.csrfToken;
     const requestCsrfToken = req.cookies.CSRFToken;
 
-    if (req.isRegister) {
+    if (req.isRegister || req.isResetPassword) {
       delete req.isRegister;
+      delete req.isResetPassword;
       if (!requestCsrfToken || !sessionCsrfToken) {
         if (sessionUser) {
           req.session.destroy();

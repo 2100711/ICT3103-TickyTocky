@@ -4,6 +4,7 @@ import { LockOutlined } from "@ant-design/icons";
 import { Link, useLocation, useNavigate } from "react-router-dom"; // If using React Router for navigation
 import "../styles/PasswordReset.css"; // You can reuse the CSS for the password reset page
 import { resetPassword } from "../../api/auth";
+import { getCsrfTokenFromAPI } from "../../api/auth";
 
 export const PasswordReset = () => {
   const [passwordUpdated, setPasswordUpdated] = useState(false);
@@ -17,6 +18,8 @@ export const PasswordReset = () => {
   useEffect(() => {
     if (!token) {
       navigate("/");
+    } else {
+      getCsrfTokenFromAPI();
     }
   }, [token, navigate]);
   if (!token) {
