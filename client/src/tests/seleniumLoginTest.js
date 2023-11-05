@@ -1,4 +1,4 @@
-const { Builder, By, Key, until } = require("selenium-webdriver");
+const { Builder, By, until } = require("selenium-webdriver");
 const chrome = require("selenium-webdriver/chrome");
 
 (async () => {
@@ -7,13 +7,15 @@ const chrome = require("selenium-webdriver/chrome");
   chromeOptions.addArguments("--headless"); // Set Chrome to run in headless mode
   chromeOptions.addArguments("--no-sandbox"); // Disable the sandbox for running as root
 
-  // Initialize the WebDriver
-  let driver = await new Builder()
-    .forBrowser("chrome")
-    .setChromeOptions(chromeOptions)
-    .build();
+  let driver;
 
   try {
+    // Initialize the WebDriver
+    driver = await new Builder()
+      .forBrowser("chrome")
+      .setChromeOptions(chromeOptions)
+      .build();
+
     // Navigate to your React application's login page
     await driver.get("https://gracious-kare.cloud/login");
 

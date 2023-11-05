@@ -98,12 +98,12 @@ pipeline {
             }
         }
 
-        stage('Frontend Test') {
+        stage('Frontend Selenium Tests') {
             steps {
                 dir('client') {
                     script {
                         sh 'apt install -y nodejs npm'
-                        sh 'npm install selenium-webdriver chromedriver'
+                        sh 'npm install selenium-webdriver'
                         sh 'npm test'
                     }
                 }
@@ -118,7 +118,7 @@ pipeline {
             }
         }
         
-        stage('Backend Test') {
+        stage('Backend Unit Tests') {
             steps {
                 dir('server') {
                     script {
