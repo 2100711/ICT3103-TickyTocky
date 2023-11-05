@@ -62,7 +62,6 @@ export const DatabaseLogsManagement = () => {
         const response = await getAllDatabaseLogs();
         if (response.success) {
           const data = response.logs;
-          console.log("dd", data);
           // Transform the data and set it in the state
           const modifiedData = data.map((item) => ({
             // Map the data to match the table columns
@@ -72,7 +71,6 @@ export const DatabaseLogsManagement = () => {
             query_type: item.query_type,
             timestamps: item.timestamps,
           }));
-          console.log(modifiedData);
           setDatabaseLogs(modifiedData);
           setOriginalDatabaseLogs(modifiedData); // Save the original data for filtering
           setLoading(false);

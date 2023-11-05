@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
-
+import { UserModel } from "./Users.js";
 // Define the schema for security log entries
 const SecurityLogSchema = new mongoose.Schema({
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
+    ref: UserModel,
   },
   login_attempts: {
     type: Number,

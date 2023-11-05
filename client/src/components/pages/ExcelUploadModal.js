@@ -45,6 +45,8 @@ export const ExcelUploadModal = ({
           message.success("Certificates created successfully");
           // Trigger a refetch of certificates for admin
           setRefetchCertForAdmin(true);
+          // Close the modal upon successful submission
+          onCancel();
         } else {
           // Show an error message if certificate creation fails
           message.error("Certificates failed to create");

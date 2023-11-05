@@ -7,7 +7,7 @@ export const AccessLogsManagement = () => {
   const [accessLogs, setAccessLogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(5); // Define the number of items per page
+  const [pageSize] = useState(2); // Define the number of items per page
   const [searchText, setSearchText] = useState(""); // Store the search input text
   const [originalAccessLogs, setOriginalAccessLogs] = useState([]); // Store the original data before filtering
 

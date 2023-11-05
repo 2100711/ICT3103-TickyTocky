@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Table, Button, Input, Popconfirm, message } from "antd";
 import {
   getAllCerts,
@@ -88,7 +88,7 @@ export const CertTable = ({
   ];
 
   // Function to fetch certificates based on the user's role
-  const fetchCertificates = async () => {
+  const fetchCertificates = useCallback(async () => {
     try {
       const response =
         role === "admin"
@@ -104,10 +104,10 @@ export const CertTable = ({
     } catch (error) {
       message.error("Something went wrong");
     }
-  };
+  }, [role, email, setRefetchCert, setRefetchCertForAdmin]);
 
   // Function to fetch user emails (for non-admin users)
-  const fetchUserEmails = async () => {
+  const fetchUserEmails = useCallback(async () => {
     try {
       const response = await getAllUsers();
       if (response.success) {
@@ -117,7 +117,7 @@ export const CertTable = ({
     } catch (error) {
       message.error("Something went wrong");
     }
-  };
+  }, [email]);
 
   // Use useEffect to fetch certificates and user emails when the component mounts or when refetch is triggered
   useEffect(() => {
@@ -127,7 +127,13 @@ export const CertTable = ({
       fetchUserEmails();
     }
     setLoading(false);
-  }, [refetchCert, refetchCertForAdmin]);
+  }, [
+    refetchCert,
+    refetchCertForAdmin,
+    fetchCertificates,
+    fetchUserEmails,
+    role,
+  ]);
 
   // Function to show the Transfer Ownership modal
   const showTransferOwnsershipModal = (cert) => {

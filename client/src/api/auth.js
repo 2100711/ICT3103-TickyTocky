@@ -54,8 +54,8 @@ export async function generateCSRFToken(req) {
 // Function to fetch a CSRF token from the API and handle errors
 export const getCsrfTokenFromAPI = async () => {
   try {
-    const response = await generateCSRFToken();
+    await generateCSRFToken();
   } catch (error) {
-    console.error("Something went wrong");
+    throw new Error("Something went wrong");
   }
 };

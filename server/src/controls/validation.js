@@ -11,7 +11,7 @@ import {
 
 // AUTH
 const validateEmail = (email) => {
-  const emailRegex = /^[a-z0-9.]{6,30}@gmail\.com$/;
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
   return emailRegex.test(email);
 };
 

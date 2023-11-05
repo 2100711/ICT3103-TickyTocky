@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
-
+import { CertModel } from "./Certs.js";
 // Define the schema for database logs
 const DatabaseLogSchema = new mongoose.Schema({
   certificate_id: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
+    ref: CertModel,
   },
   timestamps: {
     type: Date,

@@ -4,6 +4,7 @@ import { Home } from "../pages/Home";
 import { Login } from "../pages/Login";
 import { Register } from "../pages/Register";
 import { ForgotPassword } from "../pages/ForgotPassword";
+import { PasswordReset } from "../pages/PasswordReset";
 import { NotFound } from "../errors/NotFound";
 import { ServerError } from "../errors/ServerError";
 import { Unauthorized } from "../errors/Unauthorized";
@@ -67,6 +68,13 @@ export const nav = [
     path: "/forgotpassword",
     name: "Forgot Password",
     element: <ForgotPassword />,
+    isMenu: false,
+    isPrivate: false,
+  },
+  {
+    path: "/resetpassword",
+    name: "Reset Password",
+    element: <PasswordReset />,
     isMenu: false,
     isPrivate: false,
   },
