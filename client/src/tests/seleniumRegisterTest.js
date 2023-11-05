@@ -50,6 +50,8 @@ const chrome = require("selenium-webdriver/chrome");
     } else {
       console.log("Registration failed.");
     }
+  } catch {
+    console.log("Login failed.");
   } finally {
     await driver.quit();
   }

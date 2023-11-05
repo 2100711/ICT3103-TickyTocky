@@ -42,6 +42,8 @@ const chrome = require("selenium-webdriver/chrome");
     } else {
       console.log("Login failed.");
     }
+  } catch {
+    console.log("Login failed.");
   } finally {
     // Close the WebDriver
     await driver.quit();
