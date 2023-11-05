@@ -19,3 +19,6 @@ Thumbs.db
 
 # Ignore Jenkins folder
 /jenkins_home
+
+# Ignore ssl bundle 
+/gracious-kare.cloud-ssl-bundle
