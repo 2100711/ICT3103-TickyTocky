@@ -82,6 +82,7 @@ pipeline {
             steps {
                 dir('server') {
                     script {
+                        sh 'apt install -y nodejs npm'
                         sh 'npm install -D mocha chai sinon'
                         sh 'npm test'
                     }
@@ -148,6 +149,7 @@ pipeline {
         success {
             //dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             echo "Pipeline successfully completed."
+            //sh 'docker image prune -f' // Temp cleaning of images
             //sh 'docker image rm -f ict3103-tickytocky-frontend:latest'
             //sh 'docker image rm -f ict3103-tickytocky-backend:latest'
             echo "Removed Old Containers and Images"
