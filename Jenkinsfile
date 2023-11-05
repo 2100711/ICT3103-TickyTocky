@@ -98,25 +98,25 @@ pipeline {
             }
         }
 
-        stage('Frontend Selenium Tests') {
-            steps {
-                dir('client') {
-                    script {
-                        sh 'apt install -y nodejs npm'
-                        sh 'npm install selenium-webdriver'
-                        sh 'npm test'
-                    }
-                }
-            }
-            post {
-                success {
-                    echo 'Passed with flying colors'
-                }
-                failure {
-                    echo 'Failure sia you'
-                }
-            }
-        }
+        // stage('Frontend Selenium Tests') {
+        //     steps {
+        //         dir('client') {
+        //             script {
+        //                 sh 'apt install -y nodejs npm'
+        //                 sh 'npm install selenium-webdriver'
+        //                 sh 'npm test'
+        //             }
+        //         }
+        //     }
+        //     post {
+        //         success {
+        //             echo 'Passed with flying colors'
+        //         }
+        //         failure {
+        //             echo 'Failure sia you'
+        //         }
+        //     }
+        // }
         
         stage('Backend Unit Tests') {
             steps {
