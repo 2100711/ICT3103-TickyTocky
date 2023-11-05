@@ -12,11 +12,10 @@ RUN apk add --no-cache \
 # Set environment variables for Chrome
 ENV CHROME_BIN=/usr/bin/chromium-browser \
     CHROME_PATH=/usr/lib/chromium/
-    
+
 WORKDIR /app
 COPY . .
 RUN rm -rf node_modules && rm package-lock.json && yarn cache clean
-RUN npm update && npm upgrade
 RUN npm install
 CMD ["npm", "start"]
 EXPOSE 3000
