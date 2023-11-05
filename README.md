@@ -116,7 +116,7 @@ docker compose up -d
 
 # Testing
 
-To run unit tests for the application, use the following command in the `/server` directory:
+To run Selenium tests for frontend and unit tests for backend, use the following command in the `/client` and `/server` directory:
 
 ```bash
 npm test
