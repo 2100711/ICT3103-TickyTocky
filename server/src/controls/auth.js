@@ -5,6 +5,7 @@ import crypto from "crypto";
 import { UserModel } from "../models/Users.js";
 import { OtpModel } from "../models/Otp.js";
 import sanitize from "mongo-sanitize";
+import { createLog } from "../controls/securityLogs.js";
 
 // Obtain environment variables
 import { EMAIL_NAME, EMAIL_PASS, EMAIL_USER } from "../constants.js";
@@ -272,6 +273,12 @@ const generateOTP = async (req, res, next) => {
     }
 
     const token = generateSecureToken(32);
+
+    await OtpModel.create({
+      user_email: email,
+      token,
+    });
+
     const send = await emailToUser(email, token);
 
     if (!send.success) {
@@ -362,7 +369,6 @@ const emailToUser = async (email, token) => {
             <p>But don’t worry! You can use the following button to reset your password:</p>
             <p class="reset-link">
                 <a class="button" href="https://gracious-kare.cloud/resetpassword?t=${token}" style="color: #fff;">Reset your password</a>
-                <a class="button" href="https://gracious-kare.cloud/resetpassword?t=${token}" style="color: #fff;">Reset your password</a>
             </p>
             <p>If you don’t use this link within 10 minutes, it will expire. To get a new password reset link, visit:</p>
             <a href="https://gracious-kare.cloud/forgotpassword">https://gracious-kare.cloud/forgotpassword</a>
@@ -404,6 +410,11 @@ const resetPassword = async (req, res, next) => {
   try {
     const { token, password } = req.body;
     const otpRecord = await OtpModel.findOne({ token: token });
+    if (!otpRecord) {
+      return res
+        .status(200)
+        .json({ success: false, message: "An error occurred." });
+    }
     const email = otpRecord.user_email;
     const sanitizedEmail = sanitize(email);
 
@@ -449,7 +460,7 @@ const resetPassword = async (req, res, next) => {
       { email },
       { $set: { encrypted_password: hashedPassword, account_lock: false } },
       { new: true }
-    );
+    ).lean();
 
     await unlockAccount(updatedUser._id, req.ip);
 
