@@ -18,63 +18,76 @@
 <!-- GETTING STARTED -->
 # Getting Started
 
-<div align="Left">
-Install Docker Deskop from here: https://www.docker.com/products/docker-desktop/ and run it in the background.
+The following tools are required to run this application:
 
-Add .env file containing the DB_USER and DB_PASS parameters inside the /server folder.
+1. Docker Deskop: https://www.docker.com/products/docker-desktop/
+2. Node.js: https://nodejs.org/en/download/
+3. MongoDB Compass: https://www.mongodb.com/try/download/compass
 
-Follow this template:
-</div>
-
-```env
-DB_USER = [Your DB Username]
-DB_PASS = [Your DB Password]
-```
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Built With
 
-* [![JavaScript][JavaScript-logo]][JavaScript-url]
-* [![Node.js][Node-logo]][Node-url]
-* [![npm][npm-logo]][npm-url]
-* [![ExpressJS][Express.js]][Expressjs-url]
-* [![React][React]][React-url]
-* [![MongoDB][MongoDB]][MongoDB-url]
+[![JavaScript][JavaScript-logo]][JavaScript-url]
+[![Node.js][Node-logo]][Node-url]
+[![npm][npm-logo]][npm-url]
+[![ExpressJS][Express.js]][Expressjs-url]
+[![React][React]][React-url]
+[![MongoDB][MongoDB]][MongoDB-url]
+[![Mocha][Mocha]][Mocha-url]
+[![Chai][Chai]][Chai-url]
+[![Sinon][Sinon]][Sinon-url]
+[![Snyk][Snyk]][Snyk-url]
+[![OWASP Dependency-Check][OWASP Dependency-Check]][OWASP Dependency-Check-url]
+[![Selenium][Selenium]][Selenium-url]
+[![Jenkins][Jenkins]][Jenkins-url]
+[![Docker][Docker]][Docker-url]
+[![GitHub][GitHub]][GitHub-url]
+[![AWS][AWS]][AWS-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 # Running the app locally
 
-Run the following commands in /server:
+To run the project locally, follow these steps:
 
-```bash
-cd server
-npm install
-node src/index.js
+1. Clone the repository.
+2. Navigate to the `/server` directory and run `npm install` to install server dependencies.
+3. Create a `.env` file in the `/server` folder with the following contents.
+
+> Note: Replace the values in square brackets with your own values
+
+```env
+DB_USER = [Your DB Username]
+DB_PASS = [Your DB Password]
+EMAIL_NAME = [Your Email Name]
+EMAIL_USER = [Your Email Address]
+EMAIL_PASS = [Your Email Password]
+SECRET = [Your Secret]
+CRYPTOSECRET = [Your Crypto Secret]
 ```
-
-Run the following commands in a separate terminal in /client:
-
-```bash
-cd client
-npm install
-npm start
-```
+4. Start the server with `npm start`.
+5. Open a new terminal, navigate to the `/client` directory, and run `npm install` to install client dependencies.
+6. Start the client with `npm start`.
+7. Access the application at http://localhost:3000 in your web browser.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 # Running the app in Docker (Locally)
 
-Run the following command in the root directory:
+To run the project in Docker locally, follow these steps:
 
-```bash
-docker compose up -d
-```
+1. Navigate into the `root` directory of the project.
+2. Run `docker compose up -d` to start the application.
+3. Access the application at http://localhost:3000 in your web browser.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 # Running the app in Docker (AWS)
 
-Using Ubuntu CLI or WSL2 to run the following commands:
+To run the project in Docker on AWS, follow these steps using an `Ubuntu CLI` or `WSL2` to run the following commands:
+
+
 
 Intial setup of docker and compose:
 
@@ -101,17 +114,19 @@ docker compose up -d
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+# Testing
+
+To run unit tests for the application, use the following command in the `/server` directory:
+
+```bash
+npm test
+```
+
 ## Contributors
 
 The involvement of these individuals was crucial for the creation of this project.
 
--   [@Terence2389](https://github.com/Terence2389) - [2102389](2102389@sit.singaporetech.edu.sg) 
--   [@Elsonnnn](https://github.com/Elsonnnn) - [2101234](2101234@sit.singaporetech.edu.sg)
--   [@joash2808](https://github.com/joash2808) - [2101177](2101177@sit.singaporetech.edu.sg)
--   [@tay-en](https://github.com/tay-en) - [2100928](2100928@sit.singaporetech.edu.sg)
--   [@irfaan96](https://github.com/irfaan96) - [2100701](2100701@sit.singaporetech.edu.sg)
--   [@ZafrullaKamil](https://github.com/ZafrullaKamil) - [2100764](2100764@sit.singaporetech.edu.sg)
--   [@2100711](https://github.com/2100711) - [2100711](2100711@sit.singaporetech.edu.sg)
+[@Terence2389](https://github.com/Terence2389) - [2102389](2102389@sit.singaporetech.edu.sg), [@Elsonnnn](https://github.com/Elsonnnn) - [2101234](2101234@sit.singaporetech.edu.sg), [@joash2808](https://github.com/joash2808) - [2101177](2101177@sit.singaporetech.edu.sg), [@tay-en](https://github.com/tay-en) - [2100928](2100928@sit.singaporetech.edu.sg), [@irfaan96](https://github.com/irfaan96) - [2100701](2100701@sit.singaporetech.edu.sg), [@ZafrullaKamil](https://github.com/ZafrullaKamil) - [2100764](2100764@sit.singaporetech.edu.sg), [@2100711](https://github.com/2100711) - [2100711](2100711@sit.singaporetech.edu.sg)
 
 
 
@@ -142,3 +157,23 @@ The involvement of these individuals was crucial for the creation of this projec
 [React-url]: https://react.dev/
 [MongoDB]: https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white
 [MongoDB-url]: https://www.mongodb.com/
+[Mocha]: https://img.shields.io/badge/Mocha-8D6748?style=for-the-badge&logo=mocha&logoColor=white
+[Mocha-url]: https://mochajs.org/
+[Chai]: https://img.shields.io/badge/Chai-A30701?style=for-the-badge&logo=chai&logoColor=white
+[Chai-url]: https://www.chaijs.com/
+[Sinon]: https://img.shields.io/badge/Sinon-000000?style=for-the-badge&logo=sinon&logoColor=white
+[Sinon-url]: https://sinonjs.org/
+[Snyk]: https://img.shields.io/badge/Snyk-4C8BF5?style=for-the-badge&logo=snyk&logoColor=white
+[Snyk-url]: https://snyk.io/
+[OWASP Dependency-Check]: https://img.shields.io/badge/OWASP%20Dependency%20Check-5865F2?style=for-the-badge
+[OWASP Dependency-Check-url]: https://plugins.jenkins.io/dependency-check-jenkins-plugin/
+[Selenium]: https://img.shields.io/badge/Selenium-43B02A?style=for-the-badge&logo=selenium&logoColor=white
+[Selenium-url]: https://www.selenium.dev/
+[Jenkins]: https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white
+[Jenkins-url]: https://www.jenkins.io/
+[Docker]: https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white
+[Docker-url]: https://www.docker.com/
+[GitHub]: https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white
+[GitHub-url]: https://github.com/
+[AWS]: https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white
+[AWS-url]: https://aws.amazon.com/
