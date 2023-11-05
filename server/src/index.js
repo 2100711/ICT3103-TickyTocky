@@ -9,6 +9,7 @@ import crypto from "crypto"; // Crypto library for generating nonces
 import rateLimit from "express-rate-limit"; // Middleware for rate limiting
 import cookieParser from "cookie-parser"; // Middleware for parsing cookies
 import sanitize from "mongo-sanitize"; // Middleware for sanitizing input data
+import escapeHtml from "escape-html";
 
 // Import route handlers
 import { authRouter } from "./routes/auth.js";
@@ -55,6 +56,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json()); // Parse JSON request bodies
+
 mongoose.connect(MONGODB_CONNECTION, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -100,9 +102,31 @@ app.use(apiLimiter); // Apply rate limiter to all routes
 
 // Middleware for sanitizing input data from req.body, req.params, and req.query
 app.use((req, res, next) => {
+  if (req.body) {
+    // Escaping HTML in the request body
+    Object.keys(req.body).forEach((key) => {
+      req.body[key] = escapeHtml(req.body[key]);
+    });
+  }
+
+  if (req.params) {
+    // Escaping HTML in request parameters
+    Object.keys(req.params).forEach((key) => {
+      req.params[key] = escapeHtml(req.params[key]);
+    });
+  }
+
+  if (req.query) {
+    // Escaping HTML in query parameters
+    Object.keys(req.query).forEach((key) => {
+      req.query[key] = escapeHtml(req.query[key]);
+    });
+  }
+
   req.body = sanitize(req.body);
   req.params = sanitize(req.params);
   req.query = sanitize(req.query);
+
   next();
 });
 
