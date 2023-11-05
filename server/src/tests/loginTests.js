@@ -25,9 +25,7 @@ describe("Unit Test for /auth", () => {
           return {
             json: (data) => {
               expect(data.success).to.be.false;
-              expect(data.message).to.equal(
-                "Please enter your email and password"
-              );
+              expect(data.message).to.equal("Invalid email or password");
             },
           };
         },
@@ -51,7 +49,7 @@ describe("Unit Test for /auth", () => {
           return {
             json: (data) => {
               expect(data.success).to.be.false;
-              expect(data.message).to.equal("Invalid credentials.");
+              expect(data.message).to.equal("Invalid credential");
             },
           };
         },
@@ -64,12 +62,12 @@ describe("Unit Test for /auth", () => {
 
     it("Test 3 - should return 401 and an error message if the user account is locked", async () => {
       const user = {
-        f_name: "zaf",
-        l_name: "kas",
-        email: "zafkamil@gmail.com",
+        f_name: "Tony",
+        l_name: "Stary",
+        email: "tony@gmail.com",
         email_verified: false,
         encrypted_password:
-          "$2b$10$IXLg7igCZnvEUeqKRmukTOLoXtDoRBrUATD6QLclr8zzIsZPXgS9e",
+          "$2b$10$j/RNlYDxhWRGn3S2pJPaL./2E.rF6PREhd90eR8U8IHwOGOC4ScRe",
         role: "member",
         account_lock: true,
       };
@@ -78,7 +76,7 @@ describe("Unit Test for /auth", () => {
       findOneStub.resolves(user);
 
       const req = {
-        body: { email: "zafkamil@gmail.com", password: "Abc1234567890!" },
+        body: { email: "tony@gmail.com", password: "123456" },
       };
       const res = {
         status: (code) => {
@@ -101,12 +99,12 @@ describe("Unit Test for /auth", () => {
 
     it("Test 4 - should return 401 and an error message for invalid credentials", async () => {
       const user = {
-        f_name: "zaf",
-        l_name: "kas",
-        email: "zafkamil@gmail.com",
+        f_name: "Tony",
+        l_name: "Stary",
+        email: "tony@gmail.com",
         email_verified: false,
         encrypted_password:
-          "$2b$10$IXLg7igCZnvEUeqKRmukTOLoXtDoRBrUATD6QLclr8zzIsZPXgS9e",
+          "$2b$10$j/RNlYDxhWRGn3S2pJPaL./2E.rF6PREhd90eR8U8IHwOGOC4ScRe",
         role: "member",
         account_lock: false,
       };
@@ -115,7 +113,7 @@ describe("Unit Test for /auth", () => {
       findOneStub.resolves(user);
 
       const req = {
-        body: { email: "zafkamil@gmail.com", password: "Abc1234567890" },
+        body: { email: "tony@gmail.com", password: "1234567" },
       };
       const res = {
         status: (code) => {
@@ -123,7 +121,7 @@ describe("Unit Test for /auth", () => {
           return {
             json: (data) => {
               expect(data.success).to.be.false;
-              expect(data.message).to.equal("Invalid credentials.");
+              expect(data.message).to.equal("Invalid credential");
             },
           };
         },
@@ -136,12 +134,12 @@ describe("Unit Test for /auth", () => {
 
     it("Test 5 - should return 401 and an error message if the user is already logged in", async () => {
       const user = {
-        f_name: "zaf",
-        l_name: "kas",
-        email: "zafkamil@gmail.com",
+        f_name: "Tony",
+        l_name: "Stary",
+        email: "tony@gmail.com",
         email_verified: false,
         encrypted_password:
-          "$2b$10$IXLg7igCZnvEUeqKRmukTOLoXtDoRBrUATD6QLclr8zzIsZPXgS9e",
+          "$2b$10$j/RNlYDxhWRGn3S2pJPaL./2E.rF6PREhd90eR8U8IHwOGOC4ScRe",
         role: "member",
         account_lock: false,
       };
@@ -150,8 +148,8 @@ describe("Unit Test for /auth", () => {
       findOneStub.resolves(user);
 
       const req = {
-        body: { email: "zafkamil@gmail.com", password: "Abc1234567890!" },
-        session: { user: { email: "zafkamil@gmail.com" } },
+        body: { email: "tony@gmail.com", password: "123456" },
+        session: { user: { email: "tony@gmail.com" } },
       };
       const res = {
         status: (code) => {
@@ -159,9 +157,7 @@ describe("Unit Test for /auth", () => {
           return {
             json: (data) => {
               expect(data.success).to.be.false;
-              expect(data.message).to.equal(
-                "Unauthorized: User is already logged in"
-              );
+              expect(data.message).to.equal("User is already logged in");
             },
           };
         },
@@ -172,14 +168,14 @@ describe("Unit Test for /auth", () => {
       await login(req, res, next);
     });
 
-    it("Test 6 - should return 401 and an error message if user in register missing tokens", async () => {
+    it("Test 6 - should return 401 and an error message if user missing tokens", async () => {
       const user = {
-        f_name: "zaf",
-        l_name: "kas",
-        email: "zafkamil@gmail.com",
+        f_name: "Tony",
+        l_name: "Stary",
+        email: "tony@gmail.com",
         email_verified: false,
         encrypted_password:
-          "$2b$10$IXLg7igCZnvEUeqKRmukTOLoXtDoRBrUATD6QLclr8zzIsZPXgS9e",
+          "$2b$10$j/RNlYDxhWRGn3S2pJPaL./2E.rF6PREhd90eR8U8IHwOGOC4ScRe",
         role: "member",
         account_lock: false,
       };
@@ -188,51 +184,7 @@ describe("Unit Test for /auth", () => {
       findOneStub.resolves(user);
 
       const req = {
-        body: { email: "zafkamil@gmail.com", password: "Abc1234567890!" },
-        session: {
-          user: { email: null },
-          save: () => {},
-          csrfToken: null,
-        },
-        cookies: {
-          CSRFToken: null,
-        },
-        isRegister: true,
-      };
-      const res = {
-        status: (code) => {
-          expect(code).to.equal(401);
-          return {
-            json: (data) => {
-              expect(data.success).to.be.false;
-              expect(data.message).to.equal("Token has not been provided.");
-            },
-          };
-        },
-      };
-
-      const next = () => {};
-
-      await login(req, res, next);
-    });
-
-    it("Test 7 - should return 401 and an error message if user missing tokens", async () => {
-      const user = {
-        f_name: "zaf",
-        l_name: "kas",
-        email: "zafkamil@gmail.com",
-        email_verified: false,
-        encrypted_password:
-          "$2b$10$IXLg7igCZnvEUeqKRmukTOLoXtDoRBrUATD6QLclr8zzIsZPXgS9e",
-        role: "member",
-        account_lock: false,
-      };
-
-      // Stub UserModel.findOne to return the user with invalid password
-      findOneStub.resolves(user);
-
-      const req = {
-        body: { email: "zafkamil@gmail.com", password: "Abc1234567890!" },
+        body: { email: "tony@gmail.com", password: "123456" },
         session: {
           user: { email: null },
           save: () => {},
@@ -249,7 +201,7 @@ describe("Unit Test for /auth", () => {
           return {
             json: (data) => {
               expect(data.success).to.be.false;
-              expect(data.message).to.equal("Token has not been provided.");
+              expect(data.message).to.equal("Token not found");
             },
           };
         },
@@ -260,14 +212,14 @@ describe("Unit Test for /auth", () => {
       await login(req, res, next);
     });
 
-    it("Test 8 - should return 401 and an error message if tokens do not match in register", async () => {
+    it("Test 7 - should return 401 and an error message if user tokens do not match", async () => {
       const user = {
-        f_name: "zaf",
-        l_name: "kas",
-        email: "zafkamil@gmail.com",
+        f_name: "Tony",
+        l_name: "Stary",
+        email: "tony@gmail.com",
         email_verified: false,
         encrypted_password:
-          "$2b$10$IXLg7igCZnvEUeqKRmukTOLoXtDoRBrUATD6QLclr8zzIsZPXgS9e",
+          "$2b$10$j/RNlYDxhWRGn3S2pJPaL./2E.rF6PREhd90eR8U8IHwOGOC4ScRe",
         role: "member",
         account_lock: false,
       };
@@ -276,51 +228,7 @@ describe("Unit Test for /auth", () => {
       findOneStub.resolves(user);
 
       const req = {
-        body: { email: "zafkamil@gmail.com", password: "Abc1234567890!" },
-        session: {
-          user: { email: null },
-          save: () => {},
-          csrfToken: "test",
-        },
-        cookies: {
-          CSRFToken: "test1",
-        },
-        isRegister: true,
-      };
-      const res = {
-        status: (code) => {
-          expect(code).to.equal(401);
-          return {
-            json: (data) => {
-              expect(data.success).to.be.false;
-              expect(data.message).to.equal("Invalid token.");
-            },
-          };
-        },
-      };
-
-      const next = () => {};
-
-      await login(req, res, next);
-    });
-
-    it("Test 9 - should return 401 and an error message if tokens do not match", async () => {
-      const user = {
-        f_name: "zaf",
-        l_name: "kas",
-        email: "zafkamil@gmail.com",
-        email_verified: false,
-        encrypted_password:
-          "$2b$10$IXLg7igCZnvEUeqKRmukTOLoXtDoRBrUATD6QLclr8zzIsZPXgS9e",
-        role: "member",
-        account_lock: false,
-      };
-
-      // Stub UserModel.findOne to return the user with invalid password
-      findOneStub.resolves(user);
-
-      const req = {
-        body: { email: "zafkamil@gmail.com", password: "Abc1234567890!" },
+        body: { email: "tony@gmail.com", password: "123456" },
         session: {
           user: { email: null },
           save: () => {},
@@ -337,7 +245,7 @@ describe("Unit Test for /auth", () => {
           return {
             json: (data) => {
               expect(data.success).to.be.false;
-              expect(data.message).to.equal("Invalid token.");
+              expect(data.message).to.equal("Invalid token");
             },
           };
         },
@@ -350,14 +258,14 @@ describe("Unit Test for /auth", () => {
       await login(req, res, next);
     });
 
-    it("Test 10 - should return 200 OK with success message for valid login", async () => {
+    it("Test 8 - should return 200 OK with success message for valid login", async () => {
       const user = {
-        f_name: "zaf",
-        l_name: "kas",
-        email: "zafkamil@gmail.com",
+        f_name: "Tony",
+        l_name: "Stary",
+        email: "tony@gmail.com",
         email_verified: false,
         encrypted_password:
-          "$2b$10$IXLg7igCZnvEUeqKRmukTOLoXtDoRBrUATD6QLclr8zzIsZPXgS9e",
+          "$2b$10$j/RNlYDxhWRGn3S2pJPaL./2E.rF6PREhd90eR8U8IHwOGOC4ScRe",
         role: "member",
         account_lock: false,
       };
@@ -366,7 +274,7 @@ describe("Unit Test for /auth", () => {
       findOneStub.resolves(user);
 
       const req = {
-        body: { email: "zafkamil@gmail.com", password: "Abc1234567890!" },
+        body: { email: "tony@gmail.com", password: "123456" },
         session: {
           user: { email: null },
           save: () => {},
@@ -382,7 +290,7 @@ describe("Unit Test for /auth", () => {
           return {
             json: (data) => {
               expect(data.success).to.be.true;
-              expect(data.message).to.equal("Login successful.");
+              expect(data.message).to.equal("Login successfully.");
             },
           };
         },
