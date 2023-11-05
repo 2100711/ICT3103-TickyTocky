@@ -2,84 +2,81 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
-            steps {
-                echo 'Building the application'
-                script {
-                    sh 'docker compose down frontend backend'
-                    sh 'docker compose build frontend backend'
-                }
-            }
-            post {
-                success {
-                    echo 'Build Success!'
-                }
-                failure {
-                    echo 'Build Failed'
-                }
-            }
-        }
-        
-        stage('Snyk Scanning for Vulnerabilities') { 
-             parallel {
-                stage('Client Snyk Scanning') {
-                    steps {
-                        dir('client') {
-                            snykSecurity(
-                                snykInstallation: 'SnykLatest',
-                                snykTokenId: 'Snyk',
-                                targetFile: 'package.json',
-                                projectName: 'TickyTocky-Client', 
-                                severity: 'high',
-                                failOnIssues: 'false',
-                                failOnError: 'false'
-                            )
-                        }
-                    }
-                }
-                stage('Server Snyk Scanning') {// Tested Working can comment out to save time and api calls
-                    steps {
-                        dir('server') {
-                            snykSecurity(
-                                snykInstallation: 'SnykLatest',
-                                snykTokenId: 'Snyk',
-                                targetFile: 'package.json',
-                                projectName: 'TickyTocky-Server', 
-                                severity: 'high',
-                                failOnIssues: 'false',
-                                failOnError: 'false'
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        // stage('Frontend Selenium Tests') {
+        // stage('Build') {
         //     steps {
-        //         dir('client') {
-        //             script {
-        //                 sh 'apt install -y nodejs npm'
-        //                 sh 'npm install selenium-webdriver'
-        //                 sh 'npm test'
-        //             }
+        //         echo 'Building the application'
+        //         script {
+        //             sh 'docker compose build frontend backend'
         //         }
         //     }
         //     post {
         //         success {
-        //             echo 'Passed with flying colors'
+        //             echo 'Build Success!'
         //         }
         //         failure {
-        //             echo 'Failure sia you'
+        //             echo 'Build Failed'
         //         }
         //     }
         // }
+        
+        // stage('Snyk Scanning for Vulnerabilities') { 
+        //      parallel {
+        //         stage('Client Snyk Scanning') {
+        //             steps {
+        //                 dir('client') {
+        //                     snykSecurity(
+        //                         snykInstallation: 'SnykLatest',
+        //                         snykTokenId: 'Snyk',
+        //                         targetFile: 'package.json',
+        //                         projectName: 'TickyTocky-Client', 
+        //                         severity: 'high',
+        //                         failOnIssues: 'false',
+        //                         failOnError: 'false'
+        //                     )
+        //                 }
+        //             }
+        //         }
+        //         stage('Server Snyk Scanning') {
+        //             steps {
+        //                 dir('server') {
+        //                     snykSecurity(
+        //                         snykInstallation: 'SnykLatest',
+        //                         snykTokenId: 'Snyk',
+        //                         targetFile: 'package.json',
+        //                         projectName: 'TickyTocky-Server', 
+        //                         severity: 'high',
+        //                         failOnIssues: 'false',
+        //                         failOnError: 'false'
+        //                     )
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+
+        stage('Frontend Selenium Tests') {
+            steps {
+                dir('client') {
+                    script {
+                        sh 'npm install selenium-webdriver'
+                        sh 'npm test'
+                    }
+                }
+            }
+            post {
+                success {
+                    echo 'Passed with flying colors'
+                }
+                failure {
+                    echo 'Frontend Test Failed'
+                }
+            }
+        }
         
         stage('Backend Unit Tests') {
             steps {
                 dir('server') {
                     script {
-                        sh 'apt install -y nodejs npm'
                         sh 'npm install -D mocha chai sinon'
                         sh 'npm test'
                     }
@@ -141,7 +138,6 @@ pipeline {
         success {
             //dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             echo "Pipeline successfully completed."
-            //sh 'docker-compose down frontend backend'
             //sh 'docker system prune -f'
             //echo "Removed Dangling Containers and Images"
         }
