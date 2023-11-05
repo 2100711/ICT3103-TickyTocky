@@ -19,40 +19,40 @@ pipeline {
             }
         }
         
-        // stage('Snyk Scanning for Vulnerabilities') { 
-        //      parallel {
-        //         stage('Client Snyk Scanning') {
-        //             steps {
-        //                 dir('client') {
-        //                     snykSecurity(
-        //                         snykInstallation: 'SnykLatest',
-        //                         snykTokenId: 'Snyk',
-        //                         targetFile: 'package.json',
-        //                         projectName: 'TickyTocky-Client', 
-        //                         severity: 'high',
-        //                         failOnIssues: 'false',
-        //                         failOnError: 'false'
-        //                     )
-        //                 }
-        //             }
-        //         }
-        //         stage('Server Snyk Scanning') {
-        //             steps {
-        //                 dir('server') {
-        //                     snykSecurity(
-        //                         snykInstallation: 'SnykLatest',
-        //                         snykTokenId: 'Snyk',
-        //                         targetFile: 'package.json',
-        //                         projectName: 'TickyTocky-Server', 
-        //                         severity: 'high',
-        //                         failOnIssues: 'false',
-        //                         failOnError: 'false'
-        //                     )
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Snyk Scanning for Vulnerabilities') { 
+             parallel {
+                stage('Client Snyk Scanning') {
+                    steps {
+                        dir('client') {
+                            snykSecurity(
+                                snykInstallation: 'SnykLatest',
+                                snykTokenId: 'Snyk',
+                                targetFile: 'package.json',
+                                projectName: 'TickyTocky-Client', 
+                                severity: 'high',
+                                failOnIssues: 'false',
+                                failOnError: 'false'
+                            )
+                        }
+                    }
+                }
+                stage('Server Snyk Scanning') {
+                    steps {
+                        dir('server') {
+                            snykSecurity(
+                                snykInstallation: 'SnykLatest',
+                                snykTokenId: 'Snyk',
+                                targetFile: 'package.json',
+                                projectName: 'TickyTocky-Server', 
+                                severity: 'high',
+                                failOnIssues: 'false',
+                                failOnError: 'false'
+                            )
+                        }
+                    }
+                }
+            }
+        }
 
         // stage('Frontend Selenium Tests') {
         //     steps {
@@ -98,11 +98,12 @@ pipeline {
             }
         }
 
-        // stage('OWASP DependencyCheck') { // save time not running
-        //    steps {
-        //        dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
-        //    }
-        // }
+        stage('OWASP DependencyCheck') { // save time not running
+           steps {
+               dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
+           }
+        }
+        
         stage('Deploy') {
             steps {
                 dir('server') {
@@ -120,15 +121,15 @@ pipeline {
                                 echo '.env file already contains the required content'
                             }
 
-                            try {
-                                //echo 'Starting the server'
-                                sh 'docker container stop frontend backend' // Stop the frontend and backend containers
-                                sh 'docker container rm -f frontend backend' // Remove the frontend and backend containers
-                                sh 'docker compose up -d --force-recreate frontend backend' // Recreate frontend and backend containers
-                            } catch (Exception e) {
-                                echo "An error occurred during the frontend tests: ${e.message}"
-                                currentBuild.result = 'SUCCESS' // Set the build result to FAILURE
-                            }
+                            // try {
+                            //     //echo 'Starting the server'
+                            //     sh 'docker container stop frontend backend' // Stop the frontend and backend containers
+                            //     sh 'docker container rm -f frontend backend' // Remove the frontend and backend containers
+                            //     sh 'docker compose up -d --force-recreate frontend backend' // Recreate frontend and backend containers
+                            // } catch (Exception e) {
+                            //     echo "An error occurred during deployment: ${e.message}"
+                            //     currentBuild.result = 'SUCCESS' // Set the build result to FAILURE
+                            // }
                       }
                    }
                 }
@@ -147,11 +148,9 @@ pipeline {
     // Global success and failure conditions for the entire pipeline
     post {
         success {
-            //dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+            dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             echo "Pipeline successfully completed."
             sh 'docker system prune -f' // Temp cleaning of images
-            //sh 'docker image rm -f ict3103-tickytocky-frontend:latest'
-            //sh 'docker image rm -f ict3103-tickytocky-backend:latest'
             echo "Removed Old Containers and Images"
         }
         failure {
