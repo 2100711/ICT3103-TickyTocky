@@ -92,9 +92,11 @@ export const AccessLogsManagement = () => {
           const modifiedData = data.map((item) => ({
             // Map the data to match the table columns
             _id: item._id,
-            name: `${item.user_id.f_name} ${item.user_id.l_name}`,
-            email: item.user_id.email,
-            role: item.user_id.role,
+            name: `${item.user_id ? item.user_id.f_name : "N/A"} ${
+              item.user_id ? item.user_id.l_name : "N/A"
+            }`,
+            email: item.user_id ? item.user_id.email : "N/A",
+            role: item.user_id ? item.user_id.role : "N/A",
             ip_address: item.ip_address,
             user_agent: item.user_agent,
             http_status_codes: item.http_status_codes,

@@ -40,7 +40,10 @@ const logRequest = async (req, res) => {
 // Function to retrieve all access logs from the database
 const getAllAccessLogs = async (req, res) => {
   try {
-    const logs = await AccessLogModel.find().populate("user_id"); // Populate the 'user_id' field, which likely represents a related user entity
+    const logs = await AccessLogModel.find().populate({
+      path: "user_id",
+      select: "f_name l_name role email",
+    }); // Populate the 'user_id' field, which likely represents a related user entity
 
     // If the retrieval is successful, respond with the list of access logs and a success message
     res.status(200).json({

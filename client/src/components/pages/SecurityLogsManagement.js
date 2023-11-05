@@ -80,9 +80,11 @@ export const SecurityLogsManagement = () => {
           const modifiedData = data.map((item) => ({
             // Map the data to match the table columns
             _id: item._id,
-            name: `${item.user_id.f_name} ${item.user_id.l_name}`,
-            email: item.user_id.email,
-            role: item.user_id.role,
+            name: `${item.user_id ? item.user_id.f_name : "N/A"} ${
+              item.user_id ? item.user_id.l_name : "N/A"
+            }`,
+            email: item.user_id ? item.user_id.email : "N/A",
+            role: item.user_id ? item.user_id.role : "N/A",
             login_attempts: item.login_attempts,
             ip_address: item.ip_address,
             timestamps: item.timestamps,

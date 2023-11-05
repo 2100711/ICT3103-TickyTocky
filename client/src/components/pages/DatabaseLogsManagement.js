@@ -66,8 +66,10 @@ export const DatabaseLogsManagement = () => {
           const modifiedData = data.map((item) => ({
             // Map the data to match the table columns
             _id: item._id,
-            cert_id: item.certificate_id.cert_id,
-            user_email: item.certificate_id.user_email,
+            cert_id: item.certificate_id ? item.certificate_id.cert_id : "N/A",
+            user_email: item.certificate_id
+              ? item.certificate_id.user_email
+              : "N/A",
             query_type: item.query_type,
             timestamps: item.timestamps,
           }));

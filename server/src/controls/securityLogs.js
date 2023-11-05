@@ -66,7 +66,10 @@ const logRequest = async (req, res) => {
 const getAllSecurityLogs = async (req, res) => {
   try {
     // Fetch and return all security logs from the database
-    const logs = await SecurityLogModel.find().populate("user_id");
+    const logs = await SecurityLogModel.find().populate({
+      path: "user_id",
+      select: "f_name l_name role email",
+    });
     // Respond with the list of security logs
     res.status(200).json({
       success: true,

@@ -38,7 +38,10 @@ const logRequest = async (req, next) => {
 const getAllDatabaseLogs = async (req, res) => {
   try {
     // Retrieve all database logs from the DatabaseLogModel
-    const logs = await DatabaseLogModel.find().populate("certificate_id");
+    const logs = await DatabaseLogModel.find().populate({
+      path: "certificate_id",
+      select: "cert_id user_email",
+    });
     // Respond with the list of database logs
     res.status(200).json({
       success: true,
