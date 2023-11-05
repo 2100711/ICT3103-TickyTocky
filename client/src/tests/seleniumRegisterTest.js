@@ -7,15 +7,13 @@ const chrome = require("selenium-webdriver/chrome");
   chromeOptions.addArguments("--headless"); // Set Chrome to run in headless mode
   chromeOptions.addArguments("--no-sandbox"); // Disable the sandbox for running as root
 
-  let driver;
+  // Initialize the WebDriver
+  let driver = await new Builder()
+    .forBrowser("chrome")
+    .setChromeOptions(chromeOptions)
+    .build();
 
   try {
-    // Initialize the WebDriver
-    driver = await new Builder()
-      .forBrowser("chrome")
-      .setChromeOptions(chromeOptions)
-      .build();
-
     // Navigate to your application's registration page
     await driver.get("https://gracious-kare.cloud/register");
 
