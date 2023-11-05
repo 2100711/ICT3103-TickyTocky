@@ -407,6 +407,7 @@ export const validateCerts = async (req, res, next) => {
   };
 
   for (let row of data) {
+    console.log("whatisthedata", typeof row);
     const isDupSerial = await checkDupSerial(
       row.case_serial,
       row.movement_serial,
