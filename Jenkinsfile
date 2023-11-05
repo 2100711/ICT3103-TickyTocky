@@ -2,22 +2,22 @@ pipeline {
     agent any
 
     stages {
-        // stage('Build') {
-        //     steps {
-        //         echo 'Building the application'
-        //         script {
-        //             sh 'docker compose build frontend backend'
-        //         }
-        //     }
-        //     post {
-        //         success {
-        //             echo 'Build Success!'
-        //         }
-        //         failure {
-        //             echo 'Build Failed'
-        //         }
-        //     }
-        // }
+        stage('Build') {
+            steps {
+                echo 'Building the application'
+                script {
+                    sh 'docker compose build frontend backend'
+                }
+            }
+            post {
+                success {
+                    echo 'Build Success!'
+                }
+                failure {
+                    echo 'Build Failed'
+                }
+            }
+        }
         
         // stage('Snyk Scanning for Vulnerabilities') { 
         //      parallel {
@@ -58,8 +58,13 @@ pipeline {
             steps {
                 dir('client') {
                     script {
-                        sh 'npm install selenium-webdriver'
-                        sh 'npm test'
+                        try {
+                            sh 'npm install selenium-webdriver'
+                            sh 'npm test'
+                        } catch (Exception e) {
+                            echo "An error occurred during the frontend tests: ${e.message}"
+                            currentBuild.result = 'FAILURE' // Set the build result to FAILURE
+                        }
                     }
                 }
             }
@@ -114,10 +119,15 @@ pipeline {
                                 echo '.env file already contains the required content'
                             }
                             
-                            //echo 'Starting the server'
-                            //sh 'docker compose stop frontend backend' // Stop the frontend and backend containers
-                            //sh 'docker compose rm -f frontend backend' // Remove the frontend and backend containers
-                            //sh 'docker compose up -d --force-recreate frontend backend' // Recreate frontend and backend containers
+                            try {
+                                //echo 'Starting the server'
+                                sh 'docker compose stop frontend backend' // Stop the frontend and backend containers
+                                sh 'docker compose rm -f frontend backend' // Remove the frontend and backend containers
+                                sh 'docker compose up -d --force-recreate frontend backend' // Recreate frontend and backend containers
+                            } catch (Exception e) {
+                                echo "An error occurred during the frontend tests: ${e.message}"
+                                currentBuild.result = 'FAILURE' // Set the build result to FAILURE
+                            }
                       }
                    }
                 }
