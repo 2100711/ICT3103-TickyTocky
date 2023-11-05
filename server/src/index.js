@@ -102,8 +102,15 @@ app.use(apiLimiter); // Apply rate limiter to all routes
 
 // Middleware for sanitizing input data from req.body, req.params, and req.query
 app.use((req, res, next) => {
-  if (req.body) {
-    // Escaping HTML in the request body
+  if (Array.isArray(req.body)) {
+    // Escaping HTML in the request body's array of objects
+    req.body.forEach((obj) => {
+      Object.keys(obj).forEach((key) => {
+        obj[key] = escapeHtml(obj[key]);
+      });
+    });
+  } else if (req.body) {
+    // Escaping HTML in the request body as an object
     Object.keys(req.body).forEach((key) => {
       req.body[key] = escapeHtml(req.body[key]);
     });
